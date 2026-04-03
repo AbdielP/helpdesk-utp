@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardPage } from "../Pages/DashboardPage";
+import { Topbar } from '../components/Topbar';
 
 const AppRouter = () => {
   return (
@@ -7,6 +8,7 @@ const AppRouter = () => {
     // !!!!! COMPONENTES PENDIENTES POR CREAR
 
     <BrowserRouter>
+      <Topbar/>
       <Routes>
         <Route path="/login" element={<div>Login</div>} />
         <Route path="/" element={
