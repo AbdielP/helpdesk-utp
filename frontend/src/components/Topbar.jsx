@@ -6,10 +6,10 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-export const Topbar = () => {
+const Topbar = ({ open }) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed" open={open}>
         <Toolbar>
           <IconButton
             size="large"
@@ -29,3 +29,5 @@ export const Topbar = () => {
     </Box>
   );
 }
+
+export default Topbar;  
