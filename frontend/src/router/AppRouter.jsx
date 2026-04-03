@@ -19,9 +19,10 @@ const AppRouter = () => {
     </BrowserRouter>
 
     // TODO:
-    // 1) Navegacion
-    // 2) Rutas protegidas
-    // 3) Navbar y header
+    // 0) Crear pages y componentes faltantes
+    // 1) Navegacion (en navbar y/o header)
+    // 2) Rutas protegidas (todas menos login)
+    // 3) Diseñar Navbar y header (visible en todas las paginas menos en login)
     // 4) Estilos css basicos (margin, fontsize, color, etc)
   );
 }
