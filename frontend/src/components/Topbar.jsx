@@ -5,8 +5,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-
-const drawerWidth = 240;
+import { DRAWER_WIDTH } from '../constants/constants';
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -19,8 +18,8 @@ const AppBar = styled(MuiAppBar, {
     {
       props: ({ open }) => open,
       style: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
+        width: `calc(100% - ${DRAWER_WIDTH}px)`,
+        marginLeft: `${DRAWER_WIDTH}px`,
         transition: theme.transitions.create(['margin', 'width'], {
           easing: theme.transitions.easing.easeOut,
           duration: theme.transitions.duration.enteringScreen,
