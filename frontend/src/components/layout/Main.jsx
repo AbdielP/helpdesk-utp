@@ -7,9 +7,9 @@ const Main = ({ open, children }) => {
       component="main"
       sx={{
         flexGrow: 1,
-        p: 3,
-        ml: open ? `${DRAWER_WIDTH}px` : 0,
+        ml: open ? 0 : `-${DRAWER_WIDTH}px`,
         transition: 'margin 0.3s',
+        minHeight: "calc(100vh - 64px)"
       }}
     >
       {children}
