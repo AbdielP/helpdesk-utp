@@ -1,8 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 
 import LoginPage from "../Pages/LoginPage";
-import DashboardPage from "../Pages/DashboardPage";
 import Layout from "../components/layout/Layout";
+import DashboardPage from "../Pages/DashboardPage";
+import CreateTicketPage from "../Pages/CreateTicketPage";
 
 const AppRouter = () => {
   return (
@@ -12,8 +13,8 @@ const AppRouter = () => {
       {/* Rutas con layout */}
       <Route element={<Layout />}>
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/tickets" element={<div>Tickets</div>} />
-        <Route path="/tickets/new" element={<div>New Ticket</div>} />
+        <Route path="/ticket/:id" element={<div>Ticket details</div>} />
+        <Route path="/ticket/new" element={<CreateTicketPage />} />
         <Route path="/admin" element={<div>Admin</div>} />
       </Route>
     </Routes>

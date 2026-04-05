@@ -14,32 +14,22 @@ helpdesk-utp/
 └── README.md
 ```
 
---
-## 🚀 Cómo ejecutar el frontend
+## Rutas del Frontend
 
-1. Entrar a la carpeta del frontend:
+- `/login`  
+  Página de inicio de sesión.
 
-```
-cd frontend
-```
+- `/`  
+  (main page, se podría renombrar /tickets") Lista de tickets del usuario. desde aqui un botón para /create-ticket , y click en los tickets para abrir página de detalle de los tickets /ticket/:id
 
-2. Instalar dependencias (solo la primera vez):
+- `/ticket/new`  
+  Formulario para crear un nuevo ticket.
 
-```
-npm install
-```
+- `/ticket/:id`  
+  Vista de detalle de un ticket específico.
 
-3. Iniciar el servidor de desarrollo:
-
-```
-npm run dev
-```
-
-4. Abrir en el navegador:
-
-```
-http://localhost:5173
-```
+- `/admin`  
+  Panel administrativo para gestión de tickets (asignación, estado, etc).
 
 ---
 
