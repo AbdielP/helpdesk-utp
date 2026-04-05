@@ -1,7 +1,12 @@
 # Proyecto Final de Tópicos Especiales de Ingeniería de Software II
 Frontend React/Vite
     - Node.js 24.14.1
-Backend: .Net10
+    - Backend: .Net10
+
+TODO:
+1. Login
+2. Rutas protegidas
+3. Dashboard de admin y de usuarios separados
 
 ## Estructura del proyecto
 
