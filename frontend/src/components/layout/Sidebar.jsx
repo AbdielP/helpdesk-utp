@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -20,10 +22,6 @@ import Main from "./Main";
 import DrawerHeader from "./DrawerHeader";
 import Topbar from "./Topbar";
 
-// TODO:
-// - Crear navegación para probar rutas
-// - Limpiar este montón de imports
-
 const Sidebar = ({ children }) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -35,6 +33,14 @@ const Sidebar = ({ children }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const navigate = useNavigate();
+
+  const menu = [
+    { label: "Login", path: "/login", icon: <InboxIcon /> },
+    { label: "Dashboard", path: "/", icon: <MailIcon /> },
+    { label: "Crear Ticket", path: "/ticket/new", icon: <InboxIcon /> },
+  ];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -64,30 +70,16 @@ const Sidebar = ({ children }) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+          {menu.map((item) => (
+            <ListItem key={item.label} disablePadding>
+              <ListItemButton onClick={() => navigate(item.path)}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
         <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
       {/* Componente Main: contiene los componentes principales del app */}
       <Main open={open}>
