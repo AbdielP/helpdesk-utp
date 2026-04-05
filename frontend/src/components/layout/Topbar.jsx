@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { DRAWER_WIDTH } from "../constants/constants";
+import { DRAWER_WIDTH } from "../../constants/constants";
 
 const Topbar = ({ open, handleDrawerOpen }) => {
   return (

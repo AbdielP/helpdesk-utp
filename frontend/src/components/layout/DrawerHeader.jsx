@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 
-const DrawerHeader = () => {
+const DrawerHeader = ({ children }) => {
   const theme = useTheme();
 
   return (
@@ -13,7 +13,9 @@ const DrawerHeader = () => {
         ...theme.mixins.toolbar,
         justifyContent: "flex-end",
       }}
-    />
+    >
+      {children}
+    </Box>
   );
 };
 

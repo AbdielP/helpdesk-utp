@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import Layout from "../components/Layout";
 import LoginPage from "../Pages/LoginPage";
 import DashboardPage from "../Pages/DashboardPage";
+import Layout from "../components/layout/Layout";
 
 const AppRouter = () => {
   return (

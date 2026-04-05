@@ -1,4 +1,4 @@
-import { DRAWER_WIDTH } from '../constants/constants';
+import { DRAWER_WIDTH } from '../../constants/constants';
 import Box from '@mui/material/Box';
 
 const Main = ({ open, children }) => {

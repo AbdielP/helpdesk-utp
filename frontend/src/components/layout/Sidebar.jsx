@@ -14,16 +14,15 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { DRAWER_WIDTH } from "../constants/constants";
+import { DRAWER_WIDTH } from "../../constants/constants";
 
-import Topbar from "./Topbar";
 import Main from "./Main";
 import DrawerHeader from "./DrawerHeader";
+import Topbar from "./Topbar";
 
 // TODO:
 // - Crear navegación para probar rutas
 // - Limpiar este montón de imports
-// - Ordenar componentes en carpetas
 
 const Sidebar = ({ children }) => {
   const theme = useTheme();
