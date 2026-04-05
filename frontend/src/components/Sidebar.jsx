@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,19 +18,12 @@ import { DRAWER_WIDTH } from "../constants/constants";
 
 import Topbar from "./Topbar";
 import Main from "./Main";
+import DrawerHeader from "./DrawerHeader";
 
 // TODO:
-// - Sacar main del Sidebar
-// - Mostrar las pages (dashboard y crear otra)
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
-}));
+// - Crear navegación para probar rutas
+// - Limpiar este montón de imports
+// - Ordenar componentes en carpetas
 
 const Sidebar = ({ children }) => {
   const theme = useTheme();
