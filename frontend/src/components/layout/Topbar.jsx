@@ -2,11 +2,22 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { DRAWER_WIDTH } from "../../constants/constants";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Topbar = ({ open, handleDrawerOpen }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <AppBar
       position="fixed"
@@ -39,15 +50,13 @@ const Topbar = ({ open, handleDrawerOpen }) => {
           HelpDesk UTP
         </Typography>
 
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
+        <Button
           color="inherit"
+          startIcon={<AccountCircle />}
+          onClick={handleLogout}
         >
-          <AccountCircle />
-        </IconButton>
+          Cerrar sesión
+        </Button>
       </Toolbar>
     </AppBar>
   );
