@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import LoginPage from "../Pages/LoginPage";
+import ProtectedRoute from "./ProtectedRoute";
 import Layout from "../components/layout/Layout";
 import DashboardPage from "../Pages/DashboardPage";
 import CreateTicketPage from "../Pages/CreateTicketPage";
@@ -11,11 +12,13 @@ const AppRouter = () => {
       <Route path="/login" element={<LoginPage />} />
 
       {/* Rutas con layout */}
-      <Route element={<Layout />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/ticket/:id" element={<div>Ticket details</div>} />
-        <Route path="/ticket/new" element={<CreateTicketPage />} />
-        <Route path="/admin" element={<div>Admin</div>} />
+      <Route element={<ProtectedRoute />}> {/* <---- COMENTAR ESTA LINEA PARA DESHABILITAR LA PROTECCION DE RUTA*/}
+        <Route element={<Layout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/ticket/:id" element={<div>Ticket details</div>} />
+          <Route path="/ticket/new" element={<CreateTicketPage />} />
+          <Route path="/admin" element={<div>Admin</div>} />
+        </Route>
       </Route>
     </Routes>
   );
