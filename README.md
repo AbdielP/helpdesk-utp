@@ -6,6 +6,9 @@ Frontend React/Vite
 # TODO:
 1. Dashboard y paginas de admin, support y user según su roll
 
+# PARA INICIAR SESIÓN
+1. Cualquier usuario o correo y cualquier contraseña (aún no hay backend ni validación de usuarios)
+
 ## Estructura del proyecto
 
 ```
