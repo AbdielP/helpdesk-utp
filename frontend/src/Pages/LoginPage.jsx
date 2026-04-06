@@ -1,6 +1,17 @@
 import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    await login();
+    navigate("/");
+  }
+
   return (
     <Grid container sx={{ height: "100vh" }}>
       {/* Imagen izquierda */}
@@ -58,6 +69,7 @@ const LoginPage = () => {
                 py: 1.5,
                 fontWeight: 600,
               }}
+              onClick={handleLogin}
             >
               Iniciar sesión
             </Button>
