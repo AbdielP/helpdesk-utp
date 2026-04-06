@@ -1,11 +1,11 @@
-import { Box, Grid, Paper, TextField, Button, Typography, Stack } from "@mui/material";
+import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
 
 const LoginPage = () => {
   return (
     <Grid container sx={{ height: "100vh" }}>
       {/* Imagen izquierda */}
       <Grid
-        size={{ xs: 0, md: 6 }}
+        size={{ xs: 0, md: 5.4 }}
         sx={{
           display: { xs: "none", md: "block" },
           backgroundImage: "url('/campus-civil-background.jpg')",
@@ -16,7 +16,7 @@ const LoginPage = () => {
 
       {/* Formulario (Derecha) */}
       <Grid
-        size={{ xs: 12, md: 6 }}
+        size={{ xs: 12, md: 6.6 }}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -24,14 +24,8 @@ const LoginPage = () => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            width: "100%",
-            maxWidth: 400,
-            borderRadius: 2,
-          }}
+        <Box
+          sx={{ width: "100%", maxWidth: 400 }}
         >
           <Stack spacing={3}>
             {/* Title / Logo */}
@@ -77,7 +71,7 @@ const LoginPage = () => {
               Universidad Tecnológica de Panamá - 2026
             </Typography>
           </Stack>
-        </Paper>
+        </Box>
       </Grid>
     </Grid>
   );
