@@ -5,7 +5,7 @@ const ProtectedRoute = ({ roles }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return null; // o spinner
+    return null; // Aqui se puede aplicar spinner o alguna indicación de carga
   }
 
   if (!user) {
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ roles }) => {
   }
 
   if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

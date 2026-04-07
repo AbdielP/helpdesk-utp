@@ -21,6 +21,7 @@ import { DRAWER_WIDTH } from "../../constants/constants";
 import Main from "./Main";
 import DrawerHeader from "./DrawerHeader";
 import Topbar from "./Topbar";
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ children }) => {
   const theme = useTheme();
@@ -36,10 +37,18 @@ const Sidebar = ({ children }) => {
 
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   const menu = [
-    { label: "Login", path: "/login", icon: <InboxIcon /> },
     { label: "Dashboard", path: "/", icon: <MailIcon /> },
-    { label: "Crear Ticket", path: "/ticket/new", icon: <InboxIcon /> },
+
+    ...(user.role === "user"
+      ? [{ label: "Crear Ticket", path: "/ticket/new", icon: <InboxIcon /> }]
+      : []),
+
+    ...(user.role === "admin"
+      ? [{ label: "Admin", path: "/admin", icon: <InboxIcon /> }]
+      : []),
   ];
 
   return (

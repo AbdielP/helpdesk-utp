@@ -5,7 +5,7 @@ export const login = async () => {
     token: "fake-jwt",
     user: {
       id: 1,
-      role: "admin", // cambiar para probar: admin, support, user
+      role: "user", // cambiar para probar: admin, support, user
     },
   };
 };
@@ -13,4 +13,5 @@ export const login = async () => {
 export const logout = () => {
     // uso de cookie para simular almacenamiento del token
   document.cookie = "token=; Max-Age=0; path=/;";
+  document.cookie = "user=; Max-Age=0; path=/;";
 };

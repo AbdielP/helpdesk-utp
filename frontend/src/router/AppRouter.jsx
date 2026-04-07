@@ -11,13 +11,17 @@ const AppRouter = () => {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Rutas con layout */}
-      <Route element={<ProtectedRoute />}> {/* <---- COMENTAR ESTA LINEA PARA DESHABILITAR LA PROTECCION DE RUTA*/}
+      <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/ticket/:id" element={<div>Ticket details</div>} />
           <Route path="/ticket/new" element={<CreateTicketPage />} />
-          <Route path="/admin" element={<div>Admin</div>} />
+
+          <Route element={<ProtectedRoute roles={["admin"]} />}>
+            <Route path="/admin" element={<div>Admin</div>} />
+          </Route>
+
+          <Route path="*" element={<div>Not found</div>} />
         </Route>
       </Route>
     </Routes>

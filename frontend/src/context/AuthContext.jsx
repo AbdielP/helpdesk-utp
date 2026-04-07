@@ -8,13 +8,15 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const hasToken = document.cookie.includes("token=");
+    const cookies = document.cookie.split("; ");
 
-    if (hasToken) {
-      setUser({
-        id: 1,
-        role: "admin",
-      });
+    const userCookie = cookies.find((cookie) => cookie.startsWith("user="));
+
+    if (userCookie) {
+      const parsedUser = JSON.parse(
+        decodeURIComponent(userCookie.split("=")[1]),
+      );
+      setUser(parsedUser);
     }
 
     setLoading(false);
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }) => {
 
     // guarda token en cookie
     document.cookie = `token=${res.token}; path=/;`;
+    document.cookie = `user=${encodeURIComponent(JSON.stringify(res.user))}; path=/;`;
 
     setUser(res.user);
   };

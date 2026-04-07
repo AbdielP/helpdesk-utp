@@ -7,7 +7,7 @@ const DashboardPage = () => {
         height: "100%",
       }}
     >
-      DashboardPage
+      LISTADO DE TICKETS SEGÚN ROL
     </Box>
   )
 }
