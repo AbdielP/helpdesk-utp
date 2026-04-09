@@ -36,9 +36,12 @@ export default function CreateTicketPage() {
       createdAt: new Date().toISOString(),
     };
 
+    // !! Aquí se guarda el ticket en localStorage para simular una base de datos
+    // CAMBIAR A UNA LLAMADA REAL A LA API CUANDO ESTÉ LISTA
     const existing = JSON.parse(localStorage.getItem("tickets")) || [];
     localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]));
 
+    // Usar un snackbar o alguna forma de notificación mas adelante.
     alert(`Ticket creado: ${newTicket.title}`);
   };
 
