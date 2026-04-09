@@ -12,23 +12,34 @@ const categorias = ["Red", "Plataforma", "Cuenta", "Hardware"];
 const prioridades = ["Baja", "Media", "Alta"];
 
 export default function CreateTicketPage() {
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
     priority: "",
   });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(form);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const newTicket = {
+      id: Date.now(),
+      ...formData,
+      status: "Abierto",
+      createdAt: new Date().toISOString(),
+    };
+
+    const existing = JSON.parse(localStorage.getItem("tickets")) || [];
+    localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]));
+
+    alert(`Ticket creado: ${newTicket.title}`);
   };
 
   return (
@@ -68,7 +79,7 @@ export default function CreateTicketPage() {
             fullWidth
             label="Título"
             name="title"
-            value={form.title}
+            value={formData.title}
             onChange={handleChange}
             required
           />
@@ -77,7 +88,7 @@ export default function CreateTicketPage() {
             fullWidth
             label="Descripción"
             name="description"
-            value={form.description}
+            value={formData.description}
             onChange={handleChange}
             multiline
             rows={4}
@@ -96,7 +107,7 @@ export default function CreateTicketPage() {
               select
               label="Categoría"
               name="category"
-              value={form.category}
+              value={formData.category}
               onChange={handleChange}
               required
               sx={{ flex: 1, minWidth: 200 }}
@@ -112,7 +123,7 @@ export default function CreateTicketPage() {
               select
               label="Prioridad"
               name="priority"
-              value={form.priority}
+              value={formData.priority}
               onChange={handleChange}
               required
               sx={{ flex: 1, minWidth: 200 }}
