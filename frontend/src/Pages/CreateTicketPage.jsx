@@ -1,3 +1,4 @@
+import { getCurrentUser } from "../services/authService";
 import { useState } from "react";
 import {
   Box,
@@ -27,23 +28,49 @@ export default function CreateTicketPage() {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
+
+    const user = getCurrentUser();
+    if (!user) {
+      alert("No hay usuario en sesión")
+      return
+    }
 
     const newTicket = {
       id: Date.now(),
       ...formData,
       status: "Abierto",
-      createdAt: new Date().toISOString(),
-    };
-
+      created_by: user.id,
+      assigned_to: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
     // !! Aquí se guarda el ticket en localStorage para simular una base de datos
     // CAMBIAR A UNA LLAMADA REAL A LA API CUANDO ESTÉ LISTA
-    const existing = JSON.parse(localStorage.getItem("tickets")) || [];
-    localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]));
-
+    const existing = JSON.parse(localStorage.getItem("tickets")) || []
+    localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]))
     // Usar un snackbar o alguna forma de notificación mas adelante.
-    alert(`Ticket creado: ${newTicket.title}`);
-  };
+    alert(`Ticket creado: ${newTicket.title}`)
+  }
+
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+
+  //   const newTicket = {
+  //     id: Date.now(),
+  //     ...formData,
+  //     status: "Abierto",
+  //     createdAt: new Date().toISOString(),
+  //   };
+
+  //   // !! Aquí se guarda el ticket en localStorage para simular una base de datos
+  //   // CAMBIAR A UNA LLAMADA REAL A LA API CUANDO ESTÉ LISTA
+  //   const existing = JSON.parse(localStorage.getItem("tickets")) || [];
+  //   localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]));
+
+  //   // Usar un snackbar o alguna forma de notificación mas adelante.
+  //   alert(`Ticket creado: ${newTicket.title}`);
+  // };
 
   return (
     <Box
