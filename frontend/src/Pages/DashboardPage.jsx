@@ -32,7 +32,7 @@ const DashboardPage = () => {
 
     if (user.role === "user") {
       result = tickets.filter(t => t.created_by === user.id)
-    } else if (user.role === "tech") {
+    } else if (user.role === "support") {
       result = tickets.filter(t => t.assigned_to === user.id)
     } else if (user.role === "admin") {
       result = tickets

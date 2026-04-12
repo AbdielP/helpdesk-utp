@@ -4,8 +4,8 @@ export const login = async () => {
   return {
     token: "fake-jwt",
     user: {
-      id: 1,
-      role: "user", // cambiar para probar: admin, support, user
+      id: 4,
+      role: "admin", // cambiar para probar: admin, support, user
     },
   };
 };
@@ -16,7 +16,7 @@ export const logout = () => {
   document.cookie = "user=; Max-Age=0; path=/;";
 };
 
-// Temporral para obtener el usuario desde la cookie (reemplazar por lógica real cuando haya API)
+// Temporal para obtener el usuario desde la cookie (reemplazar por lógica real cuando haya API)
 export const getCurrentUser = () => {
   const cookie = document.cookie
     .split("; ")
