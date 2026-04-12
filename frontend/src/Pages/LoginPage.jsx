@@ -1,16 +1,32 @@
 import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const LoginPage = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const handleLogin = async () => {
-    await login();
-    navigate("/");
-  }
+    try {
+      setError("");
+      await login(email, password);
+      navigate("/");
+    } catch (err) {
+      if (err.message === "USER_NOT_FOUND") {
+        setError("Usuario no existe");
+      } else if (err.message === "INVALID_PASSWORD") {
+        setError("Contraseña incorrecta");
+      } else {
+        setError("Error inesperado");
+      }
+    }
+  };
 
   return (
     <Grid container sx={{ height: "100vh" }}>
@@ -35,29 +51,32 @@ const LoginPage = () => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <Box
-          sx={{ width: "100%", maxWidth: 400 }}
-        >
+        <Box sx={{ width: "100%", maxWidth: 400 }}>
           <Stack spacing={3}>
-            {/* Title / Logo */}
+            {/* Title */}
             <Box textAlign="center">
               <Typography variant="h4" fontWeight={600}>
                 HelpDesk UTP
               </Typography>
             </Box>
 
-            {/* Inputs */}
+            {/* Email */}
             <TextField
               label="Correo electrónico"
               variant="outlined"
               fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
+            {/* Password */}
             <TextField
               label="Contraseña"
               type="password"
               variant="outlined"
               fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             {/* Button */}
@@ -73,6 +92,13 @@ const LoginPage = () => {
             >
               Iniciar sesión
             </Button>
+
+            {/* Error */}
+            {error && (
+              <Typography color="error" textAlign="center">
+                {error}
+              </Typography>
+            )}
 
             {/* Footer */}
             <Typography

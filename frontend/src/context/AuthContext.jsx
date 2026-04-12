@@ -22,16 +22,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async () => {
-    const res = await authService.login();
+  const login = async (email, password) => {
+    const res = await authService.login(email, password);
 
-    // guarda token en cookie
     document.cookie = `token=${res.token}; path=/;`;
     document.cookie = `user=${encodeURIComponent(JSON.stringify(res.user))}; path=/;`;
 
     setUser(res.user);
   };
-
+  
   const logout = () => {
     authService.logout();
     setUser(null);

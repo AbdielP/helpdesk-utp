@@ -1,17 +1,25 @@
-// Simula backend (reemplazar por fetch a .NET cuando haya API real)
+import { users } from '../mocks/users';
 
-export const login = async () => {
+// Simula backend (reemplazar por fetch a .NET cuando haya API real)
+export const login = async (email, password) => {
+  const user = users.find(u => u.email === email);
+
+  if (!user) {
+    throw new Error('USER_NOT_FOUND');
+  }
+
+  if (user.password !== password) {
+    throw new Error('INVALID_PASSWORD');
+  }
+
   return {
-    token: "fake-jwt",
-    user: {
-      id: 4,
-      role: "admin", // cambiar para probar: admin, support, user
-    },
+    token: 'fake-token',
+    user
   };
 };
 
 export const logout = () => {
-    // uso de cookie para simular almacenamiento del token
+  // uso de cookie para simular almacenamiento del token
   document.cookie = "token=; Max-Age=0; path=/;";
   document.cookie = "user=; Max-Age=0; path=/;";
 };
