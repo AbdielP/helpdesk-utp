@@ -2,6 +2,7 @@ import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
 
 const LoginPage = () => {
 
@@ -16,14 +17,14 @@ const LoginPage = () => {
     try {
       setError("");
       await login(email, password);
-      navigate("/");
+      navigate(ROUTES.HOME);
     } catch (err) {
-      if (err.message === "USER_NOT_FOUND") {
-        setError("Usuario no existe");
-      } else if (err.message === "INVALID_PASSWORD") {
-        setError("Contraseña incorrecta");
+      if (err.message === AUTH_ERRORS.USER_NOT_FOUND) {
+        setError(ERROR_MESSAGES[AUTH_ERRORS.USER_NOT_FOUND]);
+      } else if (err.message === AUTH_ERRORS.INVALID_PASSWORD) {
+        setError(ERROR_MESSAGES[AUTH_ERRORS.INVALID_PASSWORD]);
       } else {
-        setError("Error inesperado");
+        setError(ERROR_MESSAGES.GENERIC);
       }
     }
   };

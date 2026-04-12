@@ -4,6 +4,7 @@ import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import { useNavigate } from "react-router-dom"
 import { getCurrentUser } from "../services/authService"
+import { ROLES, STORAGE_KEYS } from "../constants/constants"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
@@ -20,7 +21,7 @@ const DashboardPage = () => {
 
   // Obtener tickets desde localStorage
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("tickets")) || []
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
     setTickets(data)
   }, [])
 
@@ -30,11 +31,11 @@ const DashboardPage = () => {
 
     let result = []
 
-    if (user.role === "user") {
+    if (user.role === ROLES.USER) {
       result = tickets.filter(t => t.created_by === user.id)
-    } else if (user.role === "support") {
+    } else if (user.role === ROLES.SUPPORT) {
       result = tickets.filter(t => t.assigned_to === user.id)
-    } else if (user.role === "admin") {
+    } else if (user.role === ROLES.ADMIN) {
       result = tickets
     }
 
@@ -44,9 +45,9 @@ const DashboardPage = () => {
   return (
     <Box sx={{ maxWidth: 900, mx: "auto", mt: 3 }}>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        {user?.role === "user" && "Mis Tickets"}
-        {user?.role === "tech" && "Tickets Asignados"}
-        {user?.role === "admin" && "Todos los Tickets"}
+        {user?.role === ROLES.USER && "Mis Tickets"}
+        {user?.role === ROLES.SUPPORT && "Tickets Asignados"}
+        {user?.role === ROLES.ADMIN && "Todos los Tickets"}
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

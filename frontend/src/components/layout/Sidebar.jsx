@@ -16,7 +16,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { DRAWER_WIDTH } from "../../constants/constants";
+import { DRAWER_WIDTH, ROLES, ROUTES } from "../../constants/constants";
 
 import Main from "./Main";
 import DrawerHeader from "./DrawerHeader";
@@ -40,14 +40,14 @@ const Sidebar = ({ children }) => {
   const { user } = useAuth();
 
   const menu = [
-    { label: "Dashboard", path: "/", icon: <MailIcon /> },
+    { label: "Dashboard", path: ROUTES.HOME, icon: <MailIcon /> },
 
-    ...(user.role === "user"
-      ? [{ label: "Crear Ticket", path: "/ticket/new", icon: <InboxIcon /> }]
+    ...(user.role === ROLES.USER
+      ? [{ label: "Crear Ticket", path: ROUTES.TICKET_NEW, icon: <InboxIcon /> }]
       : []),
 
-    ...(user.role === "admin"
-      ? [{ label: "Admin", path: "/admin", icon: <InboxIcon /> }]
+    ...(user.role === ROLES.ADMIN
+      ? [{ label: "Admin", path: ROUTES.ADMIN, icon: <InboxIcon /> }]
       : []),
   ];
 

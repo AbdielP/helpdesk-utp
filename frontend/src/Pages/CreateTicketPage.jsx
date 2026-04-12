@@ -8,9 +8,11 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
-
-const categorias = ["Red", "Plataforma", "Cuenta", "Hardware"];
-const prioridades = ["Baja", "Media", "Alta"];
+import {
+  STORAGE_KEYS,
+  TICKET_CATEGORIES,
+  TICKET_PRIORITIES,
+} from "../constants/constants";
 
 export default function CreateTicketPage() {
   const [formData, setFormData] = useState({
@@ -47,8 +49,8 @@ export default function CreateTicketPage() {
     }
     // !! Aquí se guarda el ticket en localStorage para simular una base de datos
     // CAMBIAR A UNA LLAMADA REAL A LA API CUANDO ESTÉ LISTA
-    const existing = JSON.parse(localStorage.getItem("tickets")) || []
-    localStorage.setItem("tickets", JSON.stringify([...existing, newTicket]))
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
+    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify([...existing, newTicket]))
     // Usar un snackbar o alguna forma de notificación mas adelante.
     alert(`Ticket creado: ${newTicket.title}`)
   }
@@ -123,9 +125,9 @@ export default function CreateTicketPage() {
               required
               sx={{ flex: 1, minWidth: 200 }}
             >
-              {categorias.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
+              {TICKET_CATEGORIES.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
                 </MenuItem>
               ))}
             </TextField>
@@ -139,9 +141,9 @@ export default function CreateTicketPage() {
               required
               sx={{ flex: 1, minWidth: 200 }}
             >
-              {prioridades.map((p) => (
-                <MenuItem key={p} value={p}>
-                  {p}
+              {TICKET_PRIORITIES.map((priority) => (
+                <MenuItem key={priority} value={priority}>
+                  {priority}
                 </MenuItem>
               ))}
             </TextField>

@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { DRAWER_WIDTH } from "../../constants/constants";
+import { DRAWER_WIDTH, ROUTES } from "../../constants/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ const Topbar = ({ open, handleDrawerOpen }) => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   return (

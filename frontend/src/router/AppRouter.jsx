@@ -6,20 +6,21 @@ import Layout from "../components/layout/Layout";
 import DashboardPage from "../Pages/DashboardPage";
 import CreateTicketPage from "../Pages/CreateTicketPage";
 import TicketDetailPage from "../Pages/TicketDetailPage";
+import { ROUTES, ROLES } from "../constants/constants";
 
 const AppRouter = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/ticket/:id" element={<TicketDetailPage />} />
-          <Route path="/ticket/new" element={<CreateTicketPage />} />
+          <Route path={ROUTES.HOME} element={<DashboardPage />} />
+          <Route path={ROUTES.TICKET_DETAIL} element={<TicketDetailPage />} />
+          <Route path={ROUTES.TICKET_NEW} element={<CreateTicketPage />} />
 
-          <Route element={<ProtectedRoute roles={["admin"]} />}>
-            <Route path="/admin" element={<div>Admin</div>} />
+          <Route element={<ProtectedRoute roles={[ROLES.ADMIN]} />}>
+            <Route path={ROUTES.ADMIN} element={<div>Admin</div>} />
           </Route>
 
           <Route path="*" element={<div>Not found</div>} />

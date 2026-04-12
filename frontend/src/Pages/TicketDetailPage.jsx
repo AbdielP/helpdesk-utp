@@ -8,25 +8,51 @@ import InputLabel from "@mui/material/InputLabel"
 import Select from "@mui/material/Select"
 import MenuItem from "@mui/material/MenuItem"
 import { getCurrentUser } from "../services/authService"
+import { users } from "../mocks/users"
+import {
+  ERROR_MESSAGES,
+  ROLES,
+  STORAGE_KEYS,
+  TICKET_STATUSES,
+} from "../constants/constants"
 
 const TicketDetailPage = () => {
   const { id } = useParams()
   const [ticket, setTicket] = useState(null)
   const [user, setUser] = useState(null)
 
+  // cargar ticket
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("tickets")) || []
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
     const found = data.find(t => t.id === Number(id))
     setTicket(found)
   }, [id])
 
+  // usuario actual
   useEffect(() => {
     const currentUser = getCurrentUser()
     setUser(currentUser)
   }, [])
 
+  // técnicos
+  const supportUsers = users.filter((u) => u.role === ROLES.SUPPORT)
+
+  // actualizar ticket en localStorage
+  const updateTicket = (updatedFields) => {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
+
+    const updated = data.map(t =>
+      t.id === ticket.id
+        ? { ...t, ...updatedFields, updated_at: new Date().toISOString() }
+        : t
+    )
+
+    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updated))
+    setTicket(prev => ({ ...prev, ...updatedFields }))
+  }
+
   if (!ticket) {
-    return <Typography>No se encontró el ticket</Typography>
+    return <Typography>{ERROR_MESSAGES.TICKET_NOT_FOUND}</Typography>
   }
 
   return (
@@ -56,7 +82,7 @@ const TicketDetailPage = () => {
           {new Date(ticket.created_at).toLocaleString()}
         </Typography>
 
-        {/* Opciones de asignación y cambio de estado según el rol del usuario */}
+        {/* CONTROLES */}
         <Box
           sx={{
             display: "flex",
@@ -65,26 +91,46 @@ const TicketDetailPage = () => {
             flexWrap: "wrap"
           }}
         >
-          {user?.role === "admin" && (
+          {/* ADMIN → asignar */}
+          {user?.role === ROLES.ADMIN && (
             <FormControl size="small" sx={{ minWidth: 200, flex: 1 }}>
               <InputLabel>Asignar a técnico</InputLabel>
-              <Select label="Asignar a técnico" defaultValue="">
+              <Select
+                label="Asignar a técnico"
+                value={ticket.assigned_to || ""}
+                onChange={(e) =>
+                  updateTicket({ assigned_to: Number(e.target.value) })
+                }
+              >
                 <MenuItem value="">
                   <em>Sin asignar</em>
                 </MenuItem>
-                <MenuItem value="1">Técnico 1</MenuItem>
-                <MenuItem value="2">Técnico 2</MenuItem>
+
+                {supportUsers.map((s) => (
+                  <MenuItem key={s.id} value={s.id}>
+                    {s.email}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           )}
 
-          {(user?.role === "admin" || user?.role === "support") && (
+          {/* ADMIN + SUPPORT → estado */}
+          {(user?.role === ROLES.ADMIN || user?.role === ROLES.SUPPORT) && (
             <FormControl size="small" sx={{ minWidth: 200, flex: 1 }}>
               <InputLabel>Estado</InputLabel>
-              <Select label="Estado" defaultValue={ticket.status}>
-                <MenuItem value="Abierto">Abierto</MenuItem>
-                <MenuItem value="En proceso">En proceso</MenuItem>
-                <MenuItem value="Cerrado">Cerrado</MenuItem>
+              <Select
+                label="Estado"
+                value={ticket.status}
+                onChange={(e) =>
+                  updateTicket({ status: e.target.value })
+                }
+              >
+                  {TICKET_STATUSES.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           )}
