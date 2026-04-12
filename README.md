@@ -4,8 +4,8 @@ Frontend React/Vite
     - Backend: .Net10
 
 # TODO:
-2. Sidebar y AppRouter duplican rutas -> crear menú de rutas dinámico
-3. OPCIONAL, NO NECESARIO: En AuthContext.jsx, después de refresh el usuario se pierde o se asigna mal; debe cambiarse para que, si hay token en cookie, el frontend haga una petición al backend para obtener el usuario (id y role) en lugar de usar valores hardcodeados o vacíos.
+1. OPCIONAL, NO NECESARIO: En AuthContext.jsx, después de refresh el usuario se pierde o se asigna mal; debe cambiarse para que, si hay token en cookie, el frontend haga una petición al backend para obtener el usuario (id y role) en lugar de usar valores hardcodeados o vacíos.
+2. Dashboard y paginas de admin y support
 
 # PARA INICIAR SESIÓN
 1. Cualquier usuario o correo y cualquier contraseña (aún no hay backend ni validación de usuarios)
