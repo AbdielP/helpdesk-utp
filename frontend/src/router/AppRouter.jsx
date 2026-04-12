@@ -5,6 +5,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Layout from "../components/layout/Layout";
 import DashboardPage from "../Pages/DashboardPage";
 import CreateTicketPage from "../Pages/CreateTicketPage";
+import TicketDetailPage from "../Pages/TicketDetailPage";
 
 const AppRouter = () => {
   return (
@@ -14,7 +15,7 @@ const AppRouter = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/ticket/:id" element={<div>Ticket details</div>} />
+          <Route path="/ticket/:id" element={<TicketDetailPage />} />
           <Route path="/ticket/new" element={<CreateTicketPage />} />
 
           <Route element={<ProtectedRoute roles={["admin"]} />}>

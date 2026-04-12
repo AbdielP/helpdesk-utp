@@ -2,30 +2,20 @@ import { useEffect, useState } from "react"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-
-const getUserFromCookie = () => {
-  const match = document.cookie
-    .split("; ")
-    .find(row => row.startsWith("user="))
-
-  if (!match) return null
-
-  try {
-    return JSON.parse(decodeURIComponent(match.split("=")[1]))
-  } catch {
-    return null
-  }
-}
+import { useNavigate } from "react-router-dom"
+import { getCurrentUser } from "../services/authService"
 
 const DashboardPage = () => {
+    const navigate = useNavigate()
+
   const [tickets, setTickets] = useState([])
   const [filtered, setFiltered] = useState([])
   const [user, setUser] = useState(null)
 
   // Obtener usuario desde cookie
   useEffect(() => {
-    const u = getUserFromCookie()
-    setUser(u)
+    const user = getCurrentUser()
+    setUser(user)
   }, [])
 
   // Obtener tickets desde localStorage
@@ -78,6 +68,7 @@ const DashboardPage = () => {
                 backgroundColor: "rgba(0,0,0,0.03)",
               },
             }}
+            onClick={() => navigate(`/ticket/${t.id}`)}
           >
             <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
               {t.title}
