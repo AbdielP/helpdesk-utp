@@ -52,118 +52,131 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
           </TableHead>
 
           <TableBody>
-            {tickets
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((ticket) => {
-                const tecnico = users.find(
-                  (userItem) => userItem.id === ticket.assigned_to,
-                );
+            {tickets.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={user?.role === ROLES.ADMIN ? 5 : 4}>
+                  <Box sx={{ textAlign: "center", py: 4 }}>
+                    <Typography color="text.secondary">
+                      {user?.role === ROLES.USER && "No has creado tickets"}
+                      {user?.role === ROLES.SUPPORT &&
+                        "No tienes tickets asignados"}
+                      {user?.role === ROLES.ADMIN &&
+                        "No hay tickets en el sistema"}
+                    </Typography>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ) : (
+              tickets
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((ticket) => {
+                  const tecnico = users.find(
+                    (userItem) => userItem.id === ticket.assigned_to,
+                  );
 
-                // 🎨 colores
-                const statusColor =
-                  ticket.status === "Abierto"
-                    ? "#3b82f6"
-                    : ticket.status === "En proceso"
-                      ? "#f59e0b"
-                      : "#10b981";
+                  const statusColor =
+                    ticket.status === "Abierto"
+                      ? "#3b82f6"
+                      : ticket.status === "En proceso"
+                        ? "#f59e0b"
+                        : "#10b981";
 
-                const priorityColor =
-                  ticket.priority === "Alta"
-                    ? "#ef4444"
-                    : ticket.priority === "Media"
-                      ? "#f59e0b"
-                      : "#10b981";
+                  const priorityColor =
+                    ticket.priority === "Alta"
+                      ? "#ef4444"
+                      : ticket.priority === "Media"
+                        ? "#f59e0b"
+                        : "#10b981";
 
-                const categoryColorMap = {
-                  Plataforma: "#6366f1",
-                  Cuenta: "#ec4899",
-                  Hardware: "#14b8a6",
-                  Software: "#f97316",
-                };
+                  const categoryColorMap = {
+                    Plataforma: "#6366f1",
+                    Cuenta: "#ec4899",
+                    Hardware: "#14b8a6",
+                    Software: "#f97316",
+                  };
 
-                const avatarColor =
-                  categoryColorMap[ticket.category] || "#64748b";
+                  const avatarColor =
+                    categoryColorMap[ticket.category] || "#64748b";
 
-                return (
-                  <TableRow
-                    hover
-                    key={ticket.id}
-                    onClick={() => onRowClick(ticket.id)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    {/* TÍTULO + AVATAR */}
-                    <TableCell>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                      >
+                  return (
+                    <TableRow
+                      hover
+                      key={ticket.id}
+                      onClick={() => onRowClick(ticket.id)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+                          <Box
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: "50%",
+                              backgroundColor: avatarColor,
+                              color: "#fff",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 14,
+                              fontWeight: 600,
+                            }}
+                          >
+                            {ticket.category?.[0] || "T"}
+                          </Box>
+
+                          <Box>
+                            <Typography fontWeight={500}>
+                              {ticket.title}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {ticket.category}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>
                         <Box
                           sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: "50%",
-                            backgroundColor: avatarColor,
+                            backgroundColor: statusColor,
                             color: "#fff",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: 14,
-                            fontWeight: 600,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "999px",
+                            fontSize: 12,
+                            width: "fit-content",
                           }}
                         >
-                          {ticket.category?.[0] || "T"}
+                          {ticket.status}
                         </Box>
-
-                        <Box>
-                          <Typography fontWeight={500}>
-                            {ticket.title}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {ticket.category}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-
-                    {/* ESTADO */}
-                    <TableCell>
-                      <Box
-                        sx={{
-                          backgroundColor: statusColor,
-                          color: "#fff",
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: "999px",
-                          fontSize: 12,
-                          width: "fit-content",
-                        }}
-                      >
-                        {ticket.status}
-                      </Box>
-                    </TableCell>
-
-                    {/* PRIORIDAD */}
-                    <TableCell>
-                      <Typography
-                        sx={{ color: priorityColor, fontWeight: 600 }}
-                      >
-                        {ticket.priority}
-                      </Typography>
-                    </TableCell>
-
-                    {/* TÉCNICO */}
-                    {user?.role === ROLES.ADMIN && (
-                      <TableCell>
-                        {tecnico ? tecnico.email : "No asignado"}
                       </TableCell>
-                    )}
 
-                    {/* FECHA */}
-                    <TableCell>
-                      {new Date(ticket.created_at).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      <TableCell>
+                        <Typography
+                          sx={{ color: priorityColor, fontWeight: 600 }}
+                        >
+                          {ticket.priority}
+                        </Typography>
+                      </TableCell>
+
+                      {user?.role === ROLES.ADMIN && (
+                        <TableCell>
+                          {tecnico ? tecnico.email : "No asignado"}
+                        </TableCell>
+                      )}
+
+                      <TableCell>
+                        {new Date(ticket.created_at).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

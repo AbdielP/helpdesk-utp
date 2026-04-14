@@ -9,7 +9,7 @@ const Main = ({ open, children }) => {
         flexGrow: 1,
         ml: open ? 0 : `-${DRAWER_WIDTH}px`,
         transition: 'margin 0.3s',
-        height: "calc(100vh - 64px)",
+        minHeight: "100vh",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",

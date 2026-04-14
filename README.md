@@ -4,7 +4,6 @@ Frontend React/Vite
     - Backend: .Net10
 
 # TODO:
-0. ! Componentes no ocupan full height ni width. ticker details ni el dashboard.
 1. OPCIONAL, NO NECESARIO: En AuthContext.jsx, después de refresh el usuario se pierde o se asigna mal; debe cambiarse para que, si hay token en cookie, el frontend haga una petición al backend para obtener el usuario (id y role) en lugar de usar valores hardcodeados o vacíos.
 2. User: Limpiar formulario al crear un ticket - CreateTicketPage
 3. UI: Filtrar tickets por estado.

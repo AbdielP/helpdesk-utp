@@ -1,63 +1,73 @@
-import { useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
-import Box from "@mui/material/Box"
-import Typography from "@mui/material/Typography"
-import Paper from "@mui/material/Paper"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import Select from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import { getCurrentUser } from "../services/authService"
-import { users } from "../mocks/users"
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import { getCurrentUser } from "../services/authService";
+import { users } from "../mocks/users";
 import {
   ERROR_MESSAGES,
   ROLES,
   STORAGE_KEYS,
   TICKET_STATUSES,
-} from "../constants/constants"
+} from "../constants/constants";
 
 const TicketDetailPage = () => {
-  const { id } = useParams()
-  const [ticket, setTicket] = useState(null)
-  const [user, setUser] = useState(null)
+  const { id } = useParams();
+  const [ticket, setTicket] = useState(null);
+  const [user, setUser] = useState(null);
 
   // cargar ticket
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
-    const found = data.find(t => t.id === Number(id))
-    setTicket(found)
-  }, [id])
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
+    const found = data.find((t) => t.id === Number(id));
+    setTicket(found);
+  }, [id]);
 
   // usuario actual
   useEffect(() => {
-    const currentUser = getCurrentUser()
-    setUser(currentUser)
-  }, [])
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  }, []);
 
   // técnicos
-  const supportUsers = users.filter((u) => u.role === ROLES.SUPPORT)
+  const supportUsers = users.filter((u) => u.role === ROLES.SUPPORT);
 
   // actualizar ticket en localStorage
   const updateTicket = (updatedFields) => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
 
-    const updated = data.map(t =>
+    const updated = data.map((t) =>
       t.id === ticket.id
         ? { ...t, ...updatedFields, updated_at: new Date().toISOString() }
-        : t
-    )
+        : t,
+    );
 
-    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updated))
-    setTicket(prev => ({ ...prev, ...updatedFields }))
-  }
+    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updated));
+    setTicket((prev) => ({ ...prev, ...updatedFields }));
+  };
 
   if (!ticket) {
-    return <Typography>{ERROR_MESSAGES.TICKET_NOT_FOUND}</Typography>
+    return <Typography>{ERROR_MESSAGES.TICKET_NOT_FOUND}</Typography>;
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 3 }}>
-      <Paper sx={{ p: 3 }}>
+    <Box
+      sx={{
+        flex: 1,
+        minHeight: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        pt: 3,
+        px: 2,
+      }}
+    >
+      <Paper sx={{ p: 3, width: "100%", maxWidth: 800 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           {ticket.title}
         </Typography>
@@ -88,7 +98,7 @@ const TicketDetailPage = () => {
             display: "flex",
             gap: 2,
             mt: 2,
-            flexWrap: "wrap"
+            flexWrap: "wrap",
           }}
         >
           {/* ADMIN → asignar */}
@@ -122,11 +132,9 @@ const TicketDetailPage = () => {
               <Select
                 label="Estado"
                 value={ticket.status}
-                onChange={(e) =>
-                  updateTicket({ status: e.target.value })
-                }
+                onChange={(e) => updateTicket({ status: e.target.value })}
               >
-                  {TICKET_STATUSES.map((status) => (
+                {TICKET_STATUSES.map((status) => (
                   <MenuItem key={status} value={status}>
                     {status}
                   </MenuItem>
@@ -137,7 +145,7 @@ const TicketDetailPage = () => {
         </Box>
       </Paper>
     </Box>
-  )
-}
+  );
+};
 
-export default TicketDetailPage
+export default TicketDetailPage;

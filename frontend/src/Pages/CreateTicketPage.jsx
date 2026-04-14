@@ -61,7 +61,8 @@ export default function CreateTicketPage() {
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        minHeight: "calc(100vh - 64px)",
+        flex: 1,
+        minHeight: 0,
         p: 3,
         backgroundColor: "#f5f6fa",
       }}
