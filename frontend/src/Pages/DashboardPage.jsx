@@ -52,58 +52,8 @@ const DashboardPage = () => {
       </Typography> */}
 
       <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        <TicketsTable />
+        <TicketsTable tickets={filtered} user={user} onRowClick={(ticketId) => navigate(`/ticket/${ticketId}`)}/>
       </Box>
-
-      {/* <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {filtered.length === 0 && (
-          <Typography color="text.secondary">
-            No hay tickets
-          </Typography>
-        )}
-
-        {filtered.map((t) => (
-          <Paper
-            key={t.id}
-            elevation={1}
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: "rgba(0,0,0,0.03)",
-              },
-            }}
-            onClick={() => navigate(`/ticket/${t.id}`)}
-          >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-              {t.title}
-            </Typography>
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 1,
-                flexWrap: "wrap",
-                gap: 1,
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                Estado: {t.status}
-              </Typography>
-
-              <Typography variant="body2" color="text.secondary">
-                Prioridad: {t.priority}
-              </Typography>
-
-              <Typography variant="body2" color="text.secondary">
-                {new Date(t.created_at).toLocaleDateString()}
-              </Typography>
-            </Box>
-          </Paper>
-        ))}
-      </Box> */}
     </Box>
   );
 };
