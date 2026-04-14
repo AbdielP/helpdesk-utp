@@ -14,13 +14,15 @@ import {
   TICKET_PRIORITIES,
 } from "../constants/constants";
 
+const initialFormState = {
+  title: "",
+  description: "",
+  category: "",
+  priority: "",
+};
+
 export default function CreateTicketPage() {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "",
-    priority: "",
-  });
+  const [formData, setFormData] = useState(initialFormState);
 
   const handleChange = (event) => {
     setFormData({
@@ -30,12 +32,12 @@ export default function CreateTicketPage() {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const user = getCurrentUser();
     if (!user) {
-      alert("No hay usuario en sesión")
-      return
+      alert("No hay usuario en sesión");
+      return;
     }
 
     const newTicket = {
@@ -46,14 +48,20 @@ export default function CreateTicketPage() {
       assigned_to: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    }
+    };
     // !! Aquí se guarda el ticket en localStorage para simular una base de datos
     // CAMBIAR A UNA LLAMADA REAL A LA API CUANDO ESTÉ LISTA
-    const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || []
-    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify([...existing, newTicket]))
+    const existing =
+      JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
+    localStorage.setItem(
+      STORAGE_KEYS.TICKETS,
+      JSON.stringify([...existing, newTicket]),
+    );
     // Usar un snackbar o alguna forma de notificación mas adelante.
-    alert(`Ticket creado: ${newTicket.title}`)
-  }
+    alert(`Ticket creado: ${newTicket.title}`);
+
+    setFormData(initialFormState);
+  };
 
   return (
     <Box
