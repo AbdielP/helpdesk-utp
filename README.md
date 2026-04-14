@@ -5,12 +5,13 @@ Frontend React/Vite
 
 # TODO:
 1. OPCIONAL, NO NECESARIO: En AuthContext.jsx, después de refresh el usuario se pierde o se asigna mal; debe cambiarse para que, si hay token en cookie, el frontend haga una petición al backend para obtener el usuario (id y role) en lugar de usar valores hardcodeados o vacíos.
-2. User: Limpiar formulario al crear un ticket - CreateTicketPage
-3. UI: Filtrar tickets por estado.
+2. UI: Filtrar tickets por estado.
   - Dashboard: Los tickets cerrados se pueden consultar, pero debe verse en la UI "opaco" o "apagado"
   - TicketsTable: Estilos de color map pasarlos a archivo css.
-4. Admin: Al entrar a ticket details debe mostrar Asignado: usuario del tecnico
-5. Al crear ticket, asignar y cambiar de estado, debe mostrar una notificación en pantalla (RF7).
+3. Admin: 
+  - Al entrar a ticket details debe mostrar Asignado: usuario del tecnico
+  - Admin y support: En ticket details deben ver que usuario creó el ticket
+4. Al crear ticket, asignar y cambiar de estado, debe mostrar una notificación en pantalla (RF7).
 
 ## TODO de requisitos funcionales.
 6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
