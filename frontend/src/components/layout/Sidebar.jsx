@@ -44,15 +44,11 @@ const Sidebar = ({ children }) => {
 
     ...(user.role === ROLES.USER
       ? [{ label: "Crear Ticket", path: ROUTES.TICKET_NEW, icon: <InboxIcon /> }]
-      : []),
-
-    ...(user.role === ROLES.ADMIN
-      ? [{ label: "Admin", path: ROUTES.ADMIN, icon: <InboxIcon /> }]
-      : []),
+      : [])
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh" }}>
       <CssBaseline />
       <Topbar open={open} handleDrawerOpen={handleDrawerOpen} />
       <Drawer

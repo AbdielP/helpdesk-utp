@@ -29,8 +29,7 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   TICKET_NEW: "/ticket/new",
-  TICKET_DETAIL: "/ticket/:id",
-  ADMIN: "/admin",
+  TICKET_DETAIL: "/ticket/:id"
 };
 
 export const TICKET_CATEGORIES = ["Red", "Plataforma", "Cuenta", "Hardware"];

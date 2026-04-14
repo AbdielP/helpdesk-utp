@@ -19,10 +19,6 @@ const AppRouter = () => {
           <Route path={ROUTES.TICKET_DETAIL} element={<TicketDetailPage />} />
           <Route path={ROUTES.TICKET_NEW} element={<CreateTicketPage />} />
 
-          <Route element={<ProtectedRoute roles={[ROLES.ADMIN]} />}>
-            <Route path={ROUTES.ADMIN} element={<div>Admin</div>} />
-          </Route>
-
           <Route path="*" element={<div>Not found</div>} />
         </Route>
       </Route>
