@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../services/authService";
-import { ROLES, STORAGE_KEYS } from "../constants/constants";
+import { ROLES, STORAGE_KEYS, STATUS_ORDER } from "../constants/constants";
 import TicketsTable from "../components/TicketsTable";
 
 const DashboardPage = () => {
@@ -40,19 +38,36 @@ const DashboardPage = () => {
       result = tickets;
     }
 
-    setFiltered(result);
+    const sortedByStatus = [...result].sort(
+      (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
+    );
+
+    setFiltered(sortedByStatus);
   }, [tickets, user]);
 
   return (
-    <Box sx={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* <Typography variant="h5" sx={{ mb: 2 }}>
         {user?.role === ROLES.USER && "Mis Tickets"}
         {user?.role === ROLES.SUPPORT && "Tickets Asignados"}
         {user?.role === ROLES.ADMIN && "Todos los Tickets"}
       </Typography> */}
 
-      <Box sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        <TicketsTable tickets={filtered} user={user} onRowClick={(ticketId) => navigate(`/ticket/${ticketId}`)}/>
+      <Box
+        sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
+      >
+        <TicketsTable
+          tickets={filtered}
+          user={user}
+          onRowClick={(ticketId) => navigate(`/ticket/${ticketId}`)}
+        />
       </Box>
     </Box>
   );

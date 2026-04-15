@@ -4,7 +4,8 @@ Frontend React/Vite
     - Backend: .Net10
 
 # TODO:
-1. UI: Filtrar y ordenar tickets por estado.
+1. UI: 
+  - Revisar filtrado de la tabla
   - User: un botón flotante para crear ticket (un acceso rapido)
   - Dashboard: icono al final de cada ticket en dashboard para indicar que es clickeable (tres puntos por ejemplo ...)
   - Dashboard: Los tickets cerrados se pueden consultar, pero debe verse en la UI "opaco" o "apagado"

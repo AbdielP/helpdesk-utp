@@ -32,6 +32,12 @@ export const ROUTES = {
   TICKET_DETAIL: "/ticket/:id"
 };
 
+export const STATUS_ORDER = {
+  Abierto: 1,
+  "En proceso": 2,
+  Cerrado: 3,
+};
+
 export const TICKET_CATEGORIES = ["Red", "Plataforma", "Cuenta", "Hardware"];
 export const TICKET_PRIORITIES = ["Baja", "Media", "Alta"];
 export const TICKET_STATUSES = ["Abierto", "En proceso", "Cerrado"];

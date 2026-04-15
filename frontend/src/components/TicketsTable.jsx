@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useMemo } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,17 +7,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import { users } from "../mocks/users";
-import { ROLES } from "../constants/constants";
+import { ROLES, STATUS_ORDER } from "../constants/constants";
 
 export default function TicketsTable({ tickets = [], user, onRowClick }) {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [orderDirection, setOrderDirection] = useState("asc");
+  const [orderByField, setOrderByField] = useState(null);
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
@@ -25,6 +28,37 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const handleRequestSort = (field) => {
+    const isAscending = orderByField === field && orderDirection === "asc";
+    setOrderDirection(isAscending ? "desc" : "asc");
+    setOrderByField(field);
+  };
+
+  const sortedTickets = useMemo(() => {
+    if (!orderByField) return tickets;
+
+    const comparator = (a, b) => {
+      let valueA = a[orderByField];
+      let valueB = b[orderByField];
+
+      if (orderByField === "status") {
+        valueA = STATUS_ORDER[a.status];
+        valueB = STATUS_ORDER[b.status];
+      }
+
+      if (orderByField === "created_at") {
+        valueA = new Date(valueA).getTime();
+        valueB = new Date(valueB).getTime();
+      }
+
+      if (valueA < valueB) return orderDirection === "asc" ? -1 : 1;
+      if (valueA > valueB) return orderDirection === "asc" ? 1 : -1;
+      return 0;
+    };
+
+    return [...tickets].sort(comparator);
+  }, [tickets, orderDirection, orderByField]);
 
   return (
     <Paper
@@ -43,16 +77,56 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Prioridad</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderByField === "title"}
+                  direction={orderByField === "title" ? orderDirection : "asc"}
+                  onClick={() => handleRequestSort("title")}
+                >
+                  Título
+                </TableSortLabel>
+              </TableCell>
+
+              <TableCell>
+                <TableSortLabel
+                  active={orderByField === "status"}
+                  direction={orderByField === "status" ? orderDirection : "asc"}
+                  onClick={() => handleRequestSort("status")}
+                >
+                  Estado
+                </TableSortLabel>
+              </TableCell>
+
+              <TableCell>
+                <TableSortLabel
+                  active={orderByField === "priority"}
+                  direction={
+                    orderByField === "priority" ? orderDirection : "asc"
+                  }
+                  onClick={() => handleRequestSort("priority")}
+                >
+                  Prioridad
+                </TableSortLabel>
+              </TableCell>
+
               {user?.role === ROLES.ADMIN && <TableCell>Técnico</TableCell>}
-              <TableCell>Fecha</TableCell>
+
+              <TableCell>
+                <TableSortLabel
+                  active={orderByField === "created_at"}
+                  direction={
+                    orderByField === "created_at" ? orderDirection : "asc"
+                  }
+                  onClick={() => handleRequestSort("created_at")}
+                >
+                  Fecha
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {tickets.length === 0 ? (
+            {sortedTickets.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={user?.role === ROLES.ADMIN ? 5 : 4}>
                   <Box sx={{ textAlign: "center", py: 4 }}>
@@ -67,7 +141,7 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                 </TableCell>
               </TableRow>
             ) : (
-              tickets
+              sortedTickets
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((ticket) => {
                   const tecnico = users.find(
@@ -185,7 +259,7 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={tickets.length}
+        count={sortedTickets.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
