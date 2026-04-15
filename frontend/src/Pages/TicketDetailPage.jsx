@@ -37,20 +37,26 @@ const TicketDetailPage = () => {
   }, []);
 
   // técnicos
-  const supportUsers = users.filter((u) => u.role === ROLES.SUPPORT);
+  const supportUsers = users.filter((user) => user.role === ROLES.SUPPORT);
+  const assignedUser = users.find((user) => user.id === ticket?.assigned_to);
+  const createdByUser = users.find((user) => user.id === ticket?.created_by);
 
   // actualizar ticket en localStorage
   const updateTicket = (updatedFields) => {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
 
-    const updated = data.map((t) =>
-      t.id === ticket.id
-        ? { ...t, ...updatedFields, updated_at: new Date().toISOString() }
-        : t,
+    const updated = data.map((currentTicket) =>
+      currentTicket.id === ticket.id
+        ? {
+            ...currentTicket,
+            ...updatedFields,
+            updated_at: new Date().toISOString(),
+          }
+        : currentTicket,
     );
 
     localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updated));
-    setTicket((prev) => ({ ...prev, ...updatedFields }));
+    setTicket((prevState) => ({ ...prevState, ...updatedFields }));
   };
 
   if (!ticket) {
@@ -69,8 +75,16 @@ const TicketDetailPage = () => {
         px: 2,
       }}
     >
-      <Paper sx={{ p: 3, width: "100%", maxWidth: 800 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          width: "100%",
+          maxWidth: 800,
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
           {ticket.title}
         </Typography>
 
@@ -89,6 +103,20 @@ const TicketDetailPage = () => {
         <Typography sx={{ mb: 1 }}>
           <strong>Estado:</strong> {ticket.status}
         </Typography>
+
+        {(user?.role === ROLES.ADMIN || user?.role === ROLES.SUPPORT) && (
+          <>
+            <Typography sx={{ mb: 1 }}>
+              <strong>Asignado a:</strong>{" "}
+              {assignedUser?.email || "No asignado"}
+            </Typography>
+
+            <Typography sx={{ mb: 1 }}>
+              <strong>Creado por:</strong>{" "}
+              {createdByUser?.email || "Desconocido"}
+            </Typography>
+          </>
+        )}
 
         <Typography color="text.secondary">
           {new Date(ticket.created_at).toLocaleString()}
@@ -137,7 +165,10 @@ const TicketDetailPage = () => {
                 value={ticket.status}
                 onChange={(event) => {
                   updateTicket({ status: event.target.value });
-                  showNotification(`Estado actualizado a ${event.target.value} correctamente`, "success");
+                  showNotification(
+                    `Estado actualizado a ${event.target.value} correctamente`,
+                    "success",
+                  );
                 }}
               >
                 {TICKET_STATUSES.map((status) => (

@@ -4,14 +4,11 @@ Frontend React/Vite
     - Backend: .Net10
 
 # TODO:
-1. UI: Filtrar tickets por estado.
+1. UI: Filtrar y ordenar tickets por estado.
   - User: un botón flotante para crear ticket (un acceso rapido)
   - Dashboard: icono al final de cada ticket en dashboard para indicar que es clickeable (tres puntos por ejemplo ...)
   - Dashboard: Los tickets cerrados se pueden consultar, pero debe verse en la UI "opaco" o "apagado"
   - TicketsTable: Estilos de color map pasarlos a archivo css.
-2. Admin: 
-  - Al entrar a ticket details debe mostrar Asignado: usuario del tecnico
-  - Admin y support: En ticket details deben ver que usuario creó el ticket
 
 ## TODO de requisitos funcionales.
 6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
