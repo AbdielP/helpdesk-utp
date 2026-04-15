@@ -13,6 +13,7 @@ import {
   TICKET_CATEGORIES,
   TICKET_PRIORITIES,
 } from "../constants/constants";
+import { useNotification } from "../shared/NotificationProvider";
 
 const initialFormState = {
   title: "",
@@ -23,6 +24,7 @@ const initialFormState = {
 
 export default function CreateTicketPage() {
   const [formData, setFormData] = useState(initialFormState);
+  const { showNotification } = useNotification();
 
   const handleChange = (event) => {
     setFormData({
@@ -58,7 +60,7 @@ export default function CreateTicketPage() {
       JSON.stringify([...existing, newTicket]),
     );
     // Usar un snackbar o alguna forma de notificación mas adelante.
-    alert(`Ticket creado: ${newTicket.title}`);
+    showNotification(`Ticket creado: ${newTicket.title}`, "success");
 
     setFormData(initialFormState);
   };
