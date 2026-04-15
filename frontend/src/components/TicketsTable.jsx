@@ -8,6 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -122,6 +123,7 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                   Fecha
                 </TableSortLabel>
               </TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
 
@@ -177,7 +179,14 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                       hover
                       key={ticket.id}
                       onClick={() => onRowClick(ticket.id)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{
+                        cursor: "pointer",
+                        opacity: ticket.status === "Cerrado" ? 0.6 : 1,
+                        backgroundColor:
+                          ticket.status === "Cerrado"
+                            ? "rgba(0,0,0,0.03)"
+                            : "inherit",
+                      }}
                     >
                       <TableCell>
                         <Box
@@ -246,6 +255,10 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
 
                       <TableCell>
                         {new Date(ticket.created_at).toLocaleDateString()}
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <MoreHorizIcon sx={{ color: "text.secondary" }} />
                       </TableCell>
                     </TableRow>
                   );
