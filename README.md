@@ -5,6 +5,7 @@ Frontend React/Vite
 
 # TODO:
 1. UI: 
+  - !Pagima TicketDetails y CreateTicket necesitan diseño final.
   - Revisar filtrado de la tabla
   - User: un botón flotante para crear ticket (un acceso rapido)
   - TicketsTable: Estilos de color map pasarlos a archivo css.
