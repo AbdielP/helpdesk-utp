@@ -4,11 +4,12 @@ Frontend React/Vite
     - Backend: .Net10
 
 # TODO:
-1. OPCIONAL, NO NECESARIO: En AuthContext.jsx, después de refresh el usuario se pierde o se asigna mal; debe cambiarse para que, si hay token en cookie, el frontend haga una petición al backend para obtener el usuario (id y role) en lugar de usar valores hardcodeados o vacíos.
-2. UI: Filtrar tickets por estado.
+1. UI: Filtrar tickets por estado.
+  - User: un botón flotante para crear ticket (un acceso rapido)
+  - Dashboard: icono al final de cada ticket en dashboard para indicar que es clickeable (tres puntos por ejemplo ...)
   - Dashboard: Los tickets cerrados se pueden consultar, pero debe verse en la UI "opaco" o "apagado"
   - TicketsTable: Estilos de color map pasarlos a archivo css.
-3. Admin: 
+2. Admin: 
   - Al entrar a ticket details debe mostrar Asignado: usuario del tecnico
   - Admin y support: En ticket details deben ver que usuario creó el ticket
 

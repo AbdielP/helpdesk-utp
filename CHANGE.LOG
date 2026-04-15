@@ -1,0 +1,94 @@
+## Pendientes para migración a backend
+
+### Tickets
+
+#### `src/Pages/CreateTicketPage.jsx`
+- **Hoy:** crea tickets en `localStorage`.
+- **Luego:** debe enviar el ticket al backend.
+- **Cambiar:** `handleSubmit`
+- **Backend esperado:** `POST /api/tickets`
+
+---
+
+#### `src/Pages/TicketDetailPage.jsx`
+- **Hoy:** lee el ticket desde `localStorage`, actualiza estado/asignación en frontend y usa `users` mock para técnicos.
+- **Luego:** debe consultar y actualizar el ticket desde backend, y cargar técnicos desde backend.
+- **Cambiar:**
+  - `useEffect` que carga el ticket
+  - `updateTicket`
+  - `supportUsers = users.filter(...)`
+- **Backend esperado:**
+  - `GET /api/tickets/:id`
+  - `PUT` o `PATCH /api/tickets/:id`
+  - `GET /api/users?role=support`
+
+---
+
+#### `src/Pages/DashboardPage.jsx`
+- **Hoy:** carga tickets desde `localStorage`.
+- **Luego:** debe obtener tickets desde backend.
+- **Cambiar:** `useEffect` que carga tickets
+- **Backend esperado:** `GET /api/tickets`
+
+---
+
+#### `src/components/TicketsTable.jsx`
+- **Hoy:** usa `users` mock para mostrar el técnico asignado.
+- **Luego:** debe mostrar esa info desde backend.
+- **Cambiar:** búsqueda con `users.find(...)`
+- **Ideal:** que cada ticket ya venga con datos del técnico asignado
+
+---
+
+### Autenticación
+
+#### `src/services/authService.js`
+- **Hoy:** login mock con `users.js` y token falso.
+- **Luego:** login real contra backend.
+- **Cambiar:**
+  - `login`
+  - `getCurrentUser`
+- **Backend esperado:**
+  - `POST /api/auth/login`
+  - `GET /api/auth/me` (si aplica)
+
+---
+
+#### `src/context/AuthContext.jsx`
+- **Hoy:** la sesión depende demasiado de cookies/frontend. Después de refresh el usuario se pierde o puede quedar mal asignado.
+- **Luego:** si existe token en cookie, el frontend debe pedir al backend el usuario real.
+- **Cambiar:**
+  - lógica de carga inicial de sesión
+  - `login`
+  - `logout`
+- **Regla nueva importante:**
+  - si hay token en cookie, hacer petición al backend para obtener el usuario real (`id`, `role`, etc.)
+  - no reconstruir usuario con datos hardcodeados, incompletos o vacíos
+- **Backend esperado:** `GET /api/auth/me`
+
+---
+
+### Mocks
+
+#### `src/mocks/users.js`
+- **Hoy:** fuente mock de usuarios.
+- **Luego:** debe dejar de usarse y eliminarse cuando existan endpoints reales.
+
+---
+
+## Resumen rápido
+
+### Archivos que seguro cambiarán con backend
+- `src/Pages/CreateTicketPage.jsx`
+- `src/Pages/TicketDetailPage.jsx`
+- `src/Pages/DashboardPage.jsx`
+- `src/components/TicketsTable.jsx`
+- `src/services/authService.js`
+- `src/context/AuthContext.jsx`
+- `src/mocks/users.js`
+
+### Qué debe desaparecer
+- `localStorage` para tickets
+- `users` mock
+- token falso
+- reconstrucción fake del usuario después de refresh
