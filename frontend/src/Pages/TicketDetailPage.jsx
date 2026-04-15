@@ -15,11 +15,13 @@ import {
   STORAGE_KEYS,
   TICKET_STATUSES,
 } from "../constants/constants";
+import { useNotification } from "../shared/NotificationProvider";
 
 const TicketDetailPage = () => {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const [user, setUser] = useState(null);
+  const { showNotification } = useNotification();
 
   // cargar ticket
   useEffect(() => {
@@ -108,9 +110,10 @@ const TicketDetailPage = () => {
               <Select
                 label="Asignar a técnico"
                 value={ticket.assigned_to || ""}
-                onChange={(e) =>
-                  updateTicket({ assigned_to: Number(e.target.value) })
-                }
+                onChange={(event) => {
+                  updateTicket({ assigned_to: Number(event.target.value) });
+                  showNotification("Ticket asignado correctamente", "success");
+                }}
               >
                 <MenuItem value="">
                   <em>Sin asignar</em>
@@ -132,7 +135,10 @@ const TicketDetailPage = () => {
               <Select
                 label="Estado"
                 value={ticket.status}
-                onChange={(e) => updateTicket({ status: e.target.value })}
+                onChange={(event) => {
+                  updateTicket({ status: event.target.value });
+                  showNotification(`Estado actualizado a ${event.target.value} correctamente`, "success");
+                }}
               >
                 {TICKET_STATUSES.map((status) => (
                   <MenuItem key={status} value={status}>

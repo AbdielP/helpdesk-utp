@@ -11,12 +11,10 @@ Frontend React/Vite
 3. Admin: 
   - Al entrar a ticket details debe mostrar Asignado: usuario del tecnico
   - Admin y support: En ticket details deben ver que usuario creó el ticket
-4. Al crear ticket, asignar y cambiar de estado, debe mostrar una notificación en pantalla (RF7).
 
 ## TODO de requisitos funcionales.
 6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
 7. RF6. Historial del ticket, Se visualizan fecha, usuario y acción realizada. (BD)
-8. RF7. Notificaciones de app.
 
 ### Credenciales
 

@@ -59,7 +59,7 @@ export default function CreateTicketPage() {
       STORAGE_KEYS.TICKETS,
       JSON.stringify([...existing, newTicket]),
     );
-    // Usar un snackbar o alguna forma de notificación mas adelante.
+    
     showNotification(`Ticket creado: ${newTicket.title}`, "success");
 
     setFormData(initialFormState);
