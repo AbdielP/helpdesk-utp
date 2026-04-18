@@ -1,89 +1,71 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
+import {
+  Box,
+  Typography,
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Paper,
+} from "@mui/material";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import { getCurrentUser } from "../services/authService";
-import { useNavigate } from "react-router-dom";
 import { users } from "../mocks/users";
 import {
   ERROR_MESSAGES,
   ROLES,
   STORAGE_KEYS,
   TICKET_STATUSES,
+  PRIORITY_CONFIG,
+  STATUS_CONFIG,
 } from "../constants/constants";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
-
-const PRIORITY_CONFIG = {
-  Alta: { color: "error", label: "Alta" },
-  Media: { color: "warning", label: "Media" },
-  Baja: { color: "success", label: "Baja" },
-};
-
-const STATUS_CONFIG = {
-  Abierto: { color: "warning", label: "Abierto" },
-  "En proceso": { color: "info", label: "En proceso" },
-  Cerrado: { color: "success", label: "Cerrado" },
-};
-
-const MetaItem = ({ icon: Icon, label, children }) => (
-  <Box>
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 0.5 }}>
-      <Icon sx={{ fontSize: 15, color: "text.disabled" }} />
-      <Typography
-        variant="caption"
-        color="text.disabled"
-        sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 600 }}
-      >
-        {label}
-      </Typography>
-    </Box>
-    {children}
-  </Box>
-);
+import TicketChip from "../shared/TicketChip";
+import MetaInfoItem from "../shared/MetaInfoItem";
 
 const TicketDetailPage = () => {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const { showNotification } = useNotification();
 
+  // Load ticket from storage
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    const found = data.find((t) => t.id === Number(id));
-    setTicket(found);
+    const allTickets = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
+    const foundTicket = allTickets.find((singleTicket) => singleTicket.id === Number(id));
+    setTicket(foundTicket);
   }, [id]);
 
+  // Load current user
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
+    const user = getCurrentUser();
+    setCurrentUser(user);
   }, []);
 
-  const supportUsers = users.filter((u) => u.role === ROLES.SUPPORT);
-  const assignedUser = users.find((u) => u.id === ticket?.assigned_to);
-  const createdByUser = users.find((u) => u.id === ticket?.created_by);
+  const supportTeamUsers = users.filter((user) => user.role === ROLES.SUPPORT);
+  const assignedUser = users.find((user) => user.id === ticket?.assigned_to);
+  const createdByUser = users.find((user) => user.id === ticket?.created_by);
 
   const updateTicket = (updatedFields) => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    const updated = data.map((t) =>
-      t.id === ticket.id
-        ? { ...t, ...updatedFields, updated_at: new Date().toISOString() }
-        : t,
+    const allTickets = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
+    const updatedTickets = allTickets.map((singleTicket) =>
+      singleTicket.id === ticket.id
+        ? {
+            ...singleTicket,
+            ...updatedFields,
+            updated_at: new Date().toISOString(),
+          }
+        : singleTicket
     );
-    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updated));
-    setTicket((prev) => ({ ...prev, ...updatedFields }));
+    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updatedTickets));
+    setTicket((previousTicket) => ({ ...previousTicket, ...updatedFields }));
   };
 
   if (!ticket) {
@@ -96,10 +78,8 @@ const TicketDetailPage = () => {
     );
   }
 
-  const priorityCfg = PRIORITY_CONFIG[ticket.priority] ?? { color: "default" };
-  const statusCfg = STATUS_CONFIG[ticket.status] ?? { color: "default" };
-  const isPrivileged =
-    user?.role === ROLES.ADMIN || user?.role === ROLES.SUPPORT;
+  const isUserPrivileged =
+    currentUser?.role === ROLES.ADMIN || currentUser?.role === ROLES.SUPPORT;
 
   return (
     <Box
@@ -115,10 +95,9 @@ const TicketDetailPage = () => {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 780 }}>
-        {/* BTN VOLVER */}
         <BackNavigationButton />
-        
-        {/* ── HEADER ─────────────────────────────────────────── */}
+
+        {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
             <Typography
@@ -128,26 +107,15 @@ const TicketDetailPage = () => {
             >
               #{ticket.id}
             </Typography>
-            <Chip
-              label={statusCfg.label ?? ticket.status}
-              size="small"
-              color={statusCfg.color}
-              sx={{ fontWeight: 600, borderRadius: 1 }}
-            />
-            <Chip
-              label={priorityCfg.label ?? ticket.priority}
-              size="small"
-              color={priorityCfg.color}
-              variant="outlined"
-              sx={{ fontWeight: 600, borderRadius: 1 }}
-            />
+            <TicketChip type="status" value={ticket.status} />
+            <TicketChip type="priority" value={ticket.priority} variant="outlined" />
           </Box>
           <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
             {ticket.title}
           </Typography>
         </Box>
 
-        {/* ── MAIN CARD ──────────────────────────────────────── */}
+        {/* Main Content Card */}
         <Paper
           variant="outlined"
           sx={{ borderRadius: 2, overflow: "hidden", mb: 3 }}
@@ -175,7 +143,7 @@ const TicketDetailPage = () => {
 
           <Divider />
 
-          {/* Meta grid */}
+          {/* Metadata Grid */}
           <Box
             sx={{
               display: "grid",
@@ -185,22 +153,17 @@ const TicketDetailPage = () => {
               gap: 3,
             }}
           >
-            <MetaItem icon={CategoryOutlinedIcon} label="Categoría">
+            <MetaInfoItem Icon={CategoryOutlinedIcon} label="Categoría">
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {ticket.category}
               </Typography>
-            </MetaItem>
+            </MetaInfoItem>
 
-            <MetaItem icon={PriorityHighIcon} label="Prioridad">
-              <Chip
-                label={ticket.priority}
-                size="small"
-                color={priorityCfg.color}
-                sx={{ fontWeight: 600, borderRadius: 1 }}
-              />
-            </MetaItem>
+            <MetaInfoItem Icon={PriorityHighIcon} label="Prioridad">
+              <TicketChip type="priority" value={ticket.priority} />
+            </MetaInfoItem>
 
-            <MetaItem icon={AccessTimeOutlinedIcon} label="Creado">
+            <MetaInfoItem Icon={AccessTimeOutlinedIcon} label="Creado">
               <Typography variant="body2" color="text.secondary">
                 {new Date(ticket.created_at).toLocaleString("es-PA", {
                   day: "2-digit",
@@ -210,19 +173,19 @@ const TicketDetailPage = () => {
                   minute: "2-digit",
                 })}
               </Typography>
-            </MetaItem>
+            </MetaInfoItem>
 
-            {isPrivileged && (
-              <MetaItem icon={PersonOutlineIcon} label="Creado por">
+            {isUserPrivileged && (
+              <MetaInfoItem Icon={PersonOutlineIcon} label="Creado por">
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {createdByUser?.email ?? "Desconocido"}
                 </Typography>
-              </MetaItem>
+              </MetaInfoItem>
             )}
           </Box>
 
-          {/* Assigned — solo visible para admin/support */}
-          {isPrivileged && (
+          {/* Assignment Info (privileged users only) */}
+          {isUserPrivileged && (
             <>
               <Divider />
               <Box
@@ -252,8 +215,8 @@ const TicketDetailPage = () => {
           )}
         </Paper>
 
-        {/* ── CONTROLS ───────────────────────────────────────── */}
-        {isPrivileged && (
+        {/* Actions Section (privileged users only) */}
+        {isUserPrivileged && (
           <Box>
             <Typography
               variant="overline"
@@ -263,26 +226,26 @@ const TicketDetailPage = () => {
               Acciones
             </Typography>
             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              {user?.role === ROLES.ADMIN && (
+              {currentUser?.role === ROLES.ADMIN && (
                 <FormControl size="small" sx={{ minWidth: 220 }}>
                   <InputLabel>Asignar técnico</InputLabel>
                   <Select
                     label="Asignar técnico"
                     value={ticket.assigned_to ?? ""}
-                    onChange={(e) => {
-                      updateTicket({ assigned_to: Number(e.target.value) });
+                    onChange={(event) => {
+                      updateTicket({ assigned_to: Number(event.target.value) });
                       showNotification(
                         "Ticket asignado correctamente",
-                        "success",
+                        "success"
                       );
                     }}
                   >
                     <MenuItem value="">
                       <em>Sin asignar</em>
                     </MenuItem>
-                    {supportUsers.map((s) => (
-                      <MenuItem key={s.id} value={s.id}>
-                        {s.email}
+                    {supportTeamUsers.map((supportUser) => (
+                      <MenuItem key={supportUser.id} value={supportUser.id}>
+                        {supportUser.email}
                       </MenuItem>
                     ))}
                   </Select>
@@ -294,17 +257,17 @@ const TicketDetailPage = () => {
                 <Select
                   label="Estado"
                   value={ticket.status}
-                  onChange={(e) => {
-                    updateTicket({ status: e.target.value });
+                  onChange={(event) => {
+                    updateTicket({ status: event.target.value });
                     showNotification(
-                      `Estado actualizado a ${e.target.value}`,
-                      "success",
+                      `Estado actualizado a ${event.target.value}`,
+                      "success"
                     );
                   }}
                 >
-                  {TICKET_STATUSES.map((s) => (
-                    <MenuItem key={s} value={s}>
-                      {s}
+                  {TICKET_STATUSES.map((statusOption) => (
+                    <MenuItem key={statusOption} value={statusOption}>
+                      {statusOption}
                     </MenuItem>
                   ))}
                 </Select>
