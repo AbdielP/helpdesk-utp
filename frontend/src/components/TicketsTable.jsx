@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,6 +15,7 @@ import { useTheme } from "@mui/material/styles";
 
 import { users } from "../mocks/users";
 import { ROLES, STATUS_ORDER } from "../constants/constants";
+import TicketChip from "../shared/TicketChip";
 
 export default function TicketsTable({ tickets = [], user, onRowClick }) {
   const theme = useTheme();
@@ -67,22 +68,25 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
     <Paper
       sx={{
         width: "100%",
-        height: "100%",
         display: "flex",
         flexDirection: "column",
         minHeight: 0,
         backgroundColor: "transparent",
         boxShadow: "none",
+        borderRadius: 0,
       }}
     >
-      <TableContainer
-        sx={{ flex: 1, height: 0, overflow: "auto", minHeight: 0 }}
-      >
-        {/* TABLA */}
+      <TableContainer sx={{ overflow: "auto", minHeight: 0 }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  borderBottomColor: "#DDDADF",
+                  fontWeight: 700,
+                }}
+              >
                 <TableSortLabel
                   active={orderByField === "title"}
                   direction={orderByField === "title" ? orderDirection : "asc"}
@@ -92,7 +96,13 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                 </TableSortLabel>
               </TableCell>
 
-              <TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  borderBottomColor: "#DDDADF",
+                  fontWeight: 700,
+                }}
+              >
                 <TableSortLabel
                   active={orderByField === "status"}
                   direction={orderByField === "status" ? orderDirection : "asc"}
@@ -102,7 +112,13 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                 </TableSortLabel>
               </TableCell>
 
-              <TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  borderBottomColor: "#DDDADF",
+                  fontWeight: 700,
+                }}
+              >
                 <TableSortLabel
                   active={orderByField === "priority"}
                   direction={
@@ -114,9 +130,25 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                 </TableSortLabel>
               </TableCell>
 
-              {user?.role === ROLES.ADMIN && <TableCell>Técnico</TableCell>}
+              {user?.role === ROLES.ADMIN && (
+                <TableCell
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    borderBottomColor: "#DDDADF",
+                    fontWeight: 700,
+                  }}
+                >
+                  Técnico
+                </TableCell>
+              )}
 
-              <TableCell>
+              <TableCell
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  borderBottomColor: "#DDDADF",
+                  fontWeight: 700,
+                }}
+              >
                 <TableSortLabel
                   active={orderByField === "created_at"}
                   direction={
@@ -127,15 +159,21 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                   Fecha
                 </TableSortLabel>
               </TableCell>
-              <TableCell />
+
+              <TableCell
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  borderBottomColor: "#DDDADF",
+                }}
+              />
             </TableRow>
           </TableHead>
 
           <TableBody>
             {sortedTickets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={user?.role === ROLES.ADMIN ? 5 : 4}>
-                  <Box sx={{ textAlign: "center", py: 4 }}>
+                <TableCell colSpan={user?.role === ROLES.ADMIN ? 6 : 5}>
+                  <Box sx={{ textAlign: "center", py: 6 }}>
                     <Typography color="text.secondary">
                       {user?.role === ROLES.USER && "No has creado tickets"}
                       {user?.role === ROLES.SUPPORT &&
@@ -153,10 +191,8 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                   const tecnico = users.find(
                     (userItem) => userItem.id === ticket.assigned_to,
                   );
-
-                  const statusColor = theme.custom.colors.statuses[ticket.status];
-                  const priorityColors = theme.custom.colors.priorities[ticket.priority];
-                  const avatarColor = theme.custom.colors.categories[ticket.category] || "#64748b";
+                  const avatarColor =
+                    theme.custom.colors.categories[ticket.category] || "#64748b";
                   const isEvenRow = index % 2 === 0;
                   const rowBackgroundColor = isEvenRow
                     ? theme.palette.background.paper
@@ -172,11 +208,15 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                       onClick={() => onRowClick(ticket.id)}
                       sx={{
                         cursor: "pointer",
-                        opacity: ticket.status === "Cerrado" ? 0.6 : 1,
+                        opacity: ticket.status === "Cerrado" ? 0.68 : 1,
                         backgroundColor:
                           ticket.status === "Cerrado"
                             ? closedRowBackgroundColor
                             : rowBackgroundColor,
+                        "& td": {
+                          borderBottomColor: "#E4E0E7",
+                          py: 2,
+                        },
                       }}
                     >
                       <TableCell>
@@ -194,20 +234,18 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                               alignItems: "center",
                               justifyContent: "center",
                               fontSize: 14,
-                              fontWeight: 600,
+                              fontWeight: 700,
+                              flexShrink: 0,
                             }}
                           >
                             {ticket.category?.[0] || "T"}
                           </Box>
 
                           <Box>
-                            <Typography fontWeight={500}>
+                            <Typography sx={{ fontWeight: 600 }}>
                               {ticket.title}
                             </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
+                            <Typography variant="caption" color="text.secondary">
                               {ticket.category}
                             </Typography>
                           </Box>
@@ -217,47 +255,43 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                       <TableCell>
                         <Box
                           sx={{
-                            backgroundColor: statusColor,
-                            color: "#fff",
-                            px: 1.5,
-                            py: 0.5,
-                            borderRadius: "999px",
-                            fontSize: 12,
-                            width: 104,
-                            textAlign: "center",
+                            width: 112,
+                            "& .MuiChip-root": {
+                              width: "100%",
+                              justifyContent: "center",
+                            },
                           }}
                         >
-                          {ticket.status}
+                          <TicketChip type="status" value={ticket.status} />
                         </Box>
                       </TableCell>
 
                       <TableCell>
                         <Box
                           sx={{
-                            backgroundColor: priorityColors.bg,
-                            color: priorityColors.color,
-                            border: `1px solid ${priorityColors.border}`,
-                            px: 1.5,
-                            py: 0.5,
-                            borderRadius: 1,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            width: 80,
-                            textAlign: "center",
+                            width: 88,
+                            "& .MuiChip-root": {
+                              width: "100%",
+                              justifyContent: "center",
+                            },
                           }}
                         >
-                          {ticket.priority}
+                          <TicketChip type="priority" value={ticket.priority} />
                         </Box>
                       </TableCell>
 
                       {user?.role === ROLES.ADMIN && (
                         <TableCell>
-                          {tecnico ? tecnico.email : "No asignado"}
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {tecnico ? tecnico.email : "No asignado"}
+                          </Typography>
                         </TableCell>
                       )}
 
                       <TableCell>
-                        {new Date(ticket.created_at).toLocaleDateString()}
+                        <Typography variant="body2">
+                          {new Date(ticket.created_at).toLocaleDateString()}
+                        </Typography>
                       </TableCell>
 
                       <TableCell align="right">
@@ -271,7 +305,6 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
         </Table>
       </TableContainer>
 
-      {/* PAGINACIÓN */}
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
@@ -280,6 +313,11 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{
+          borderTop: "1px solid",
+          borderColor: "#DDDADF",
+          backgroundColor: "#FFFFFF",
+        }}
       />
     </Paper>
   );
