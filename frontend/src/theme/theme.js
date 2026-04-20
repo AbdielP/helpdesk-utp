@@ -2,6 +2,14 @@ import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   palette: {
+    text: {
+      primary: "#424242",
+      secondary: "#616161",
+    },
+    background: {
+      default: "#EDEDED",
+      paper: "#FFFFFF",
+    },
     primary: {
       main: "#681A5D",
       hover: "#7a4473",

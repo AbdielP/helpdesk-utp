@@ -12,7 +12,6 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
-import * as helpdeskutplogo from "../../public/helpdeskutp_logo.png";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -60,7 +59,7 @@ const LoginPage = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: theme.palette.background.default,
         }}
       >
         <Box sx={{ width: "100%", maxWidth: 330 }}>
@@ -125,7 +124,7 @@ const LoginPage = () => {
 
             {/* Footer */}
             <Typography
-              variant="body2"
+              variant="caption"
               textAlign="center"
               color="text.secondary"
             >

@@ -1,14 +1,6 @@
-:root {
-  --background-grey: #EDEDED;
-}
 
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-}
-
-body {
-  background-color: var(--background-grey);
-  color: #424242;
 }
