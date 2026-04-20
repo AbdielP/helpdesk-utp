@@ -1,0 +1,36 @@
+.pageWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding: 16px;
+    background-color: #F8F9FC;
+    overflow: auto;
+}
+
+.container {
+    width: 100%;
+    max-width: 860px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 600px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}

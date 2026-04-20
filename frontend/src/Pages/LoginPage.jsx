@@ -1,13 +1,15 @@
 import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
 
 const LoginPage = () => {
-
   const { login } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const inputFieldStyles = theme.custom.form.inputFieldStyles;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,20 +66,20 @@ const LoginPage = () => {
             {/* Email */}
             <TextField
               label="Correo electrónico"
-              variant="outlined"
               fullWidth
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={inputFieldStyles}
             />
 
             {/* Password */}
             <TextField
               label="Contraseña"
               type="password"
-              variant="outlined"
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={inputFieldStyles}
             />
 
             {/* Button */}
@@ -88,6 +90,12 @@ const LoginPage = () => {
               sx={{
                 py: 1.5,
                 fontWeight: 600,
+                backgroundColor: "#6366F1",
+                textTransform: "none",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#4F46E5",
+                },
               }}
               onClick={handleLogin}
             >

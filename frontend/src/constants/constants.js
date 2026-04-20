@@ -42,25 +42,11 @@ export const TICKET_CATEGORIES = ["Red", "Plataforma", "Cuenta", "Hardware"];
 export const TICKET_PRIORITIES = ["Baja", "Media", "Alta"];
 export const TICKET_STATUSES = ["Abierto", "En proceso", "Cerrado"];
 
-// Configuración de prioridades para MUI (props + colores)
-export const PRIORITY_CONFIG = {
-  Alta: { color: "error", label: "Alta" },
-  Media: { color: "warning", label: "Media" },
-  Baja: { color: "success", label: "Baja" },
-};
-
 // Configuración de estados para MUI (props + colores)
 export const STATUS_CONFIG = {
   Abierto: { color: "warning", label: "Abierto" },
   "En proceso": { color: "info", label: "En proceso" },
   Cerrado: { color: "success", label: "Cerrado" },
-};
-
-// Colores custom para chips de prioridad en formularios
-export const PRIORITY_CUSTOM_COLORS = {
-  Alta: { bg: "#FEF2F2", color: "#B91C1C", border: "#FECACA" },
-  Media: { bg: "#FFFBEB", color: "#B45309", border: "#FDE68A" },
-  Baja: { bg: "#F0FDF4", color: "#15803D", border: "#BBF7D0" },
 };
 
 export { DRAWER_WIDTH };

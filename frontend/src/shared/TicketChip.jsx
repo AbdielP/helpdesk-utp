@@ -1,5 +1,5 @@
 import Chip from "@mui/material/Chip";
-import { PRIORITY_CONFIG, STATUS_CONFIG } from "../constants/constants";
+import { useTheme } from "@mui/material/styles";
 
 /**
  * Componente reutilizable para mostrar chips de prioridad o estado
@@ -8,15 +8,38 @@ import { PRIORITY_CONFIG, STATUS_CONFIG } from "../constants/constants";
  * @param {string} variant - "filled" o "outlined"
  */
 const TicketChip = ({ type = "priority", value, variant = "filled" }) => {
-  const config = type === "priority" ? PRIORITY_CONFIG[value] : STATUS_CONFIG[value];
+  const theme = useTheme();
 
-  if (!config) return null;
+  if (type === "priority") {
+    const colors = theme.custom.colors.priorities[value];
+    if (!colors) return null;
+    return (
+      <Chip
+        label={value}
+        size="small"
+        sx={{
+          backgroundColor: colors.bg,
+          color: colors.color,
+          border: `1px solid ${colors.border}`,
+          fontWeight: 600,
+          borderRadius: 1,
+        }}
+      />
+    );
+  }
+
+  // Type: status
+  const statusColorMap = {
+    Abierto: "info",
+    "En proceso": "warning",
+    Cerrado: "success",
+  };
 
   return (
     <Chip
-      label={config.label || value}
+      label={value}
       size="small"
-      color={config.color}
+      color={statusColorMap[value]}
       variant={variant}
       sx={{
         fontWeight: 600,

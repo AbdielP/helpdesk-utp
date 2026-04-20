@@ -22,8 +22,6 @@ import {
   ROLES,
   STORAGE_KEYS,
   TICKET_STATUSES,
-  PRIORITY_CONFIG,
-  STATUS_CONFIG,
 } from "../constants/constants";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";

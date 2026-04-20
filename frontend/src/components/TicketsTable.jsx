@@ -11,11 +11,13 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 
 import { users } from "../mocks/users";
 import { ROLES, STATUS_ORDER } from "../constants/constants";
 
 export default function TicketsTable({ tickets = [], user, onRowClick }) {
+  const theme = useTheme();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [orderDirection, setOrderDirection] = useState("asc");
@@ -150,29 +152,9 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                     (userItem) => userItem.id === ticket.assigned_to,
                   );
 
-                  const statusColor =
-                    ticket.status === "Abierto"
-                      ? "#3b82f6"
-                      : ticket.status === "En proceso"
-                        ? "#f59e0b"
-                        : "#10b981";
-
-                  const priorityColor =
-                    ticket.priority === "Alta"
-                      ? "#ef4444"
-                      : ticket.priority === "Media"
-                        ? "#f59e0b"
-                        : "#10b981";
-
-                  const categoryColorMap = {
-                    Plataforma: "#6366f1",
-                    Cuenta: "#ec4899",
-                    Hardware: "#14b8a6",
-                    Software: "#f97316",
-                  };
-
-                  const avatarColor =
-                    categoryColorMap[ticket.category] || "#64748b";
+                  const statusColor = theme.custom.colors.statuses[ticket.status];
+                  const priorityColors = theme.custom.colors.priorities[ticket.priority];
+                  const avatarColor = theme.custom.colors.categories[ticket.category] || "#64748b";
 
                   return (
                     <TableRow
@@ -240,11 +222,21 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                       </TableCell>
 
                       <TableCell>
-                        <Typography
-                          sx={{ color: priorityColor, fontWeight: 600 }}
+                        <Box
+                          sx={{
+                            backgroundColor: priorityColors.bg,
+                            color: priorityColors.color,
+                            border: `1px solid ${priorityColors.border}`,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 1,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            width: "fit-content",
+                          }}
                         >
                           {ticket.priority}
-                        </Typography>
+                        </Box>
                       </TableCell>
 
                       {user?.role === ROLES.ADMIN && (
