@@ -10,7 +10,8 @@ const Main = ({ open, children }) => {
         ml: open ? 0 : `-${DRAWER_WIDTH}px`,
         transition: 'margin 0.3s',
         minHeight: "100vh",
-        overflow: "hidden",
+        overflowY: "auto",
+        overflowX: "hidden",
         display: "flex",
         flexDirection: "column",
       }}
