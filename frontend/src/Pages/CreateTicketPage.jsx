@@ -3,7 +3,6 @@ import { useState } from "react";
 import {
   Box,
   TextField,
-  Button,
   MenuItem,
   Typography,
   Paper,
@@ -14,6 +13,7 @@ import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
 import PrioritySelectField from "../shared/PrioritySelectField";
 import { useTheme } from "@mui/material/styles";
+import Button from "../shared/Button";
 
 const INITIAL_FORM_STATE = {
   title: "",
@@ -230,46 +230,11 @@ export default function CreateTicketPage() {
                 </Typography>
 
                 <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-                  <Button
-                    variant="outlined"
-                    onClick={handleClearForm}
-                    sx={{
-                      borderColor: "#D5D1DA",
-                      color: "text.secondary",
-                      textTransform: "none",
-                      fontWeight: 500,
-                      borderRadius: "10px",
-                      px: 3,
-                      "&:hover": {
-                        borderColor: "#BBB4C3",
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
+                  <Button appearance="secondary" onClick={handleClearForm} sx={{ px: 3 }}>
                     Limpiar
                   </Button>
 
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    disableElevation
-                    disabled={!isFormComplete}
-                    sx={{
-                      backgroundColor: theme.palette.primary.main,
-                      color: "#FFFFFF",
-                      textTransform: "none",
-                      fontWeight: 600,
-                      borderRadius: "10px",
-                      px: 3.5,
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.hover,
-                      },
-                      "&.Mui-disabled": {
-                        backgroundColor: "#D7CDD5",
-                        color: "#F8F4F7",
-                      },
-                    }}
-                  >
+                  <Button type="submit" disabled={!isFormComplete} sx={{ px: 3.5 }}>
                     Crear ticket
                   </Button>
                 </Box>

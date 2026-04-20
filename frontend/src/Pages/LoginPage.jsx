@@ -1,17 +1,10 @@
-import {
-  Box,
-  Grid,
-  TextField,
-  Button,
-  Typography,
-  Stack,
-  Divider,
-} from "@mui/material";
+import { Box, Grid, TextField, Typography, Stack, Divider } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
+import Button from "../shared/Button";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -41,7 +34,6 @@ const LoginPage = () => {
 
   return (
     <Grid container sx={{ height: "100vh" }}>
-      {/* Imagen izquierda */}
       <Grid
         size={{ xs: 0, md: 5.4 }}
         sx={{
@@ -52,7 +44,6 @@ const LoginPage = () => {
         }}
       />
 
-      {/* Formulario (Derecha) */}
       <Grid
         size={{ xs: 12, md: 6.6 }}
         sx={{
@@ -64,7 +55,6 @@ const LoginPage = () => {
       >
         <Box sx={{ width: "100%", maxWidth: 330 }}>
           <Stack spacing={3}>
-            {/* Logo */}
             <Box textAlign="center">
               <Box
                 component="img"
@@ -74,46 +64,27 @@ const LoginPage = () => {
               />
             </Box>
 
-            {/* Email */}
             <TextField
               label="Correo electrónico"
               fullWidth
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
               sx={inputFieldStyles}
             />
 
-            {/* Password */}
             <TextField
               label="Contraseña"
               type="password"
               fullWidth
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
               sx={inputFieldStyles}
             />
 
-            {/* Button */}
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              sx={{
-                py: 2,
-                fontWeight: 600,
-                backgroundColor: theme.palette.primary.main,
-                textTransform: "none",
-                borderRadius: "10px",
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.hover,
-                },
-              }}
-              onClick={handleLogin}
-            >
+            <Button size="large" fullWidth sx={{ py: 2 }} onClick={handleLogin}>
               Iniciar sesión
             </Button>
 
-            {/* Error */}
             {error && (
               <Typography color="error" textAlign="center">
                 {error}
@@ -122,7 +93,6 @@ const LoginPage = () => {
 
             <Divider />
 
-            {/* Footer */}
             <Typography
               variant="caption"
               textAlign="center"
