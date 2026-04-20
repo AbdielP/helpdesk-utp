@@ -121,11 +121,7 @@ const LoginPage = () => {
               </Typography>
             )}
 
-            <Divider sx={{ my: 2 }}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                or
-              </Typography>
-            </Divider>
+            <Divider />
 
             {/* Footer */}
             <Typography
