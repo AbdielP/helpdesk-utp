@@ -1,4 +1,3 @@
-import styles from "./CreateTicketPage.module.css";
 import { getCurrentUser } from "../services/authService";
 import { useState } from "react";
 import {
@@ -46,14 +45,15 @@ export default function CreateTicketPage() {
       return;
     }
 
+    const now = new Date().toISOString();
     const newTicket = {
       id: Date.now(),
       ...formData,
       status: "Abierto",
       created_by: currentUser.id,
       assigned_to: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: now,
+      updated_at: now,
     };
 
     const existingTickets =
@@ -78,36 +78,48 @@ export default function CreateTicketPage() {
     formData.priority;
 
   return (
-    <Box className={styles.pageWrapper}>
-      <Box className={styles.container}>
-        <Box sx={{ mb: 2 }}>
-          <BackNavigationButton />
+    <Box
+      sx={{
+        px: { xs: 2, md: 4 },
+        py: { xs: 3, md: 4 },
+        backgroundColor: theme.palette.background.default,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 1040, mx: "auto" }}>
+        <BackNavigationButton />
+
+        <Paper
+          variant="outlined"
+          sx={{
+            borderRadius: 3,
+            p: { xs: 2.5, md: 3 },
+            backgroundColor: theme.palette.background.paper,
+            borderColor: "#DDDADF",
+            mb: 3,
+          }}
+        >
           <Typography
-            variant="h4"
+            variant="h5"
             sx={{
               fontWeight: 700,
-              fontSize: "1.65rem",
-              color: "#0F172A",
-              letterSpacing: "-0.02em",
+              lineHeight: 1.25,
             }}
           >
             Nuevo ticket
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "#64748B", mt: 0.25, fontSize: "0.875rem" }}
-          >
-            Describe tu problema o solicitud y te ayudaremos a resolverlo.
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+            Describe tu problema o solicitud y completa la información básica
+            para que podamos darle seguimiento.
           </Typography>
-        </Box>
+        </Paper>
 
         <Paper
-          elevation={0}
+          variant="outlined"
           sx={{
-            border: "1px solid #E2E8F0",
-            borderRadius: "16px",
+            borderRadius: 3,
             overflow: "hidden",
-            backgroundColor: "#fff",
+            backgroundColor: "#FFFFFF",
+            borderColor: "#DDDADF",
           }}
         >
           <Box
@@ -115,7 +127,7 @@ export default function CreateTicketPage() {
             onSubmit={handleFormSubmit}
             sx={{ display: "flex", flexDirection: "column" }}
           >
-            <Box sx={{ p: { xs: 2, sm: 2.5 }, pb: 2 }}>
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
                 Identificación
               </Typography>
@@ -131,9 +143,9 @@ export default function CreateTicketPage() {
               />
             </Box>
 
-            <Divider sx={{ borderColor: "#F1F5F9" }} />
+            <Divider />
 
-            <Box sx={{ p: { xs: 2, sm: 2.5 }, pb: 2 }}>
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
                 Descripción
               </Typography>
@@ -144,27 +156,32 @@ export default function CreateTicketPage() {
                 value={formData.description}
                 onChange={handleFormFieldChange}
                 multiline
-                rows={3}
+                minRows={7}
                 required
-                placeholder="Incluye pasos para reproducir el problema, mensajes de error, capturas de pantalla, etc."
+                placeholder="Incluye contexto, pasos para reproducir el problema, mensajes de error u otra información útil."
                 sx={{
                   ...inputFieldStyles,
                   "& .MuiInputBase-root": {
                     alignItems: "flex-start",
-                    paddingTop: "14px",
                   },
                 }}
               />
             </Box>
 
-            <Divider sx={{ borderColor: "#F1F5F9" }} />
+            <Divider />
 
-            <Box sx={{ p: { xs: 2, sm: 2.5 }, pb: 2 }}>
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
                 Clasificación
               </Typography>
 
-              <Box className={styles.grid}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                  gap: 2,
+                }}
+              >
                 <TextField
                   select
                   fullWidth
@@ -192,34 +209,40 @@ export default function CreateTicketPage() {
 
             <Box
               sx={{
-                px: { xs: 2, sm: 2.5 },
-                py: 1.5,
-                backgroundColor: "#F8FAFC",
-                borderTop: "1px solid #F1F5F9",
+                px: { xs: 2, md: 3 },
+                py: 2,
+                backgroundColor: theme.palette.background.paper,
+                borderTop: "1px solid",
+                borderColor: "#DDDADF",
               }}
             >
-              <Box className={styles.actions}>
-                <Typography
-                  variant="caption"
-                  sx={{ color: "#94A3B8", fontSize: "0.78rem" }}
-                >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Typography variant="caption" color="text.secondary">
                   Los campos marcados con * son obligatorios
                 </Typography>
 
-                <Box sx={{ display: "flex", gap: 1.5 }}>
+                <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
                   <Button
                     variant="outlined"
                     onClick={handleClearForm}
                     sx={{
-                      borderColor: "#E2E8F0",
-                      color: "#64748B",
+                      borderColor: "#D5D1DA",
+                      color: "text.secondary",
                       textTransform: "none",
                       fontWeight: 500,
                       borderRadius: "10px",
                       px: 3,
                       "&:hover": {
-                        borderColor: "#CBD5E1",
-                        backgroundColor: "#F8FAFC",
+                        borderColor: "#BBB4C3",
+                        backgroundColor: "transparent",
                       },
                     }}
                   >
@@ -232,16 +255,18 @@ export default function CreateTicketPage() {
                     disableElevation
                     disabled={!isFormComplete}
                     sx={{
-                      backgroundColor: isFormComplete ? "#6366F1" : "#C7D2FE",
-                      color: isFormComplete ? "#fff" : "#818CF8",
+                      backgroundColor: theme.palette.primary.main,
+                      color: "#FFFFFF",
                       textTransform: "none",
                       fontWeight: 600,
                       borderRadius: "10px",
                       px: 3.5,
-                      transition: "all 0.2s ease",
-                      cursor: isFormComplete ? "pointer" : "not-allowed",
                       "&:hover": {
-                        backgroundColor: isFormComplete ? "#4F46E5" : "#C7D2FE",
+                        backgroundColor: theme.palette.primary.hover,
+                      },
+                      "&.Mui-disabled": {
+                        backgroundColor: "#D7CDD5",
+                        color: "#F8F4F7",
                       },
                     }}
                   >
@@ -252,6 +277,8 @@ export default function CreateTicketPage() {
             </Box>
           </Box>
         </Paper>
+
+        <Box sx={{ height: { xs: 40, md: 56 } }} />
       </Box>
     </Box>
   );
