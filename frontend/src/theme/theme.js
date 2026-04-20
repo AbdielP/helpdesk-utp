@@ -15,36 +15,36 @@ export const theme = createTheme({
       hover: "#7a4473",
     },
     warning: {
-      main: "#f59e0b",
+      main: "#D28A1E",
     },
     info: {
-      main: "#3b82f6",
+      main: "#3F7AE0",
     },
     success: {
-      main: "#10b981",
+      main: "#2FA36B",
     },
     error: {
-      main: "#ef4444",
+      main: "#D34F5C",
     },
   },
   custom: {
     colors: {
       priorities: {
-        Alta: { bg: "#FEF2F2", color: "#B91C1C", border: "#FECACA" },
-        Media: { bg: "#FFFBEB", color: "#B45309", border: "#FDE68A" },
-        Baja: { bg: "#F0FDF4", color: "#15803D", border: "#BBF7D0" },
+        Alta: { bg: "#FDECEE", color: "#C43D4B", border: "#F6C7CD" },
+        Media: { bg: "#FFF6E8", color: "#B96C00", border: "#F4D29A" },
+        Baja: { bg: "#EAF8F1", color: "#1E8A57", border: "#B9E7CF" },
       },
       statuses: {
-        Abierto: "#3b82f6",
-        "En proceso": "#f59e0b",
-        Cerrado: "#10b981",
+        Abierto: "#3F7AE0",
+        "En proceso": "#D28A1E",
+        Cerrado: "#2FA36B",
       },
       categories: {
-        Plataforma: "#6366f1",
-        Cuenta: "#ec4899",
-        Hardware: "#14b8a6",
-        Red: "#64748b",
-        Software: "#f97316",
+        Plataforma: "#6C63D9",
+        Cuenta: "#C0528C",
+        Hardware: "#1FA7A0",
+        Red: "#718096",
+        Software: "#D47A2C",
       },
     },
     form: {
