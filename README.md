@@ -3,13 +3,6 @@ Frontend React/Vite
     - Node.js 24.14.1
     - Backend: .Net10
 
-# TODO:
-1. UI: 
-  - !Pagima TicketDetails y CreateTicket necesitan diseño final.
-  - Revisar filtrado de la tabla
-  - User: un botón flotante para crear ticket (un acceso rapido)
-  - TicketsTable: Estilos de color map pasarlos a archivo css.
-
 ## TODO de requisitos funcionales.
 6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
 7. RF6. Historial del ticket, Se visualizan fecha, usuario y acción realizada. (BD)
@@ -49,8 +42,6 @@ helpdesk-utp/
 - `/ticket/:id`  
   Vista de detalle de un ticket específico.
 
-- `/admin`  
-  Panel administrativo para gestión de tickets (asignación, estado, etc).
 
 ---
 
