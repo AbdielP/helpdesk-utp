@@ -14,8 +14,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import HomeIcon from '@mui/icons-material/Home';
+import NewLabelIcon from '@mui/icons-material/NewLabel';
 import { DRAWER_WIDTH, ROLES, ROUTES } from "../../constants/constants";
 
 import Main from "./Main";
@@ -40,10 +40,16 @@ const Sidebar = ({ children }) => {
   const { user } = useAuth();
 
   const menu = [
-    { label: "Dashboard", path: ROUTES.HOME, icon: <MailIcon /> },
+    { label: "Dashboard", path: ROUTES.HOME, icon: <HomeIcon /> },
 
     ...(user.role === ROLES.USER
-      ? [{ label: "Crear Ticket", path: ROUTES.TICKET_NEW, icon: <InboxIcon /> }]
+      ? [
+          {
+            label: "Crear Ticket",
+            path: ROUTES.TICKET_NEW,
+            icon: <NewLabelIcon />,
+          },
+        ]
       : [])
   ];
 
