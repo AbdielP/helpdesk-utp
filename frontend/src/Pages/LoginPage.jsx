@@ -1,9 +1,18 @@
-import { Box, Grid, TextField, Button, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Stack,
+  Divider,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
+import * as helpdeskutplogo from "../../public/helpdeskutp_logo.png";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -54,13 +63,16 @@ const LoginPage = () => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <Box sx={{ width: "100%", maxWidth: 400 }}>
+        <Box sx={{ width: "100%", maxWidth: 330 }}>
           <Stack spacing={3}>
-            {/* Title */}
+            {/* Logo */}
             <Box textAlign="center">
-              <Typography variant="h4" fontWeight={600}>
-                HelpDesk UTP
-              </Typography>
+              <Box
+                component="img"
+                src="/helpdeskutp_logo.png"
+                alt="Helpdesk UTP"
+                sx={{ width: 300, height: "auto", mx: "auto", mb: 2 }}
+              />
             </Box>
 
             {/* Email */}
@@ -88,13 +100,13 @@ const LoginPage = () => {
               size="large"
               fullWidth
               sx={{
-                py: 1.5,
+                py: 2,
                 fontWeight: 600,
-                backgroundColor: "#6366F1",
+                backgroundColor: theme.palette.primary.main,
                 textTransform: "none",
                 borderRadius: "10px",
                 "&:hover": {
-                  backgroundColor: "#4F46E5",
+                  backgroundColor: theme.palette.primary.hover,
                 },
               }}
               onClick={handleLogin}
@@ -108,6 +120,12 @@ const LoginPage = () => {
                 {error}
               </Typography>
             )}
+
+            <Divider sx={{ my: 2 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                or
+              </Typography>
+            </Divider>
 
             {/* Footer */}
             <Typography
