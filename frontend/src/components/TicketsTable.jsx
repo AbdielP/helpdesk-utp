@@ -71,6 +71,8 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
         display: "flex",
         flexDirection: "column",
         minHeight: 0,
+        backgroundColor: "transparent",
+        boxShadow: "none",
       }}
     >
       <TableContainer
@@ -147,7 +149,7 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
             ) : (
               sortedTickets
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((ticket) => {
+                .map((ticket, index) => {
                   const tecnico = users.find(
                     (userItem) => userItem.id === ticket.assigned_to,
                   );
@@ -155,6 +157,13 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                   const statusColor = theme.custom.colors.statuses[ticket.status];
                   const priorityColors = theme.custom.colors.priorities[ticket.priority];
                   const avatarColor = theme.custom.colors.categories[ticket.category] || "#64748b";
+                  const isEvenRow = index % 2 === 0;
+                  const rowBackgroundColor = isEvenRow
+                    ? theme.palette.background.paper
+                    : theme.palette.background.default;
+                  const closedRowBackgroundColor = isEvenRow
+                    ? "rgba(0,0,0,0.04)"
+                    : "rgba(0,0,0,0.02)";
 
                   return (
                     <TableRow
@@ -166,8 +175,8 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                         opacity: ticket.status === "Cerrado" ? 0.6 : 1,
                         backgroundColor:
                           ticket.status === "Cerrado"
-                            ? "rgba(0,0,0,0.03)"
-                            : "inherit",
+                            ? closedRowBackgroundColor
+                            : rowBackgroundColor,
                       }}
                     >
                       <TableCell>
@@ -214,7 +223,8 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                             py: 0.5,
                             borderRadius: "999px",
                             fontSize: 12,
-                            width: "fit-content",
+                            width: 104,
+                            textAlign: "center",
                           }}
                         >
                           {ticket.status}
@@ -232,7 +242,8 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
                             borderRadius: 1,
                             fontSize: 12,
                             fontWeight: 600,
-                            width: "fit-content",
+                            width: 80,
+                            textAlign: "center",
                           }}
                         >
                           {ticket.priority}

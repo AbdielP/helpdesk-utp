@@ -54,12 +54,6 @@ const DashboardPage = () => {
         flexDirection: "column",
       }}
     >
-      {/* <Typography variant="h5" sx={{ mb: 2 }}>
-        {user?.role === ROLES.USER && "Mis Tickets"}
-        {user?.role === ROLES.SUPPORT && "Tickets Asignados"}
-        {user?.role === ROLES.ADMIN && "Todos los Tickets"}
-      </Typography> */}
-
       <Box
         sx={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
       >
