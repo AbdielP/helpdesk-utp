@@ -12,9 +12,11 @@ public class MockTicketRepository : ITicketRepository
             Title = "Printer not working",
             Description = "The printer in the second floor is not responding.",
             Category = "Hardware",
-            Status = "Open",
+            Priority = "Alta",
+            Status = "Abierto",
             CreatedBy = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         },
         new Ticket
         {
@@ -22,9 +24,11 @@ public class MockTicketRepository : ITicketRepository
             Title = "Cannot login to portal",
             Description = "I'm getting an invalid password error even after reset.",
             Category = "Software",
-            Status = "In Progress",
+            Priority = "Media",
+            Status = "En proceso",
             CreatedBy = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         }
     };
 
@@ -44,6 +48,7 @@ public class MockTicketRepository : ITicketRepository
         if (ticket == null) return Task.FromResult(false);
         
         ticket.Status = status;
+        ticket.UpdatedAt = DateTime.UtcNow;
         return Task.FromResult(true);
     }
 }

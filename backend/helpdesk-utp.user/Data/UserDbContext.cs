@@ -13,19 +13,23 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
     {
         base.OnModelCreating(modelBuilder);
 
-        // Ticket 1:1 TicketHistory relationship
         modelBuilder.Entity<Ticket>()
-            .HasOne(t => t.History)
+            .HasOne(t => t.CreatedByUser)
+            .WithMany(u => u.CreatedTickets)
+            .HasForeignKey(t => t.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Ticket>()
+            .HasOne(t => t.AssignedToUser)
+            .WithMany(u => u.AssignedTickets)
+            .HasForeignKey(t => t.AssignedTo)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Ticket>()
+            .HasMany(t => t.History)
             .WithOne(h => h.Ticket)
-            .HasForeignKey<TicketHistory>(h => h.TicketId);
+            .HasForeignKey(h => h.TicketId);
 
-        // User 1:N Ticket relationship
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Tickets)
-            .WithOne(t => t.User)
-            .HasForeignKey(t => t.CreatedBy);
-
-        // User 1:N TicketHistory relationship
         modelBuilder.Entity<User>()
             .HasMany(u => u.Histories)
             .WithOne(h => h.User)

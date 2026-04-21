@@ -6,8 +6,8 @@ public class MockTicketRepository : ITicketRepository
 {
     private readonly List<Ticket> _tickets = 
     [
-        new Ticket { Id = Guid.NewGuid(), Title = "Internet Down", Description = "No connection in Building A", Category = "Network", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow },
-        new Ticket { Id = Guid.NewGuid(), Title = "Printer Jam", Description = "Printer in Room 302 is jammed", Category = "Hardware", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow }
+        new Ticket { Id = Guid.NewGuid(), Title = "Internet Down", Description = "No connection in Building A", Category = "Network", Priority = "Alta", Status = "Abierto", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+        new Ticket { Id = Guid.NewGuid(), Title = "Printer Jam", Description = "Printer in Room 302 is jammed", Category = "Hardware", Priority = "Media", Status = "En proceso", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
     ];
 
     public async Task<IEnumerable<Ticket>> GetAllTicketsAsync() => await Task.FromResult(_tickets);
@@ -18,6 +18,7 @@ public class MockTicketRepository : ITicketRepository
     {
         ticket.Id = Guid.NewGuid();
         ticket.CreatedAt = DateTime.UtcNow;
+        ticket.UpdatedAt = ticket.CreatedAt;
         _tickets.Add(ticket);
         return await Task.FromResult(ticket);
     }

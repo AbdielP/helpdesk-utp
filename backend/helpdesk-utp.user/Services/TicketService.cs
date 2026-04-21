@@ -25,6 +25,8 @@ public class TicketService(ITicketRepository repository, ILogger<TicketService> 
             Title = request.Title,
             Description = request.Description,
             Category = request.Category,
+            Priority = request.Priority,
+            AssignedTo = request.AssignedTo,
             CreatedBy = request.CreatedBy
         };
         return await repository.CreateTicketAsync(ticket);
