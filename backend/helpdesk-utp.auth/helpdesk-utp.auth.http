@@ -1,0 +1,13 @@
+@helpdesk_utp_auth_HostAddress = http://localhost:5000
+
+POST {{helpdesk_utp_auth_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+###
+
+POST {{helpdesk_utp_auth_HostAddress}}/auth/logout

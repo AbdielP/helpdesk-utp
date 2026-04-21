@@ -1,0 +1,25 @@
+﻿services:
+  helpdesk-utp-auth:
+    image: helpdesk-utp-auth
+    build:
+      context: .
+      dockerfile: helpdesk-utp.auth/Dockerfile
+
+  helpdesk-utp-admin:
+    image: helpdesk-utp-admin
+    build:
+      context: .
+      dockerfile: helpdesk-utp.admin/Dockerfile
+
+  helpdesk-utp-support:
+    image: helpdesk-utp-support
+    build:
+      context: .
+      dockerfile: helpdesk-utp.support/Dockerfile
+
+  helpdesk-utp-user:
+    image: helpdesk-utp-user
+    build:
+      context: .
+      dockerfile: helpdesk-utp.user/Dockerfile
+
