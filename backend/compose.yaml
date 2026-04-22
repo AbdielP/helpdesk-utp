@@ -1,4 +1,4 @@
-﻿services:
+services:
   helpdesk-utp-auth:
     image: helpdesk-utp-auth
     build:
@@ -22,4 +22,3 @@
     build:
       context: .
       dockerfile: helpdesk-utp.user/Dockerfile
-

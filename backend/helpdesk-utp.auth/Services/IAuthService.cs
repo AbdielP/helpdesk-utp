@@ -5,7 +5,7 @@ namespace helpdesk_utp.auth.Services;
 
 public interface IAuthService
 {
-    LoginResponse? Login(LoginRequest request);
-    void Logout();
+    Task<LoginResponse?> LoginAsync(LoginRequest request);
+    Task LogoutAsync();
 }
 

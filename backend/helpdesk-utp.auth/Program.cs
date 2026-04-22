@@ -1,6 +1,8 @@
+using helpdesk_utp.auth.Data;
 using helpdesk_utp.auth.Models;
 using helpdesk_utp.auth.Repositories;
 using helpdesk_utp.auth.Services;
+using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -31,8 +33,11 @@ builder.Logging.AddOpenTelemetry(options =>
 // Add services to the container.
 builder.Services.AddOpenApi();
 
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Register Dependencies
-builder.Services.AddScoped<IAuthRepository, MockAuthRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
@@ -48,25 +53,25 @@ app.UseHttpsRedirection();
 // AUTH Endpoints
 var authGroup = app.MapGroup("/auth");
 
-authGroup.MapPost("/login", (LoginRequest request, IAuthService authService, ILogger<Program> logger) =>
+authGroup.MapPost("/login", async (LoginRequest request, IAuthService authService, ILogger<Program> logger) =>
 {
-    logger.LogInformation("Login attempt for user: {Username}", request.Username);
-    var response = authService.Login(request);
+    logger.LogInformation("Login attempt for user: {Email}", request.Email);
+    var response = await authService.LoginAsync(request);
     
     if (response is not null)
     {
-        logger.LogInformation("Login successful for user: {Username}", request.Username);
+        logger.LogInformation("Login successful for user: {Email}", request.Email);
         return Results.Ok(response);
     }
     
-    logger.LogWarning("Login failed for user: {Username}", request.Username);
+    logger.LogWarning("Login failed for user: {Email}", request.Email);
     return Results.Unauthorized();
 });
 
-authGroup.MapPost("/logout", (IAuthService authService, ILogger<Program> logger) =>
+authGroup.MapPost("/logout", async (IAuthService authService, ILogger<Program> logger) =>
 {
     logger.LogInformation("Logout request received");
-    authService.Logout();
+    await authService.LogoutAsync();
     logger.LogInformation("Logout successful");
     return Results.Ok(new { message = "Logged out successfully" });
 });

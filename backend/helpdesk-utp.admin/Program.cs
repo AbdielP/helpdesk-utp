@@ -38,8 +38,8 @@ builder.Services.AddDbContext<AdminDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Repositories
-builder.Services.AddScoped<ITicketRepository, MockTicketRepository>();
-builder.Services.AddScoped<IUserRepository, MockUserRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Services
 builder.Services.AddScoped<ITicketService, TicketService>();

@@ -1,10 +1,8 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
     container_name: helpdesk-db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -13,6 +11,62 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  helpdesk-utp-auth:
+    image: helpdesk-utp-auth
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.auth/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5227:8080"
+
+  helpdesk-utp-admin:
+    image: helpdesk-utp-admin
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.admin/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5110:8080"
+
+  helpdesk-utp-support:
+    image: helpdesk-utp-support
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.support/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5093:8080"
+
+  helpdesk-utp-user:
+    image: helpdesk-utp-user
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.user/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5200:8080"
 
 volumes:
   postgres_data:

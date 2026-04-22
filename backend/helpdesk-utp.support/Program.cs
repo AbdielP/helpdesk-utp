@@ -38,7 +38,7 @@ builder.Services.AddDbContext<SupportDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Repository and Service
-builder.Services.AddScoped<ITicketRepository, MockTicketRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 
 var app = builder.Build();

@@ -1,30 +1,39 @@
 using helpdesk_utp.auth.Models;
 using helpdesk_utp.auth.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace helpdesk_utp.auth.Services;
 
 public class AuthService(IAuthRepository authRepository, ILogger<AuthService> logger) : IAuthService
 {
-    public LoginResponse? Login(LoginRequest request)
+    public async Task<LoginResponse?> LoginAsync(LoginRequest request)
     {
-        logger.LogInformation("Processing login for {Username}", request.Username);
+        logger.LogInformation("Processing login for {Email}", request.Email);
 
-        // Simple mock logic: accept any non-empty username/password
-        if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         {
-            logger.LogWarning("Login failed: Username or password was empty");
+            logger.LogWarning("Login failed: Email or password was empty");
             return null;
         }
 
-        var token = authRepository.GetFakeJwtToken(request.Username);
-        logger.LogInformation("Successfully generated token for {Username}", request.Username);
-        return new LoginResponse(token);
+        var user = await authRepository.GetUserByEmailAsync(request.Email);
+        if (user is null || user.Password != request.Password)
+        {
+            logger.LogWarning("Login failed for {Email}", request.Email);
+            return null;
+        }
+
+        var tokenPayload = $"{user.Id}:{user.Email}:{DateTime.UtcNow:O}";
+        var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(tokenPayload));
+
+        logger.LogInformation("Login succeeded for {Email}", request.Email);
+        return new LoginResponse(token, new AuthenticatedUser(user.Id, user.Email, user.Role));
     }
 
-    public void Logout()
+    public Task LogoutAsync()
     {
         logger.LogInformation("Processing logout");
-        // Logout logic (could be clearing a cookie or token in a real app)
+        return Task.CompletedTask;
     }
 }
