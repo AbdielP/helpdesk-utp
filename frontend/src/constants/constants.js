@@ -7,16 +7,16 @@ export const ROLES = {
 };
 
 export const AUTH_ERRORS = {
-  USER_NOT_FOUND: "USER_NOT_FOUND",
-  INVALID_PASSWORD: "INVALID_PASSWORD",
+  INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
+  NETWORK_ERROR: "NETWORK_ERROR",
 };
 
 export const ERROR_MESSAGES = {
-  [AUTH_ERRORS.USER_NOT_FOUND]: "Usuario no existe",
-  [AUTH_ERRORS.INVALID_PASSWORD]: "Contraseña incorrecta",
+  [AUTH_ERRORS.INVALID_CREDENTIALS]: "Credenciales invalidas",
+  [AUTH_ERRORS.NETWORK_ERROR]: "No se pudo conectar con el servidor",
   GENERIC: "Error inesperado",
-  NO_SESSION_USER: "No hay usuario en sesión",
-  TICKET_NOT_FOUND: "No se encontró el ticket",
+  NO_SESSION_USER: "No hay usuario en sesion",
+  TICKET_NOT_FOUND: "No se encontro el ticket",
 };
 
 export const STORAGE_KEYS = {
@@ -29,7 +29,7 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   TICKET_NEW: "/ticket/new",
-  TICKET_DETAIL: "/ticket/:id"
+  TICKET_DETAIL: "/ticket/:id",
 };
 
 export const STATUS_ORDER = {
@@ -42,7 +42,7 @@ export const TICKET_CATEGORIES = ["Red", "Plataforma", "Cuenta", "Hardware"];
 export const TICKET_PRIORITIES = ["Baja", "Media", "Alta"];
 export const TICKET_STATUSES = ["Abierto", "En proceso", "Cerrado"];
 
-// Configuración de estados para MUI (props + colores)
+// Configuracion de estados para MUI (props + colores)
 export const STATUS_CONFIG = {
   Abierto: { color: "warning", label: "Abierto" },
   "En proceso": { color: "info", label: "En proceso" },

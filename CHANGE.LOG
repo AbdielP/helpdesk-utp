@@ -93,29 +93,8 @@
 - token falso
 - reconstrucción fake del usuario después de refresh
 
----------
 
-docker-compose.yml de la raíz y esa es la forma correcta si quieres que todo corra junto en Docker.
 
-Quedó así:
-
-db en el mismo compose
-los 4 microservicios construyéndose desde ./backend
-cada servicio con ConnectionStrings__DefaultConnection=Host=db;Database=helpdesk;...
-puertos publicados:
-user en 5200
-auth en 5227
-admin en 5110
-support en 5093
-Eso sí debería permitir que el backend funcione en Docker, porque ahora los contenedores ya no intentan conectarse a localhost, sino al servicio db dentro de la red de Compose.
-
-Para levantar todo:
-
-docker compose up -d --build
-Y para aplicar las tablas:
-
-dotnet ef database update --project backend\helpdesk-utp.user --startup-project backend\helpdesk-utp.user
-Si quieres dejarlo todavía más limpio, el siguiente paso sería que ignoremos backend/compose.yaml y usemos solo el de la raíz como compose oficial.
 
 ---------
 Las APIs que existen en código son estas:

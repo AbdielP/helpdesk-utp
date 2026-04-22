@@ -1,9 +1,9 @@
-import { Box, Grid, TextField, Typography, Stack, Divider } from "@mui/material";
+import { Box, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
+import { useAuth } from "../context/AuthContext";
 import Button from "../shared/Button";
 
 const LoginPage = () => {
@@ -15,20 +15,24 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async () => {
     try {
       setError("");
+      setIsSubmitting(true);
       await login(email, password);
       navigate(ROUTES.HOME);
     } catch (err) {
-      if (err.message === AUTH_ERRORS.USER_NOT_FOUND) {
-        setError(ERROR_MESSAGES[AUTH_ERRORS.USER_NOT_FOUND]);
-      } else if (err.message === AUTH_ERRORS.INVALID_PASSWORD) {
-        setError(ERROR_MESSAGES[AUTH_ERRORS.INVALID_PASSWORD]);
+      if (err.message === AUTH_ERRORS.INVALID_CREDENTIALS) {
+        setError(ERROR_MESSAGES[AUTH_ERRORS.INVALID_CREDENTIALS]);
+      } else if (err.message === AUTH_ERRORS.NETWORK_ERROR) {
+        setError(ERROR_MESSAGES[AUTH_ERRORS.NETWORK_ERROR]);
       } else {
         setError(ERROR_MESSAGES.GENERIC);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -65,24 +69,32 @@ const LoginPage = () => {
             </Box>
 
             <TextField
-              label="Correo electrónico"
+              label="Correo electronico"
               fullWidth
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              disabled={isSubmitting}
               sx={inputFieldStyles}
             />
 
             <TextField
-              label="Contraseña"
+              label="Contrasena"
               type="password"
               fullWidth
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              disabled={isSubmitting}
               sx={inputFieldStyles}
             />
 
-            <Button size="large" fullWidth sx={{ py: 2 }} onClick={handleLogin}>
-              Iniciar sesión
+            <Button
+              size="large"
+              fullWidth
+              sx={{ py: 2 }}
+              onClick={handleLogin}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Iniciando..." : "Iniciar sesion"}
             </Button>
 
             {error && (
@@ -98,7 +110,7 @@ const LoginPage = () => {
               textAlign="center"
               color="text.secondary"
             >
-              Universidad Tecnológica de Panamá - 2026
+              Universidad Tecnologica de Panama - 2026
             </Typography>
           </Stack>
         </Box>

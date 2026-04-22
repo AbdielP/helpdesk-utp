@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import * as authService from "../services/authService";
-import { STORAGE_KEYS } from "../constants/constants";
 
 const AuthContext = createContext();
 
@@ -9,35 +8,20 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cookies = document.cookie.split("; ");
-
-    const userCookie = cookies.find((cookie) =>
-      cookie.startsWith(`${STORAGE_KEYS.USER}=`),
-    );
-
-    if (userCookie) {
-      const parsedUser = JSON.parse(
-        decodeURIComponent(userCookie.split("=")[1]),
-      );
-      setUser(parsedUser);
-    }
-
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     const res = await authService.login(email, password);
 
-    document.cookie = `${STORAGE_KEYS.TOKEN}=${res.token}; path=/;`;
-    document.cookie = `${STORAGE_KEYS.USER}=${encodeURIComponent(
-      JSON.stringify(res.user),
-    )}; path=/;`;
-
+    authService.persistSession(res);
     setUser(res.user);
   };
   
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
   };
 

@@ -1,37 +1,72 @@
-import { users } from '../mocks/users';
-import { AUTH_ERRORS, STORAGE_KEYS } from '../constants/constants';
+import apiClient from "./apiClient";
+import { AUTH_ERRORS, STORAGE_KEYS } from "../constants/constants";
 
-// Simula backend (reemplazar por fetch a .NET cuando haya API real)
-export const login = async (email, password) => {
-  const user = users.find(u => u.email === email);
+const getCookieValue = (key) => {
+  const cookie = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith(`${key}=`));
 
-  if (!user) {
-    throw new Error(AUTH_ERRORS.USER_NOT_FOUND);
+  if (!cookie) {
+    return null;
   }
 
-  if (user.password !== password) {
-    throw new Error(AUTH_ERRORS.INVALID_PASSWORD);
-  }
-
-  return {
-    token: 'fake-token',
-    user,
-  };
+  return cookie.split("=").slice(1).join("=");
 };
 
-export const logout = () => {
-  // uso de cookie para simular almacenamiento del token
+const createAuthError = (message) => {
+  const error = new Error(message);
+  error.code = message;
+  return error;
+};
+
+export const login = async (email, password) => {
+  try {
+    const { data } = await apiClient.post("/auth/login", {
+      email,
+      password,
+    });
+
+    return data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      throw createAuthError(AUTH_ERRORS.INVALID_CREDENTIALS);
+    }
+
+    throw createAuthError(AUTH_ERRORS.NETWORK_ERROR);
+  }
+};
+
+export const persistSession = ({ token, user }) => {
+  document.cookie = `${STORAGE_KEYS.TOKEN}=${encodeURIComponent(token)}; path=/;`;
+  document.cookie = `${STORAGE_KEYS.USER}=${encodeURIComponent(
+    JSON.stringify(user),
+  )}; path=/;`;
+};
+
+export const clearSession = () => {
   document.cookie = `${STORAGE_KEYS.TOKEN}=; Max-Age=0; path=/;`;
   document.cookie = `${STORAGE_KEYS.USER}=; Max-Age=0; path=/;`;
 };
 
-// Temporal para obtener el usuario desde la cookie (reemplazar por lógica real cuando haya API)
+export const logout = async () => {
+  try {
+    await apiClient.post("/auth/logout");
+  } finally {
+    clearSession();
+  }
+};
+
 export const getCurrentUser = () => {
-  const cookie = document.cookie
-    .split("; ")
-    .find((c) => c.startsWith(`${STORAGE_KEYS.USER}=`));
+  const rawUser = getCookieValue(STORAGE_KEYS.USER);
 
-  if (!cookie) return null;
+  if (!rawUser) {
+    return null;
+  }
 
-  return JSON.parse(decodeURIComponent(cookie.split("=")[1]));
+  try {
+    return JSON.parse(decodeURIComponent(rawUser));
+  } catch {
+    clearSession();
+    return null;
+  }
 };
