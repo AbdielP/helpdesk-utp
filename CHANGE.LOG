@@ -95,7 +95,7 @@
 
 ---------
 
-Sí, ahora sí: lo monté en el docker-compose.yml de la raíz y esa es la forma correcta si quieres que todo corra junto en Docker.
+docker-compose.yml de la raíz y esa es la forma correcta si quieres que todo corra junto en Docker.
 
 Quedó así:
 

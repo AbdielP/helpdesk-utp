@@ -1,24 +1,65 @@
 services:
   helpdesk-utp-auth:
     image: helpdesk-utp-auth
+    container_name: helpdesk-auth
     build:
       context: .
       dockerfile: helpdesk-utp.auth/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5227:8080"
+    networks:
+      - helpdesk-network
 
   helpdesk-utp-admin:
     image: helpdesk-utp-admin
+    container_name: helpdesk-admin
     build:
       context: .
       dockerfile: helpdesk-utp.admin/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5110:8080"
+    networks:
+      - helpdesk-network
 
   helpdesk-utp-support:
     image: helpdesk-utp-support
+    container_name: helpdesk-support
     build:
       context: .
       dockerfile: helpdesk-utp.support/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5093:8080"
+    networks:
+      - helpdesk-network
 
   helpdesk-utp-user:
     image: helpdesk-utp-user
+    container_name: helpdesk-user
     build:
       context: .
       dockerfile: helpdesk-utp.user/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+    ports:
+      - "5200:8080"
+    networks:
+      - helpdesk-network
+
+networks:
+  helpdesk-network:
+    name: helpdesk-utp_default
+    external: true
