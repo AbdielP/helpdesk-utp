@@ -41,8 +41,11 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+var applyMigrations = builder.Configuration.GetValue("ApplyMigrationsOnStartup", false);
+
+if (applyMigrations)
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
     dbContext.Database.Migrate();
 }
