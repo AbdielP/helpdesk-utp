@@ -1,19 +1,21 @@
-import { getCurrentUser } from "../services/authService";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
-  TextField,
-  MenuItem,
-  Typography,
-  Paper,
   Divider,
+  MenuItem,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { STORAGE_KEYS, TICKET_CATEGORIES } from "../constants/constants";
+import { useTheme } from "@mui/material/styles";
+import { ERROR_MESSAGES, ROUTES, TICKET_CATEGORIES } from "../constants/constants";
+import { useAuth } from "../context/AuthContext";
+import { createTicket } from "../services/ticketService";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
-import PrioritySelectField from "../shared/PrioritySelectField";
-import { useTheme } from "@mui/material/styles";
 import Button from "../shared/Button";
+import PrioritySelectField from "../shared/PrioritySelectField";
 
 const INITIAL_FORM_STATE = {
   title: "",
@@ -24,6 +26,9 @@ const INITIAL_FORM_STATE = {
 
 export default function CreateTicketPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const theme = useTheme();
   const inputFieldStyles = theme.custom.form.inputFieldStyles;
@@ -36,35 +41,34 @@ export default function CreateTicketPage() {
     });
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      showNotification("No hay usuario en sesión", "error");
+    if (!user?.id) {
+      showNotification(ERROR_MESSAGES.NO_SESSION_USER, "error");
       return;
     }
 
-    const now = new Date().toISOString();
-    const newTicket = {
-      id: Date.now(),
-      ...formData,
-      status: "Abierto",
-      created_by: currentUser.id,
-      assigned_to: null,
-      created_at: now,
-      updated_at: now,
-    };
+    try {
+      setIsSubmitting(true);
 
-    const existingTickets =
-      JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    localStorage.setItem(
-      STORAGE_KEYS.TICKETS,
-      JSON.stringify([...existingTickets, newTicket]),
-    );
+      const createdTicket = await createTicket({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority,
+        created_by: user.id,
+        assigned_to: null,
+      });
 
-    showNotification(`Ticket creado: ${newTicket.title}`, "success");
-    setFormData(INITIAL_FORM_STATE);
+      showNotification(`Ticket creado: ${createdTicket.title}`, "success");
+      setFormData(INITIAL_FORM_STATE);
+      navigate(ROUTES.HOME);
+    } catch {
+      showNotification(ERROR_MESSAGES.GENERIC, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClearForm = () => {
@@ -108,7 +112,7 @@ export default function CreateTicketPage() {
             Nuevo ticket
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
-            Describe tu problema o solicitud y completa la información básica
+            Describe tu problema o solicitud y completa la informacion basica
             para que podamos darle seguimiento.
           </Typography>
         </Paper>
@@ -129,15 +133,16 @@ export default function CreateTicketPage() {
           >
             <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
-                Identificación
+                Identificacion
               </Typography>
               <TextField
                 fullWidth
-                label="Título del ticket"
+                label="Titulo del ticket"
                 name="title"
                 value={formData.title}
                 onChange={handleFormFieldChange}
                 required
+                disabled={isSubmitting}
                 placeholder="Ej: No puedo acceder a mi cuenta"
                 sx={inputFieldStyles}
               />
@@ -147,7 +152,7 @@ export default function CreateTicketPage() {
 
             <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
-                Descripción
+                Descripcion
               </Typography>
               <TextField
                 fullWidth
@@ -158,7 +163,8 @@ export default function CreateTicketPage() {
                 multiline
                 minRows={7}
                 required
-                placeholder="Incluye contexto, pasos para reproducir el problema, mensajes de error u otra información útil."
+                disabled={isSubmitting}
+                placeholder="Incluye contexto, pasos para reproducir el problema, mensajes de error u otra informacion util."
                 sx={{
                   ...inputFieldStyles,
                   "& .MuiInputBase-root": {
@@ -172,24 +178,28 @@ export default function CreateTicketPage() {
 
             <Box sx={{ p: { xs: 2, md: 3 } }}>
               <Typography variant="caption" sx={sectionLabelStyles}>
-                Clasificación
+                Clasificacion
               </Typography>
 
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, minmax(0, 1fr))",
+                  },
                   gap: 2,
                 }}
               >
                 <TextField
                   select
                   fullWidth
-                  label="Categoría"
+                  label="Categoria"
                   name="category"
                   value={formData.category}
                   onChange={handleFormFieldChange}
                   required
+                  disabled={isSubmitting}
                   sx={inputFieldStyles}
                 >
                   {TICKET_CATEGORIES.map((categoryOption) => (
@@ -203,6 +213,7 @@ export default function CreateTicketPage() {
                   value={formData.priority}
                   onChange={handleFormFieldChange}
                   required
+                  disabled={isSubmitting}
                 />
               </Box>
             </Box>
@@ -230,12 +241,21 @@ export default function CreateTicketPage() {
                 </Typography>
 
                 <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-                  <Button appearance="secondary" onClick={handleClearForm} sx={{ px: 3 }}>
+                  <Button
+                    appearance="secondary"
+                    onClick={handleClearForm}
+                    sx={{ px: 3 }}
+                    disabled={isSubmitting}
+                  >
                     Limpiar
                   </Button>
 
-                  <Button type="submit" disabled={!isFormComplete} sx={{ px: 3.5 }}>
-                    Crear ticket
+                  <Button
+                    type="submit"
+                    disabled={!isFormComplete || isSubmitting}
+                    sx={{ px: 3.5 }}
+                  >
+                    {isSubmitting ? "Creando..." : "Crear ticket"}
                   </Button>
                 </Box>
               </Box>

@@ -98,10 +98,23 @@ public class TicketHistory
 }
 
 // DTOs for API requests
-public record CreateTicketRequest(
-    string Title,
-    string Description,
-    string Category,
-    string Priority,
-    [property: JsonPropertyName("created_by")] Guid CreatedBy,
-    [property: JsonPropertyName("assigned_to")] Guid? AssignedTo);
+public class CreateTicketRequest
+{
+    [JsonPropertyName("title")]
+    public required string Title { get; set; }
+
+    [JsonPropertyName("description")]
+    public required string Description { get; set; }
+
+    [JsonPropertyName("category")]
+    public required string Category { get; set; }
+
+    [JsonPropertyName("priority")]
+    public required string Priority { get; set; }
+
+    [JsonPropertyName("created_by")]
+    public Guid CreatedBy { get; set; }
+
+    [JsonPropertyName("assigned_to")]
+    public Guid? AssignedTo { get; set; }
+}

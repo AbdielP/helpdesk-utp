@@ -1,9 +1,13 @@
 import axios from "axios";
 
-const DEFAULT_AUTH_API_URL = "http://localhost:5227";
+const authApiUrl = import.meta.env.VITE_AUTH_API_URL;
+
+if (!authApiUrl) {
+  throw new Error("Missing VITE_AUTH_API_URL");
+}
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_AUTH_API_URL ?? DEFAULT_AUTH_API_URL,
+  baseURL: authApiUrl,
   headers: {
     "Content-Type": "application/json",
   },

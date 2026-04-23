@@ -9,6 +9,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:5173"];
 
 // OpenTelemetry Configuration
 const string serviceName = "helpdesk-utp.user";
@@ -38,6 +40,15 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -56,6 +67,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("FrontendPolicy");
 
 // Endpoints
 var ticketGroup = app.MapGroup("/ticket");
@@ -75,7 +87,19 @@ ticketGroup.MapGet("/{id:guid}", async (Guid id, ITicketService ticketService) =
 ticketGroup.MapPost("/new", async (CreateTicketRequest request, ITicketService ticketService) =>
 {
     var createdTicket = await ticketService.CreateNewTicketAsync(request);
-    return Results.Created($"/ticket/{createdTicket.Id}", createdTicket);
+    return Results.Created($"/ticket/{createdTicket.Id}", new
+    {
+        id = createdTicket.Id,
+        title = createdTicket.Title,
+        description = createdTicket.Description,
+        category = createdTicket.Category,
+        priority = createdTicket.Priority,
+        status = createdTicket.Status,
+        created_by = createdTicket.CreatedBy,
+        assigned_to = createdTicket.AssignedTo,
+        created_at = createdTicket.CreatedAt,
+        updated_at = createdTicket.UpdatedAt
+    });
 });
 
 app.Run();

@@ -9,7 +9,12 @@ import { TICKET_PRIORITIES } from "../constants/constants";
  * Componente reutilizable para el select de prioridad
  * Incluye renderizado custom con colores
  */
-const PrioritySelectField = ({ value, onChange, required = false }) => {
+const PrioritySelectField = ({
+  value,
+  onChange,
+  required = false,
+  disabled = false,
+}) => {
   const theme = useTheme();
   const inputFieldStyles = theme.custom.form.inputFieldStyles;
   const priorityColors = theme.custom.colors.priorities;
@@ -23,6 +28,7 @@ const PrioritySelectField = ({ value, onChange, required = false }) => {
       value={value}
       onChange={onChange}
       required={required}
+      disabled={disabled}
       sx={inputFieldStyles}
       SelectProps={{
         renderValue: (selectedValue) => {
