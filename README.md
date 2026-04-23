@@ -9,8 +9,6 @@ Frontend React/Vite
  - El backend no está usando JWT.
 __
 5. Hay una dependencia de servicio de getKnownUsers() de admin para mostrar nombres en detalles en support: quien creó el ticket y a quien se le asignó.
-6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
-7. RF6. Historial del ticket, Se visualizan fecha, usuario y acción realizada. (BD)
 
 ### Credenciales
 
