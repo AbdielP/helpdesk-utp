@@ -5,9 +5,10 @@ Frontend React/Vite
 
 ## TODO de requisitos funcionales.
 0. Luego de cambiar un estado desde ticketDetails, al volver a dashboard hace un pequeño refresh. talves sea el Chip de la notificación lo que lo provoca?
-0. falta refreshSession() / authMe() para refrescar la sesión al recargar pagina
+0. Falta refreshSession() / authMe() para refrescar la sesión al recargar pagina
+ - El backend no está usando JWT.
 __
-5. Hay una dependencia de servicio de getKnownUsers() de admin para mostrar nombres en detalles en support: quien creó el ticke y a quien se le asignó.
+5. Hay una dependencia de servicio de getKnownUsers() de admin para mostrar nombres en detalles en support: quien creó el ticket y a quien se le asignó.
 6. RF5. Dice que El sistema permite pasar por estados definidos y guarda historial. (BD)
 7. RF6. Historial del ticket, Se visualizan fecha, usuario y acción realizada. (BD)
 
