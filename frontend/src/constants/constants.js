@@ -20,7 +20,6 @@ export const ERROR_MESSAGES = {
 };
 
 export const STORAGE_KEYS = {
-  TICKETS: "tickets",
   USER: "user",
   TOKEN: "token",
 };

@@ -96,16 +96,19 @@ const TicketDetailPage = () => {
       try {
         setIsLoading(true);
 
-        const requests = [
-          getTicketByRole(currentUser.role, id, currentUser.id),
-          getKnownUsers(),
-        ];
+        const requests = [getTicketByRole(currentUser.role, id, currentUser.id)];
+
+        if (currentUser.role !== ROLES.USER) {
+          requests.push(getKnownUsers());
+        }
 
         if (currentUser.role === ROLES.ADMIN) {
           requests.push(getSupportUsers());
         }
 
-        const [fetchedTicket, users, adminSupportUsers = []] = await Promise.all(requests);
+        const [fetchedTicket, users = [], adminSupportUsers = []] = await Promise.all(
+          requests,
+        );
 
         setTicket(fetchedTicket);
         setKnownUsers(users);
@@ -303,14 +306,18 @@ const TicketDetailPage = () => {
                   label="Ultima actualizacion"
                   value={formatDateTime(ticket.updated_at || ticket.created_at)}
                 />
-                <InfoTableRow
-                  label="Creado por"
-                  value={createdByUser?.email || ticket.created_by}
-                />
-                <InfoTableRow
-                  label="Asignado a"
-                  value={assignedUser?.email || (ticket.assigned_to ?? "Sin asignar")}
-                />
+                {currentUser?.role !== ROLES.USER && (
+                  <InfoTableRow
+                    label="Creado por"
+                    value={createdByUser?.email || ticket.created_by}
+                  />
+                )}
+                {currentUser?.role !== ROLES.USER && (
+                  <InfoTableRow
+                    label="Asignado a"
+                    value={assignedUser?.email || (ticket.assigned_to ?? "Sin asignar")}
+                  />
+                )}
               </TableBody>
             </Table>
           </Paper>
@@ -341,7 +348,7 @@ const TicketDetailPage = () => {
             />
           </Paper>
 
-          {isUserPrivileged && (
+          {isUserPrivileged && currentUser?.role !== ROLES.USER && (
             <Paper
               variant="outlined"
               sx={{
