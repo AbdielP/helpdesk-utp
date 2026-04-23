@@ -1,34 +1,59 @@
 import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../services/authService";
-import { ROLES, STORAGE_KEYS, STATUS_ORDER } from "../constants/constants";
 import TicketsTable from "../components/TicketsTable";
+import { ERROR_MESSAGES, ROLES, STATUS_ORDER } from "../constants/constants";
+import { useAuth } from "../context/AuthContext";
+import { useNotification } from "../shared/NotificationProvider";
+import { getSupportUsers, getTicketsByRole } from "../services/ticketService";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { user } = useAuth();
+  const { showNotification } = useNotification();
 
   const [tickets, setTickets] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [user, setUser] = useState(null);
+  const [supportUsers, setSupportUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-  }, []);
+    if (!user?.role) {
+      return;
+    }
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    setTickets(data);
-  }, []);
+    const loadDashboard = async () => {
+      try {
+        setIsLoading(true);
 
-  useEffect(() => {
-    if (!user) return;
+        const fetchedTickets = await getTicketsByRole(user.role);
+        setTickets(fetchedTickets);
+
+        if (user.role === ROLES.ADMIN) {
+          const fetchedSupportUsers = await getSupportUsers();
+          setSupportUsers(fetchedSupportUsers);
+        } else {
+          setSupportUsers([]);
+        }
+      } catch {
+        showNotification(ERROR_MESSAGES.GENERIC, "error");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDashboard();
+  }, [showNotification, user]);
+
+  const filtered = useMemo(() => {
+    if (!user) {
+      return [];
+    }
 
     let result = [];
 
@@ -40,11 +65,9 @@ const DashboardPage = () => {
       result = tickets;
     }
 
-    const sortedByStatus = [...result].sort(
+    return [...result].sort(
       (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
     );
-
-    setFiltered(sortedByStatus);
   }, [tickets, user]);
 
   const dashboardCopy = useMemo(() => {
@@ -67,14 +90,14 @@ const DashboardPage = () => {
       return {
         title: "Tickets asignados",
         description:
-          "Revisa los casos que tienes a cargo y mantén actualizado su progreso.",
+          "Revisa los casos que tienes a cargo y manten actualizado su progreso.",
       };
     }
 
     return {
       title: "Panel general",
       description:
-        "Supervisa todos los tickets del sistema y detecta rápidamente la carga operativa.",
+        "Supervisa todos los tickets del sistema y detecta rapidamente la carga operativa.",
     };
   }, [user]);
 
@@ -186,11 +209,25 @@ const DashboardPage = () => {
             </Typography>
           </Box>
 
-          <TicketsTable
-            tickets={filtered}
-            user={user}
-            onRowClick={(ticketId) => navigate(`/ticket/${ticketId}`)}
-          />
+          {isLoading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                py: 8,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <TicketsTable
+              tickets={filtered}
+              user={user}
+              supportUsers={supportUsers}
+              onRowClick={(ticketId) => navigate(`/ticket/${ticketId}`)}
+            />
+          )}
         </Paper>
 
         <Box sx={{ height: { xs: 40, md: 56 } }} />

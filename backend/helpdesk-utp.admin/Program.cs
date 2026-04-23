@@ -9,6 +9,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:5173"];
 
 // OpenTelemetry Configuration
 const string serviceName = "helpdesk-utp.admin";
@@ -32,6 +34,15 @@ builder.Logging.AddOpenTelemetry(options =>
 
 // Add services to the container.
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // DB Context with Npgsql
 builder.Services.AddDbContext<AdminDbContext>(options =>
@@ -53,6 +64,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors("FrontendPolicy");
 app.MapAdminEndpoints();
 
 app.Run();

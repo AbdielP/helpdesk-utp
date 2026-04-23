@@ -13,11 +13,15 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
-import { users } from "../mocks/users";
 import { ROLES, STATUS_ORDER } from "../constants/constants";
 import TicketChip from "../shared/TicketChip";
 
-export default function TicketsTable({ tickets = [], user, onRowClick }) {
+export default function TicketsTable({
+  tickets = [],
+  user,
+  supportUsers = [],
+  onRowClick,
+}) {
   const theme = useTheme();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -188,7 +192,7 @@ export default function TicketsTable({ tickets = [], user, onRowClick }) {
               sortedTickets
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((ticket, index) => {
-                  const tecnico = users.find(
+                  const tecnico = supportUsers.find(
                     (userItem) => userItem.id === ticket.assigned_to,
                   );
                   const avatarColor =
