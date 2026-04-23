@@ -10,7 +10,8 @@ public class MockTicketRepository : ITicketRepository
         new Ticket { Id = Guid.NewGuid(), Title = "Printer Jam", Description = "Printer in Room 302 is jammed", Category = "Hardware", Priority = "Media", Status = "En proceso", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
     ];
 
-    public async Task<IEnumerable<Ticket>> GetAllTicketsAsync() => await Task.FromResult(_tickets);
+    public async Task<IEnumerable<Ticket>> GetTicketsByCreatedByAsync(Guid userId) =>
+        await Task.FromResult(_tickets.Where(ticket => ticket.CreatedBy == userId).ToList());
 
     public async Task<Ticket?> GetTicketByIdAsync(Guid id) => await Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id));
 

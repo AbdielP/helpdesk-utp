@@ -5,10 +5,10 @@ namespace helpdesk_utp.user.Services;
 
 public class TicketService(ITicketRepository repository, ILogger<TicketService> logger) : ITicketService
 {
-    public async Task<IEnumerable<Ticket>> GetTicketsAsync()
+    public async Task<IEnumerable<Ticket>> GetTicketsAsync(Guid userId)
     {
-        logger.LogInformation("Retrieving all tickets");
-        return await repository.GetAllTicketsAsync();
+        logger.LogInformation("Retrieving tickets for user: {UserId}", userId);
+        return await repository.GetTicketsByCreatedByAsync(userId);
     }
 
     public async Task<Ticket?> GetTicketAsync(Guid id)

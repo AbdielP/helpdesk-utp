@@ -4,7 +4,7 @@ namespace helpdesk_utp.support.Services;
 
 public interface ITicketService
 {
-    Task<IEnumerable<Ticket>> GetAllTicketsAsync();
+    Task<IEnumerable<Ticket>> GetTicketsAsync(Guid userId);
     Task<Ticket?> GetTicketByIdAsync(Guid id);
     Task<bool> UpdateTicketStatusAsync(Guid id, string status);
 }

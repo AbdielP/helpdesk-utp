@@ -32,9 +32,11 @@ public class MockTicketRepository : ITicketRepository
         }
     };
 
-    public Task<IEnumerable<Ticket>> GetAllTicketsAsync()
+    public Task<IEnumerable<Ticket>> GetTicketsByAssignedToAsync(Guid userId)
     {
-        return Task.FromResult<IEnumerable<Ticket>>(_tickets);
+        return Task.FromResult<IEnumerable<Ticket>>(
+            _tickets.Where(ticket => ticket.AssignedTo == userId).ToList()
+        );
     }
 
     public Task<Ticket?> GetTicketByIdAsync(Guid id)

@@ -6,10 +6,11 @@ namespace helpdesk_utp.support.Repositories;
 
 public class TicketRepository(SupportDbContext dbContext) : ITicketRepository
 {
-    public async Task<IEnumerable<Ticket>> GetAllTicketsAsync()
+    public async Task<IEnumerable<Ticket>> GetTicketsByAssignedToAsync(Guid userId)
     {
         return await dbContext.Tickets
             .AsNoTracking()
+            .Where(ticket => ticket.AssignedTo == userId)
             .OrderByDescending(ticket => ticket.CreatedAt)
             .ToListAsync();
     }

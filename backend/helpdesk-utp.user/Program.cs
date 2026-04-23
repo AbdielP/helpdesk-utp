@@ -73,8 +73,15 @@ app.UseCors("FrontendPolicy");
 var ticketGroup = app.MapGroup("/ticket");
 
 // GET /tickets
-app.MapGet("/tickets", async (ITicketService ticketService) => 
-    Results.Ok(await ticketService.GetTicketsAsync()));
+app.MapGet("/tickets", async (Guid? userId, ITicketService ticketService) =>
+{
+    if (userId is null || userId == Guid.Empty)
+    {
+        return Results.BadRequest("userId is required.");
+    }
+
+    return Results.Ok(await ticketService.GetTicketsAsync(userId.Value));
+});
 
 // GET /ticket/:id
 ticketGroup.MapGet("/{id:guid}", async (Guid id, ITicketService ticketService) =>

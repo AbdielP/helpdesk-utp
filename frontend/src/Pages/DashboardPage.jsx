@@ -31,7 +31,7 @@ const DashboardPage = () => {
       try {
         setIsLoading(true);
 
-        const fetchedTickets = await getTicketsByRole(user.role);
+        const fetchedTickets = await getTicketsByRole(user.role, user.id);
         setTickets(fetchedTickets);
 
         if (user.role === ROLES.ADMIN) {
@@ -55,17 +55,7 @@ const DashboardPage = () => {
       return [];
     }
 
-    let result = [];
-
-    if (user.role === ROLES.USER) {
-      result = tickets.filter((ticket) => ticket.created_by === user.id);
-    } else if (user.role === ROLES.SUPPORT) {
-      result = tickets.filter((ticket) => ticket.assigned_to === user.id);
-    } else if (user.role === ROLES.ADMIN) {
-      result = tickets;
-    }
-
-    return [...result].sort(
+    return [...tickets].sort(
       (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
     );
   }, [tickets, user]);

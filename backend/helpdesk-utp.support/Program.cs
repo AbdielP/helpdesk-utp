@@ -64,9 +64,14 @@ app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");
 
 // GET /tickets
-app.MapGet("/tickets", async (ITicketService ticketService) =>
+app.MapGet("/tickets", async (Guid? userId, ITicketService ticketService) =>
 {
-    var tickets = await ticketService.GetAllTicketsAsync();
+    if (userId is null || userId == Guid.Empty)
+    {
+        return Results.BadRequest("userId is required.");
+    }
+
+    var tickets = await ticketService.GetTicketsAsync(userId.Value);
     return Results.Ok(tickets);
 });
 

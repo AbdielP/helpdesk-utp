@@ -12,9 +12,9 @@ public class TicketService : ITicketService
         _ticketRepository = ticketRepository;
     }
 
-    public Task<IEnumerable<Ticket>> GetAllTicketsAsync()
+    public Task<IEnumerable<Ticket>> GetTicketsAsync(Guid userId)
     {
-        return _ticketRepository.GetAllTicketsAsync();
+        return _ticketRepository.GetTicketsByAssignedToAsync(userId);
     }
 
     public Task<Ticket?> GetTicketByIdAsync(Guid id)
