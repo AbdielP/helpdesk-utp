@@ -11,7 +11,7 @@ public class TicketService(ITicketRepository repository, ILogger<TicketService> 
         return await repository.GetTicketsByCreatedByAsync(userId);
     }
 
-    public async Task<Ticket?> GetTicketAsync(Guid id, Guid userId)
+    public async Task<TicketDetailResponse?> GetTicketAsync(Guid id, Guid userId)
     {
         logger.LogInformation("Retrieving ticket with ID: {Id} for user: {UserId}", id, userId);
         return await repository.GetTicketByIdAsync(id, userId);

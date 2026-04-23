@@ -39,9 +39,25 @@ public class MockTicketRepository : ITicketRepository
         );
     }
 
-    public Task<Ticket?> GetTicketByIdAsync(Guid id, Guid userId)
+    public Task<TicketDetailResponse?> GetTicketByIdAsync(Guid id, Guid userId)
     {
-        return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id && t.AssignedTo == userId));
+        var ticket = _tickets.FirstOrDefault(t => t.Id == id && t.AssignedTo == userId);
+
+        return Task.FromResult(ticket == null
+            ? null
+            : new TicketDetailResponse
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                Category = ticket.Category,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                CreatedBy = ticket.CreatedBy,
+                AssignedTo = ticket.AssignedTo,
+                CreatedAt = ticket.CreatedAt,
+                UpdatedAt = ticket.UpdatedAt
+            });
     }
 
     public Task<bool> UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)

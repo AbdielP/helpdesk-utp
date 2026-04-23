@@ -125,3 +125,78 @@ public class CreateTicketRequest
     [JsonPropertyName("assigned_to")]
     public Guid? AssignedTo { get; set; }
 }
+
+public class TicketUserSummary
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("email")]
+    public required string Email { get; set; }
+
+    [JsonPropertyName("role")]
+    public required string Role { get; set; }
+}
+
+public class TicketHistoryResponse
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("ticket_id")]
+    public Guid TicketId { get; set; }
+
+    [JsonPropertyName("user_id")]
+    public Guid UserId { get; set; }
+
+    [JsonPropertyName("action")]
+    public required string Action { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [JsonPropertyName("user")]
+    public TicketUserSummary? User { get; set; }
+}
+
+public class TicketDetailResponse
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("title")]
+    public required string Title { get; set; }
+
+    [JsonPropertyName("description")]
+    public required string Description { get; set; }
+
+    [JsonPropertyName("category")]
+    public required string Category { get; set; }
+
+    [JsonPropertyName("priority")]
+    public required string Priority { get; set; }
+
+    [JsonPropertyName("status")]
+    public required string Status { get; set; }
+
+    [JsonPropertyName("created_by")]
+    public Guid CreatedBy { get; set; }
+
+    [JsonPropertyName("assigned_to")]
+    public Guid? AssignedTo { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [JsonPropertyName("updated_at")]
+    public DateTime UpdatedAt { get; set; }
+
+    [JsonPropertyName("created_by_user")]
+    public TicketUserSummary? CreatedByUser { get; set; }
+
+    [JsonPropertyName("assigned_to_user")]
+    public TicketUserSummary? AssignedToUser { get; set; }
+
+    [JsonPropertyName("history")]
+    public List<TicketHistoryResponse> History { get; set; } = [];
+}

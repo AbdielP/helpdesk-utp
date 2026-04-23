@@ -17,7 +17,7 @@ public class TicketService : ITicketService
         return _ticketRepository.GetTicketsByAssignedToAsync(userId);
     }
 
-    public Task<Ticket?> GetTicketByIdAsync(Guid id, Guid userId)
+    public Task<TicketDetailResponse?> GetTicketByIdAsync(Guid id, Guid userId)
     {
         return _ticketRepository.GetTicketByIdAsync(id, userId);
     }

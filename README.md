@@ -10,10 +10,13 @@ Stack principal:
 
 ## TODO
 
-0. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
-0. Falta `refreshSession()` / `authMe()` para refrescar la sesion al recargar pagina.
-0. El backend no esta usando JWT.
-5. Hay una dependencia de servicio de `getKnownUsers()` de admin para mostrar nombres en detalles en support: quien creo el ticket y a quien se le asigno.
+1. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
+2. Falta `refreshSession()` / `authMe()` para refrescar la sesion al recargar pagina.
+3. El backend no esta usando JWT.
+4. Mensajes de errores especificos.
+    - Mensajes personalizados cuando servicios down.
+5. Hay duplicidad de endpoints según rol
+    - Ejemplo: consultar tickets
 
 ## Estructura
 

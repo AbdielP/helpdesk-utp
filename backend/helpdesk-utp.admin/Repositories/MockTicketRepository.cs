@@ -12,7 +12,26 @@ public class MockTicketRepository : ITicketRepository
 
     public Task<IEnumerable<Ticket>> GetAllTicketsAsync() => Task.FromResult<IEnumerable<Ticket>>(_tickets);
 
-    public Task<Ticket?> GetTicketByIdAsync(Guid id) => Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id));
+    public Task<TicketDetailResponse?> GetTicketByIdAsync(Guid id)
+    {
+        var ticket = _tickets.FirstOrDefault(t => t.Id == id);
+
+        return Task.FromResult(ticket == null
+            ? null
+            : new TicketDetailResponse
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                Category = ticket.Category,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                CreatedBy = ticket.CreatedBy,
+                AssignedTo = ticket.AssignedTo,
+                CreatedAt = ticket.CreatedAt,
+                UpdatedAt = ticket.UpdatedAt
+            });
+    }
 
     public Task UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {

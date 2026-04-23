@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -25,7 +25,6 @@ import BackNavigationButton from "../shared/BackNavigationButton";
 import TicketChip from "../shared/TicketChip";
 import {
   assignTicketToSupport,
-  getKnownUsers,
   getSupportUsers,
   getTicketByRole,
   updateTicketStatusByRole,
@@ -88,7 +87,6 @@ const TicketDetailPage = () => {
 
   const [ticket, setTicket] = useState(null);
   const [supportUsers, setSupportUsers] = useState([]);
-  const [knownUsers, setKnownUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -100,21 +98,17 @@ const TicketDetailPage = () => {
     try {
       setIsLoading(true);
 
-      const requests = [
-        getTicketByRole(currentUser.role, id, currentUser.id),
-        getKnownUsers().catch(() => []),
-      ];
+      const requests = [getTicketByRole(currentUser.role, id, currentUser.id)];
 
       if (currentUser.role === ROLES.ADMIN) {
         requests.push(getSupportUsers().catch(() => []));
       }
 
-      const [fetchedTicket, users = [], adminSupportUsers = []] = await Promise.all(
+      const [fetchedTicket, adminSupportUsers = []] = await Promise.all(
         requests,
       );
 
       setTicket(fetchedTicket);
-      setKnownUsers(users);
       setSupportUsers(adminSupportUsers);
     } catch {
       setTicket(null);
@@ -127,24 +121,10 @@ const TicketDetailPage = () => {
     loadTicketDetail();
   }, [currentUser, id]);
 
-  const knownUsersById = useMemo(
-    () =>
-      new Map(
-        knownUsers.map((knownUser) => [knownUser.id, knownUser]),
-      ),
-    [knownUsers],
-  );
-
-  const assignedUser = ticket?.assigned_to
-    ? knownUsersById.get(ticket.assigned_to)
-    : null;
-  const createdByUser = ticket?.created_by
-    ? knownUsersById.get(ticket.created_by)
-    : null;
+  const assignedUser = ticket?.assigned_to_user ?? null;
+  const createdByUser = ticket?.created_by_user ?? null;
   const assignmentEvent = getAssignmentEvent(ticket?.history);
-  const historyItems = [...(ticket?.history ?? [])].sort(
-    (left, right) => new Date(right.created_at) - new Date(left.created_at),
-  );
+  const historyItems = ticket?.history ?? [];
 
   const isUserPrivileged =
     currentUser?.role === ROLES.ADMIN || currentUser?.role === ROLES.SUPPORT;
@@ -393,7 +373,7 @@ const TicketDetailPage = () => {
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                       {formatDateTime(entry.created_at)} |{" "}
-                      {knownUsersById.get(entry.user_id)?.email || entry.user_id}
+                      {entry.user?.email || entry.user_id}
                     </Typography>
                   </Box>
                 ))

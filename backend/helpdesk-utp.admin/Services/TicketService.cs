@@ -7,7 +7,7 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 {
     public Task<IEnumerable<Ticket>> GetAllTicketsAsync() => ticketRepository.GetAllTicketsAsync();
 
-    public Task<Ticket?> GetTicketByIdAsync(Guid id) => ticketRepository.GetTicketByIdAsync(id);
+    public Task<TicketDetailResponse?> GetTicketByIdAsync(Guid id) => ticketRepository.GetTicketByIdAsync(id);
 
     public async Task<bool> UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {

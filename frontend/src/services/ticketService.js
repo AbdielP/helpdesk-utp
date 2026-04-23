@@ -78,13 +78,3 @@ export const getUsersByRole = async (role) => {
 };
 
 export const getSupportUsers = async () => getUsersByRole(ROLES.SUPPORT);
-
-export const getKnownUsers = async () => {
-  const [admins, supportUsers, endUsers] = await Promise.all([
-    getUsersByRole(ROLES.ADMIN),
-    getUsersByRole(ROLES.SUPPORT),
-    getUsersByRole(ROLES.USER),
-  ]);
-
-  return [...admins, ...supportUsers, ...endUsers];
-};
