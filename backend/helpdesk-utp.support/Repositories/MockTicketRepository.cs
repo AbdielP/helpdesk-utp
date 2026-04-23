@@ -44,7 +44,7 @@ public class MockTicketRepository : ITicketRepository
         return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id && t.AssignedTo == userId));
     }
 
-    public Task<bool> UpdateTicketStatusAsync(Guid id, string status)
+    public Task<bool> UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {
         var ticket = _tickets.FirstOrDefault(t => t.Id == id);
         if (ticket == null) return Task.FromResult(false);

@@ -14,7 +14,7 @@ public class MockTicketRepository : ITicketRepository
 
     public Task<Ticket?> GetTicketByIdAsync(Guid id) => Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id));
 
-    public Task UpdateTicketStatusAsync(Guid id, string status)
+    public Task UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {
         var ticket = _tickets.FirstOrDefault(t => t.Id == id);
         if (ticket != null)
@@ -25,12 +25,12 @@ public class MockTicketRepository : ITicketRepository
         return Task.CompletedTask;
     }
 
-    public Task AssignTicketAsync(Guid id, Guid userId)
+    public Task AssignTicketAsync(Guid id, Guid assigneeUserId, Guid actorUserId)
     {
         var ticket = _tickets.FirstOrDefault(t => t.Id == id);
         if (ticket != null)
         {
-            ticket.AssignedTo = userId;
+            ticket.AssignedTo = assigneeUserId;
             ticket.UpdatedAt = DateTime.UtcNow;
         }
         return Task.CompletedTask;

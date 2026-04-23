@@ -74,6 +74,11 @@ const InfoTableRow = ({ label, value, chips = null }) => (
   </TableRow>
 );
 
+const getAssignmentEvent = (history = []) =>
+  [...history]
+    .sort((left, right) => new Date(right.created_at) - new Date(left.created_at))
+    .find((entry) => entry.action?.startsWith("Ticket asignado"));
+
 const TicketDetailPage = () => {
   const { id } = useParams();
   const theme = useTheme();
@@ -87,39 +92,38 @@ const TicketDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
+  const loadTicketDetail = async () => {
     if (!currentUser?.id || !id) {
       return;
     }
 
-    const loadTicketDetail = async () => {
-      try {
-        setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-        const requests = [getTicketByRole(currentUser.role, id, currentUser.id)];
+      const requests = [
+        getTicketByRole(currentUser.role, id, currentUser.id),
+        getKnownUsers().catch(() => []),
+      ];
 
-        if (currentUser.role !== ROLES.USER) {
-          requests.push(getKnownUsers());
-        }
-
-        if (currentUser.role === ROLES.ADMIN) {
-          requests.push(getSupportUsers());
-        }
-
-        const [fetchedTicket, users = [], adminSupportUsers = []] = await Promise.all(
-          requests,
-        );
-
-        setTicket(fetchedTicket);
-        setKnownUsers(users);
-        setSupportUsers(adminSupportUsers);
-      } catch {
-        setTicket(null);
-      } finally {
-        setIsLoading(false);
+      if (currentUser.role === ROLES.ADMIN) {
+        requests.push(getSupportUsers().catch(() => []));
       }
-    };
 
+      const [fetchedTicket, users = [], adminSupportUsers = []] = await Promise.all(
+        requests,
+      );
+
+      setTicket(fetchedTicket);
+      setKnownUsers(users);
+      setSupportUsers(adminSupportUsers);
+    } catch {
+      setTicket(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadTicketDetail();
   }, [currentUser, id]);
 
@@ -137,6 +141,10 @@ const TicketDetailPage = () => {
   const createdByUser = ticket?.created_by
     ? knownUsersById.get(ticket.created_by)
     : null;
+  const assignmentEvent = getAssignmentEvent(ticket?.history);
+  const historyItems = [...(ticket?.history ?? [])].sort(
+    (left, right) => new Date(right.created_at) - new Date(left.created_at),
+  );
 
   const isUserPrivileged =
     currentUser?.role === ROLES.ADMIN || currentUser?.role === ROLES.SUPPORT;
@@ -148,12 +156,13 @@ const TicketDetailPage = () => {
 
     try {
       setIsSaving(true);
-      await updateTicketStatusByRole(currentUser.role, ticket.id, nextStatus);
-      setTicket((previousTicket) => ({
-        ...previousTicket,
-        status: nextStatus,
-        updated_at: new Date().toISOString(),
-      }));
+      await updateTicketStatusByRole(
+        currentUser.role,
+        ticket.id,
+        nextStatus,
+        currentUser.id,
+      );
+      await loadTicketDetail();
       showNotification(`Estado actualizado a ${nextStatus}`, "success");
     } catch {
       showNotification(ERROR_MESSAGES.GENERIC, "error");
@@ -163,18 +172,14 @@ const TicketDetailPage = () => {
   };
 
   const handleAssignChange = async (nextAssignedTo) => {
-    if (!ticket) {
+    if (!ticket || !currentUser) {
       return;
     }
 
     try {
       setIsSaving(true);
-      await assignTicketToSupport(ticket.id, nextAssignedTo);
-      setTicket((previousTicket) => ({
-        ...previousTicket,
-        assigned_to: nextAssignedTo,
-        updated_at: new Date().toISOString(),
-      }));
+      await assignTicketToSupport(ticket.id, nextAssignedTo, currentUser.id);
+      await loadTicketDetail();
       showNotification("Ticket asignado correctamente", "success");
     } catch {
       showNotification(ERROR_MESSAGES.GENERIC, "error");
@@ -308,6 +313,12 @@ const TicketDetailPage = () => {
                 />
                 {currentUser?.role !== ROLES.USER && (
                   <InfoTableRow
+                    label="Fecha de asignacion"
+                    value={formatDateTime(assignmentEvent?.created_at)}
+                  />
+                )}
+                {currentUser?.role !== ROLES.USER && (
+                  <InfoTableRow
                     label="Creado por"
                     value={createdByUser?.email || ticket.created_by}
                   />
@@ -346,6 +357,52 @@ const TicketDetailPage = () => {
               InputProps={{ readOnly: true }}
               sx={inputFieldStyles}
             />
+          </Paper>
+
+          <Paper
+            variant="outlined"
+            sx={{
+              borderRadius: 3,
+              p: { xs: 2, md: 3 },
+              backgroundColor: "#FFFFFF",
+              borderColor: "#DDDADF",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+              Historial del ticket
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+              Registro de fecha, usuario y accion realizada sobre el caso.
+            </Typography>
+
+            <Stack spacing={1.5}>
+              {historyItems.length > 0 ? (
+                historyItems.map((entry) => (
+                  <Box
+                    key={entry.id}
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                      px: 2,
+                      py: 1.5,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 600 }}>
+                      {entry.action}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {formatDateTime(entry.created_at)} |{" "}
+                      {knownUsersById.get(entry.user_id)?.email || entry.user_id}
+                    </Typography>
+                  </Box>
+                ))
+              ) : (
+                <Typography color="text.secondary">
+                  No hay eventos registrados todavia.
+                </Typography>
+              )}
+            </Stack>
           </Paper>
 
           {isUserPrivileged && currentUser?.role !== ROLES.USER && (

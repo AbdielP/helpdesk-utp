@@ -6,6 +6,6 @@ public interface ITicketRepository
 {
     Task<IEnumerable<Ticket>> GetAllTicketsAsync();
     Task<Ticket?> GetTicketByIdAsync(Guid id);
-    Task UpdateTicketStatusAsync(Guid id, string status);
-    Task AssignTicketAsync(Guid id, Guid userId);
+    Task UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId);
+    Task AssignTicketAsync(Guid id, Guid assigneeUserId, Guid actorUserId);
 }

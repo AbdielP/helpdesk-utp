@@ -46,8 +46,8 @@ export const getTicketByRole = async (role, ticketId, userId) => {
   return data;
 };
 
-export const updateTicketStatusByRole = async (role, ticketId, status) => {
-  const payload = { status };
+export const updateTicketStatusByRole = async (role, ticketId, status, actorUserId) => {
+  const payload = { status, actorUserId };
 
   if (role === ROLES.ADMIN) {
     await adminApiClient.patch(`/ticket/${ticketId}/status`, payload);
@@ -62,9 +62,10 @@ export const updateTicketStatusByRole = async (role, ticketId, status) => {
   throw new Error("Role not allowed to update ticket status");
 };
 
-export const assignTicketToSupport = async (ticketId, userId) => {
+export const assignTicketToSupport = async (ticketId, userId, actorUserId) => {
   await adminApiClient.patch(`/ticket/${ticketId}/assign`, {
-    userId,
+    assigneeUserId: userId,
+    actorUserId,
   });
 };
 

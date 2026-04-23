@@ -19,10 +19,11 @@ public class TicketRepository(SupportDbContext dbContext) : ITicketRepository
     {
         return await dbContext.Tickets
             .AsNoTracking()
+            .Include(ticket => ticket.History)
             .FirstOrDefaultAsync(ticket => ticket.Id == id && ticket.AssignedTo == userId);
     }
 
-    public async Task<bool> UpdateTicketStatusAsync(Guid id, string status)
+    public async Task<bool> UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {
         var ticket = await dbContext.Tickets.FirstOrDefaultAsync(existing => existing.Id == id);
         if (ticket is null)
@@ -30,8 +31,22 @@ public class TicketRepository(SupportDbContext dbContext) : ITicketRepository
             return false;
         }
 
+        if (ticket.Status == status)
+        {
+            return true;
+        }
+
+        var previousStatus = ticket.Status;
         ticket.Status = status;
         ticket.UpdatedAt = DateTime.UtcNow;
+        dbContext.TicketHistories.Add(new TicketHistory
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticket.Id,
+            UserId = actorUserId,
+            Action = $"Estado cambiado de {previousStatus} a {status}",
+            CreatedAt = ticket.UpdatedAt
+        });
 
         await dbContext.SaveChangesAsync();
         return true;

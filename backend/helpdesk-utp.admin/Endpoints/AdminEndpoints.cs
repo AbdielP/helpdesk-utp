@@ -18,13 +18,23 @@ public static class AdminEndpoints
 
         app.MapPatch("/ticket/{id:guid}/status", async (Guid id, [FromBody] StatusUpdateRequest request, ITicketService ticketService) =>
         {
-            var success = await ticketService.UpdateTicketStatusAsync(id, request.Status);
+            if (request.ActorUserId == Guid.Empty)
+            {
+                return Results.BadRequest("actorUserId is required");
+            }
+
+            var success = await ticketService.UpdateTicketStatusAsync(id, request.Status, request.ActorUserId);
             return success ? Results.NoContent() : Results.NotFound();
         });
 
         app.MapPatch("/ticket/{id:guid}/assign", async (Guid id, [FromBody] AssignRequest request, ITicketService ticketService) =>
         {
-            var success = await ticketService.AssignTicketAsync(id, request.UserId);
+            if (request.AssigneeUserId == Guid.Empty || request.ActorUserId == Guid.Empty)
+            {
+                return Results.BadRequest("assigneeUserId and actorUserId are required");
+            }
+
+            var success = await ticketService.AssignTicketAsync(id, request.AssigneeUserId, request.ActorUserId);
             return success ? Results.NoContent() : Results.NotFound();
         });
 
@@ -37,5 +47,5 @@ public static class AdminEndpoints
     }
 }
 
-public record StatusUpdateRequest(string Status);
-public record AssignRequest(Guid UserId);
+public record StatusUpdateRequest(string Status, Guid ActorUserId);
+public record AssignRequest(Guid AssigneeUserId, Guid ActorUserId);

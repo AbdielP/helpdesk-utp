@@ -19,6 +19,7 @@ public class TicketRepository(UserDbContext dbContext) : ITicketRepository
     {
         return await dbContext.Tickets
             .AsNoTracking()
+            .Include(ticket => ticket.History)
             .FirstOrDefaultAsync(ticket => ticket.Id == id && ticket.CreatedBy == userId);
     }
 
@@ -34,9 +35,21 @@ public class TicketRepository(UserDbContext dbContext) : ITicketRepository
             Id = Guid.NewGuid(),
             TicketId = ticket.Id,
             UserId = ticket.CreatedBy,
-            Action = "Ticket created",
+            Action = "Ticket creado",
             CreatedAt = DateTime.UtcNow
         });
+
+        if (ticket.AssignedTo is Guid assignedToUserId)
+        {
+            dbContext.TicketHistories.Add(new TicketHistory
+            {
+                Id = Guid.NewGuid(),
+                TicketId = ticket.Id,
+                UserId = ticket.CreatedBy,
+                Action = $"Ticket asignado al tecnico {assignedToUserId}",
+                CreatedAt = ticket.CreatedAt
+            });
+        }
 
         await dbContext.SaveChangesAsync();
         return ticket;

@@ -24,8 +24,11 @@ public class User
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    [JsonIgnore]
     public ICollection<Ticket> CreatedTickets { get; set; } = [];
+    [JsonIgnore]
     public ICollection<Ticket> AssignedTickets { get; set; } = [];
+    [JsonIgnore]
     public ICollection<TicketHistory> Histories { get; set; } = [];
 }
 
@@ -54,11 +57,13 @@ public class Ticket
     [Column("created_by")]
     [JsonPropertyName("created_by")]
     public Guid CreatedBy { get; set; }
+    [JsonIgnore]
     public User? CreatedByUser { get; set; }
 
     [Column("assigned_to")]
     [JsonPropertyName("assigned_to")]
     public Guid? AssignedTo { get; set; }
+    [JsonIgnore]
     public User? AssignedToUser { get; set; }
 
     [Column("created_at")]
@@ -82,11 +87,13 @@ public class TicketHistory
     [Column("ticket_id")]
     [JsonPropertyName("ticket_id")]
     public Guid TicketId { get; set; }
+    [JsonIgnore]
     public Ticket? Ticket { get; set; }
 
     [Column("user_id")]
     [JsonPropertyName("user_id")]
     public Guid UserId { get; set; }
+    [JsonIgnore]
     public User? User { get; set; }
 
     [Column("action")]

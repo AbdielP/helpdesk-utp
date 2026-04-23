@@ -18,10 +18,11 @@ public class TicketRepository(AdminDbContext dbContext) : ITicketRepository
     {
         return await dbContext.Tickets
             .AsNoTracking()
+            .Include(ticket => ticket.History)
             .FirstOrDefaultAsync(ticket => ticket.Id == id);
     }
 
-    public async Task UpdateTicketStatusAsync(Guid id, string status)
+    public async Task UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {
         var ticket = await dbContext.Tickets.FirstOrDefaultAsync(existing => existing.Id == id);
         if (ticket is null)
@@ -29,13 +30,27 @@ public class TicketRepository(AdminDbContext dbContext) : ITicketRepository
             return;
         }
 
+        if (ticket.Status == status)
+        {
+            return;
+        }
+
+        var previousStatus = ticket.Status;
         ticket.Status = status;
         ticket.UpdatedAt = DateTime.UtcNow;
+        dbContext.TicketHistories.Add(new TicketHistory
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticket.Id,
+            UserId = actorUserId,
+            Action = $"Estado cambiado de {previousStatus} a {status}",
+            CreatedAt = ticket.UpdatedAt
+        });
 
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task AssignTicketAsync(Guid id, Guid userId)
+    public async Task AssignTicketAsync(Guid id, Guid assigneeUserId, Guid actorUserId)
     {
         var ticket = await dbContext.Tickets.FirstOrDefaultAsync(existing => existing.Id == id);
         if (ticket is null)
@@ -43,8 +58,21 @@ public class TicketRepository(AdminDbContext dbContext) : ITicketRepository
             return;
         }
 
-        ticket.AssignedTo = userId;
+        if (ticket.AssignedTo == assigneeUserId)
+        {
+            return;
+        }
+
+        ticket.AssignedTo = assigneeUserId;
         ticket.UpdatedAt = DateTime.UtcNow;
+        dbContext.TicketHistories.Add(new TicketHistory
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticket.Id,
+            UserId = actorUserId,
+            Action = $"Ticket asignado al tecnico {assigneeUserId}",
+            CreatedAt = ticket.UpdatedAt
+        });
 
         await dbContext.SaveChangesAsync();
     }

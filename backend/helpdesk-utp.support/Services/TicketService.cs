@@ -22,8 +22,8 @@ public class TicketService : ITicketService
         return _ticketRepository.GetTicketByIdAsync(id, userId);
     }
 
-    public Task<bool> UpdateTicketStatusAsync(Guid id, string status)
+    public Task<bool> UpdateTicketStatusAsync(Guid id, string status, Guid actorUserId)
     {
-        return _ticketRepository.UpdateTicketStatusAsync(id, status);
+        return _ticketRepository.UpdateTicketStatusAsync(id, status, actorUserId);
     }
 }

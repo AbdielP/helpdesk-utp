@@ -95,10 +95,15 @@ app.MapPatch("/ticket/{id:guid}/status", async (Guid id, StatusUpdateDto statusU
         return Results.BadRequest("Status is required.");
     }
 
-    var success = await ticketService.UpdateTicketStatusAsync(id, statusUpdate.Status);
+    if (statusUpdate.ActorUserId == Guid.Empty)
+    {
+        return Results.BadRequest("actorUserId is required.");
+    }
+
+    var success = await ticketService.UpdateTicketStatusAsync(id, statusUpdate.Status, statusUpdate.ActorUserId);
     return success ? Results.NoContent() : Results.NotFound();
 });
 
 app.Run();
 
-public record StatusUpdateDto(string Status);
+public record StatusUpdateDto(string Status, Guid ActorUserId);
