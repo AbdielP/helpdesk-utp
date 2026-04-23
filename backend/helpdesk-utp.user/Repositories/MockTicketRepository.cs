@@ -13,7 +13,8 @@ public class MockTicketRepository : ITicketRepository
     public async Task<IEnumerable<Ticket>> GetTicketsByCreatedByAsync(Guid userId) =>
         await Task.FromResult(_tickets.Where(ticket => ticket.CreatedBy == userId).ToList());
 
-    public async Task<Ticket?> GetTicketByIdAsync(Guid id) => await Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id));
+    public async Task<Ticket?> GetTicketByIdAsync(Guid id, Guid userId) =>
+        await Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id && t.CreatedBy == userId));
 
     public async Task<Ticket> CreateTicketAsync(Ticket ticket)
     {

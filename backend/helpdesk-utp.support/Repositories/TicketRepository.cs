@@ -15,11 +15,11 @@ public class TicketRepository(SupportDbContext dbContext) : ITicketRepository
             .ToListAsync();
     }
 
-    public async Task<Ticket?> GetTicketByIdAsync(Guid id)
+    public async Task<Ticket?> GetTicketByIdAsync(Guid id, Guid userId)
     {
         return await dbContext.Tickets
             .AsNoTracking()
-            .FirstOrDefaultAsync(ticket => ticket.Id == id);
+            .FirstOrDefaultAsync(ticket => ticket.Id == id && ticket.AssignedTo == userId);
     }
 
     public async Task<bool> UpdateTicketStatusAsync(Guid id, string status)

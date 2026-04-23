@@ -84,9 +84,14 @@ app.MapGet("/tickets", async (Guid? userId, ITicketService ticketService) =>
 });
 
 // GET /ticket/:id
-ticketGroup.MapGet("/{id:guid}", async (Guid id, ITicketService ticketService) =>
+ticketGroup.MapGet("/{id:guid}", async (Guid id, Guid? userId, ITicketService ticketService) =>
 {
-    var ticket = await ticketService.GetTicketAsync(id);
+    if (userId is null || userId == Guid.Empty)
+    {
+        return Results.BadRequest("userId is required.");
+    }
+
+    var ticket = await ticketService.GetTicketAsync(id, userId.Value);
     return ticket is not null ? Results.Ok(ticket) : Results.NotFound();
 });
 

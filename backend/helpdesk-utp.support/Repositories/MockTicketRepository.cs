@@ -39,9 +39,9 @@ public class MockTicketRepository : ITicketRepository
         );
     }
 
-    public Task<Ticket?> GetTicketByIdAsync(Guid id)
+    public Task<Ticket?> GetTicketByIdAsync(Guid id, Guid userId)
     {
-        return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id));
+        return Task.FromResult(_tickets.FirstOrDefault(t => t.Id == id && t.AssignedTo == userId));
     }
 
     public Task<bool> UpdateTicketStatusAsync(Guid id, string status)

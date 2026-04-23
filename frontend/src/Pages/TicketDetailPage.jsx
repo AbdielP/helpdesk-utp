@@ -1,33 +1,35 @@
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import {
   Box,
-  Typography,
+  CircularProgress,
+  Divider,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
   Paper,
+  Select,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableRow,
   TextField,
-  Divider,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { getCurrentUser } from "../services/authService";
-import { users } from "../mocks/users";
-import {
-  ERROR_MESSAGES,
-  ROLES,
-  STORAGE_KEYS,
-  TICKET_STATUSES,
-} from "../constants/constants";
+import { ERROR_MESSAGES, ROLES, TICKET_STATUSES } from "../constants/constants";
+import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
 import TicketChip from "../shared/TicketChip";
+import {
+  assignTicketToSupport,
+  getKnownUsers,
+  getSupportUsers,
+  getTicketByRole,
+  updateTicketStatusByRole,
+} from "../services/ticketService";
 
 const formatDateTime = (value) => {
   if (!value) return "-";
@@ -76,53 +78,115 @@ const TicketDetailPage = () => {
   const { id } = useParams();
   const theme = useTheme();
   const inputFieldStyles = theme.custom.form.inputFieldStyles;
-
-  const [ticket, setTicket] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser } = useAuth();
   const { showNotification } = useNotification();
 
-  useEffect(() => {
-    const allTickets =
-      JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    const foundTicket = allTickets.find(
-      (singleTicket) => singleTicket.id === Number(id),
-    );
-    setTicket(foundTicket);
-  }, [id]);
+  const [ticket, setTicket] = useState(null);
+  const [supportUsers, setSupportUsers] = useState([]);
+  const [knownUsers, setKnownUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const user = getCurrentUser();
-    setCurrentUser(user);
-  }, []);
+    if (!currentUser?.id || !id) {
+      return;
+    }
 
-  const supportTeamUsers = users.filter((user) => user.role === ROLES.SUPPORT);
-  const assignedUser = users.find((user) => user.id === ticket?.assigned_to);
-  const createdByUser = users.find((user) => user.id === ticket?.created_by);
+    const loadTicketDetail = async () => {
+      try {
+        setIsLoading(true);
+
+        const requests = [
+          getTicketByRole(currentUser.role, id, currentUser.id),
+          getKnownUsers(),
+        ];
+
+        if (currentUser.role === ROLES.ADMIN) {
+          requests.push(getSupportUsers());
+        }
+
+        const [fetchedTicket, users, adminSupportUsers = []] = await Promise.all(requests);
+
+        setTicket(fetchedTicket);
+        setKnownUsers(users);
+        setSupportUsers(adminSupportUsers);
+      } catch {
+        setTicket(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTicketDetail();
+  }, [currentUser, id]);
+
+  const knownUsersById = useMemo(
+    () =>
+      new Map(
+        knownUsers.map((knownUser) => [knownUser.id, knownUser]),
+      ),
+    [knownUsers],
+  );
+
+  const assignedUser = ticket?.assigned_to
+    ? knownUsersById.get(ticket.assigned_to)
+    : null;
+  const createdByUser = ticket?.created_by
+    ? knownUsersById.get(ticket.created_by)
+    : null;
+
   const isUserPrivileged =
     currentUser?.role === ROLES.ADMIN || currentUser?.role === ROLES.SUPPORT;
 
-  const updateTicket = (updatedFields) => {
-    const allTickets =
-      JSON.parse(localStorage.getItem(STORAGE_KEYS.TICKETS)) || [];
-    const updatedAt = new Date().toISOString();
+  const handleStatusChange = async (nextStatus) => {
+    if (!ticket || !currentUser) {
+      return;
+    }
 
-    const updatedTickets = allTickets.map((singleTicket) =>
-      singleTicket.id === ticket.id
-        ? {
-            ...singleTicket,
-            ...updatedFields,
-            updated_at: updatedAt,
-          }
-        : singleTicket,
-    );
-
-    localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(updatedTickets));
-    setTicket((previousTicket) => ({
-      ...previousTicket,
-      ...updatedFields,
-      updated_at: updatedAt,
-    }));
+    try {
+      setIsSaving(true);
+      await updateTicketStatusByRole(currentUser.role, ticket.id, nextStatus);
+      setTicket((previousTicket) => ({
+        ...previousTicket,
+        status: nextStatus,
+        updated_at: new Date().toISOString(),
+      }));
+      showNotification(`Estado actualizado a ${nextStatus}`, "success");
+    } catch {
+      showNotification(ERROR_MESSAGES.GENERIC, "error");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handleAssignChange = async (nextAssignedTo) => {
+    if (!ticket) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await assignTicketToSupport(ticket.id, nextAssignedTo);
+      setTicket((previousTicket) => ({
+        ...previousTicket,
+        assigned_to: nextAssignedTo,
+        updated_at: new Date().toISOString(),
+      }));
+      showNotification("Ticket asignado correctamente", "success");
+    } catch {
+      showNotification(ERROR_MESSAGES.GENERIC, "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 8 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!ticket) {
     return (
@@ -208,7 +272,7 @@ const TicketDetailPage = () => {
           >
             <Box sx={{ px: { xs: 2, md: 3 }, py: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Información del ticket
+                Informacion del ticket
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 Resumen general y datos principales del caso.
@@ -219,7 +283,7 @@ const TicketDetailPage = () => {
 
             <Table>
               <TableBody>
-                <InfoTableRow label="Categoría" value={ticket.category} />
+                <InfoTableRow label="Categoria" value={ticket.category} />
                 <InfoTableRow
                   label="Estado y prioridad"
                   chips={[
@@ -236,16 +300,16 @@ const TicketDetailPage = () => {
                   value={formatDateTime(ticket.created_at)}
                 />
                 <InfoTableRow
-                  label="Última actualización"
+                  label="Ultima actualizacion"
                   value={formatDateTime(ticket.updated_at || ticket.created_at)}
                 />
                 <InfoTableRow
                   label="Creado por"
-                  value={createdByUser?.email || "Desconocido"}
+                  value={createdByUser?.email || ticket.created_by}
                 />
                 <InfoTableRow
                   label="Asignado a"
-                  value={assignedUser?.email || "Sin asignar"}
+                  value={assignedUser?.email || (ticket.assigned_to ?? "Sin asignar")}
                 />
               </TableBody>
             </Table>
@@ -261,7 +325,7 @@ const TicketDetailPage = () => {
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-              Descripción
+              Descripcion
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Detalle completo del ticket para lectura y seguimiento.
@@ -288,10 +352,10 @@ const TicketDetailPage = () => {
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-                Gestión del ticket
+                Gestion del ticket
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
-                Actualiza el estado del caso y, si corresponde, asigna un técnico.
+                Actualiza el estado del caso y, si corresponde, asigna un tecnico.
               </Typography>
 
               <Box
@@ -302,23 +366,17 @@ const TicketDetailPage = () => {
                 }}
               >
                 {currentUser?.role === ROLES.ADMIN && (
-                  <FormControl size="small" fullWidth>
-                    <InputLabel>Asignar técnico</InputLabel>
+                  <FormControl size="small" fullWidth disabled={isSaving}>
+                    <InputLabel>Asignar tecnico</InputLabel>
                     <Select
-                      label="Asignar técnico"
+                      label="Asignar tecnico"
                       value={ticket.assigned_to ?? ""}
                       onChange={(event) => {
-                        const nextAssignedTo =
-                          event.target.value === "" ? null : Number(event.target.value);
-
-                        updateTicket({ assigned_to: nextAssignedTo });
-                        showNotification("Ticket asignado correctamente", "success");
+                        const nextAssignedTo = event.target.value;
+                        handleAssignChange(nextAssignedTo);
                       }}
                     >
-                      <MenuItem value="">
-                        <em>Sin asignar</em>
-                      </MenuItem>
-                      {supportTeamUsers.map((supportUser) => (
+                      {supportUsers.map((supportUser) => (
                         <MenuItem key={supportUser.id} value={supportUser.id}>
                           {supportUser.email}
                         </MenuItem>
@@ -327,17 +385,13 @@ const TicketDetailPage = () => {
                   </FormControl>
                 )}
 
-                <FormControl size="small" fullWidth>
+                <FormControl size="small" fullWidth disabled={isSaving}>
                   <InputLabel>Estado</InputLabel>
                   <Select
                     label="Estado"
                     value={ticket.status}
                     onChange={(event) => {
-                      updateTicket({ status: event.target.value });
-                      showNotification(
-                        `Estado actualizado a ${event.target.value}`,
-                        "success",
-                      );
+                      handleStatusChange(event.target.value);
                     }}
                   >
                     {TICKET_STATUSES.map((statusOption) => (
