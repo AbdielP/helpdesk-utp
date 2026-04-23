@@ -17,6 +17,7 @@ Stack principal:
     - Mensajes personalizados cuando servicios down.
 5. Hay duplicidad de endpoints según rol
     - Ejemplo: consultar tickets
+6. las metricas de tickets podrían ser un servicio
 
 ## Estructura
 
