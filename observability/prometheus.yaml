@@ -1,0 +1,37 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+ 
+# Receive metrics pushed by Tempo's metrics_generator
+remote_write_receiver:
+  enabled: true   # enables the /api/v1/write endpoint
+ 
+scrape_configs:
+ 
+  # Scrape your 4 APIs — add one job per service that exposes /metrics
+  - job_name: helpdesk-utp-auth
+    static_configs:
+      - targets: ["helpdesk-utp-auth:8080"]
+    metrics_path: /metrics
+ 
+  - job_name: helpdesk-utp-admin
+    static_configs:
+      - targets: ["helpdesk-utp-admin:8080"]
+ 
+  - job_name: helpdesk-utp-support
+    static_configs:
+      - targets: ["helpdesk-utp-support:8080"]
+ 
+  - job_name: helpdesk-utp-user
+    static_configs:
+      - targets: ["helpdesk-utp-user:8080"]
+ 
+  # Scrape Prometheus itself
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+ 
+  # Scrape Tempo's own metrics (optional but useful)
+  - job_name: tempo
+    static_configs:
+      - targets: ["tempo:3200"]
