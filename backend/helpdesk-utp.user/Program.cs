@@ -3,6 +3,7 @@ using helpdesk_utp.user.Models;
 using helpdesk_utp.user.Repositories;
 using helpdesk_utp.user.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -58,7 +59,16 @@ if (applyMigrations)
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-    dbContext.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        dbContext.Database.Migrate();
+    }
+    catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.DuplicateTable)
+    {
+        logger.LogWarning(ex, "Skipping startup migrations because the schema already exists.");
+    }
 }
 
 if (app.Environment.IsDevelopment())

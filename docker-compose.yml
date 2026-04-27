@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:15
-    container_name: helpdesk-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -11,6 +10,85 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  helpdesk-utp-auth:
+    image: helpdesk-utp-auth
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.auth/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+    ports:
+      - "5227:8080"
+
+  helpdesk-utp-admin:
+    image: helpdesk-utp-admin
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.admin/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+    ports:
+      - "5110:8080"
+
+  helpdesk-utp-support:
+    image: helpdesk-utp-support
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.support/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+    ports:
+      - "5093:8080"
+
+  helpdesk-utp-user:
+    image: helpdesk-utp-user
+    build:
+      context: ./backend
+      dockerfile: helpdesk-utp.user/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+      ApplyMigrationsOnStartup: "true"
+    ports:
+      - "5200:8080"
+
+  frontend:
+    image: helpdesk-utp-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_AUTH_API_URL: /auth-api
+        VITE_USER_API_URL: /user-api
+        VITE_SUPPORT_API_URL: /support-api
+        VITE_ADMIN_API_URL: /admin-api
+    depends_on:
+      - helpdesk-utp-auth
+      - helpdesk-utp-admin
+      - helpdesk-utp-support
+      - helpdesk-utp-user
+    ports:
+      - "80:80"
 
 
 volumes:
