@@ -1,7 +1,8 @@
 services:
   helpdesk-utp-auth:
     image: helpdesk-utp-auth
-    container_name: helpdesk-auth
+    container_name: helpdesk-utp.auth
+    restart: unless-stopped
     build:
       context: .
       dockerfile: helpdesk-utp.auth/Dockerfile
@@ -16,7 +17,8 @@ services:
 
   helpdesk-utp-admin:
     image: helpdesk-utp-admin
-    container_name: helpdesk-admin
+    container_name: helpdesk-utp.admin
+    restart: unless-stopped
     build:
       context: .
       dockerfile: helpdesk-utp.admin/Dockerfile
@@ -31,7 +33,8 @@ services:
 
   helpdesk-utp-support:
     image: helpdesk-utp-support
-    container_name: helpdesk-support
+    container_name: helpdesk-utp.support
+    restart: unless-stopped
     build:
       context: .
       dockerfile: helpdesk-utp.support/Dockerfile
@@ -46,7 +49,8 @@ services:
 
   helpdesk-utp-user:
     image: helpdesk-utp-user
-    container_name: helpdesk-user
+    container_name: helpdesk-utp.user
+    restart: unless-stopped
     build:
       context: .
       dockerfile: helpdesk-utp.user/Dockerfile

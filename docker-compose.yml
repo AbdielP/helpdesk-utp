@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:15
+    container_name: helpdesk-utp.db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -13,6 +14,8 @@ services:
 
   helpdesk-utp-auth:
     image: helpdesk-utp-auth
+    container_name: helpdesk-utp.auth
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: helpdesk-utp.auth/Dockerfile
@@ -28,6 +31,8 @@ services:
 
   helpdesk-utp-admin:
     image: helpdesk-utp-admin
+    container_name: helpdesk-utp.admin
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: helpdesk-utp.admin/Dockerfile
@@ -43,6 +48,8 @@ services:
 
   helpdesk-utp-support:
     image: helpdesk-utp-support
+    container_name: helpdesk-utp.support
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: helpdesk-utp.support/Dockerfile
@@ -58,6 +65,8 @@ services:
 
   helpdesk-utp-user:
     image: helpdesk-utp-user
+    container_name: helpdesk-utp.user
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: helpdesk-utp.user/Dockerfile
@@ -74,6 +83,8 @@ services:
 
   frontend:
     image: helpdesk-utp-frontend
+    container_name: helpdesk-utp.frontend
+    restart: unless-stopped
     build:
       context: ./frontend
       dockerfile: Dockerfile
