@@ -10,7 +10,7 @@ using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? ["http://localhost:5173"];
+                     ?? ["http://localhost:5173"];
 
 // OpenTelemetry Configuration
 const string serviceName = "helpdesk-utp.auth";
@@ -20,11 +20,13 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddConsoleExporter())
+        .AddOtlpExporter())
+    // .AddConsoleExporter())
     .WithMetrics(metrics => metrics
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddConsoleExporter());
+        .AddPrometheusExporter());
+// .AddConsoleExporter());
 
 builder.Logging.AddOpenTelemetry(options =>
 {
@@ -69,13 +71,13 @@ authGroup.MapPost("/login", async (LoginRequest request, IAuthService authServic
 {
     logger.LogInformation("Login attempt for user: {Email}", request.Email);
     var response = await authService.LoginAsync(request);
-    
+
     if (response is not null)
     {
         logger.LogInformation("Login successful for user: {Email}", request.Email);
         return Results.Ok(response);
     }
-    
+
     logger.LogWarning("Login failed for user: {Email}", request.Email);
     return Results.Unauthorized();
 });

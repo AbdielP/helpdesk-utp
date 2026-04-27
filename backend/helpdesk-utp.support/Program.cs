@@ -9,7 +9,7 @@ using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? ["http://localhost:5173"];
+                     ?? ["http://localhost:5173"];
 
 // OpenTelemetry Configuration
 const string serviceName = "helpdesk-utp.support";
@@ -19,11 +19,13 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddConsoleExporter())
+        .AddOtlpExporter())
+    // .AddConsoleExporter())
     .WithMetrics(metrics => metrics
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddConsoleExporter());
+        .AddPrometheusExporter());
+// .AddConsoleExporter());
 
 builder.Logging.AddOpenTelemetry(options =>
 {
