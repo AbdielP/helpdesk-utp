@@ -2,10 +2,6 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
  
-# Receive metrics pushed by Tempo's metrics_generator
-remote_write_receiver:
-  enabled: true   # enables the /api/v1/write endpoint
- 
 scrape_configs:
  
   # Scrape your 4 APIs — add one job per service that exposes /metrics

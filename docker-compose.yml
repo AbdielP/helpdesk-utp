@@ -14,7 +14,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+ 
   helpdesk-utp-auth:
     image: helpdesk-utp-auth
     container_name: helpdesk-utp.auth
@@ -29,9 +29,12 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
       Cors__AllowedOrigins__0: http://localhost:5173
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: helpdesk-utp.auth
     ports:
       - "5227:8080"
-
+ 
   helpdesk-utp-admin:
     image: helpdesk-utp-admin
     container_name: helpdesk-utp.admin
@@ -46,9 +49,12 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
       Cors__AllowedOrigins__0: http://localhost:5173
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: helpdesk-utp.admin
     ports:
       - "5110:8080"
-
+ 
   helpdesk-utp-support:
     image: helpdesk-utp-support
     container_name: helpdesk-utp.support
@@ -63,9 +69,12 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
       Cors__AllowedOrigins__0: http://localhost:5173
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: helpdesk-utp.support
     ports:
       - "5093:8080"
-
+ 
   helpdesk-utp-user:
     image: helpdesk-utp-user
     container_name: helpdesk-utp.user
@@ -81,9 +90,12 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
       Cors__AllowedOrigins__0: http://localhost:5173
       ApplyMigrationsOnStartup: "true"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: helpdesk-utp.user
     ports:
       - "5200:8080"
-
+ 
   frontend:
     image: helpdesk-utp-frontend
     container_name: helpdesk-utp.frontend
@@ -103,7 +115,7 @@ services:
       - helpdesk-utp-user
     ports:
       - "80:80"
-
-
+ 
+ 
 volumes:
   postgres_data:

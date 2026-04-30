@@ -35,3 +35,4 @@ datasources:
       exemplarTraceIdDestinations:
         - name: trace_id
           datasourceUid: tempo-uid      # click an exemplar → jump to trace in Tempo
+ 

@@ -12,15 +12,6 @@ distributor:
         http:
           endpoint: 0.0.0.0:4318
  
-ingester:
-  trace_idle_period: 10s
-  max_block_bytes: 1_000_000
-  max_block_duration: 5m
- 
-compactor:
-  compaction:
-    block_retention: 1h      # keep traces for 1h locally
- 
 metrics_generator:
   registry:
     external_labels:
@@ -48,4 +39,3 @@ overrides:
   defaults:
     metrics_generator:
       processors: [service-graphs, span-metrics]   # auto-derive RED metrics from traces
- 
