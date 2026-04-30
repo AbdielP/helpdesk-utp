@@ -1,11 +1,18 @@
-import { useCallback, useState } from "react";
-import { REQUEST_RETRY_CONFIG } from "../services/createApiClient";
+import { useCallback, useEffect, useState } from "react";
+import {
+  REQUEST_RETRY_CONFIG,
+  getRequestFailureReason,
+} from "../services/createApiClient";
+
+const getTimeoutSeconds = () => Math.ceil(REQUEST_RETRY_CONFIG.timeoutMs / 1000);
 
 const initialState = {
   isLoading: false,
   error: null,
   attempt: 0,
   maxAttempts: REQUEST_RETRY_CONFIG.maxAttempts,
+  remainingSeconds: getTimeoutSeconds(),
+  lastFailureReason: null,
 };
 
 export const useRequest = ({ onSuccess, onError } = {}) => {
@@ -18,14 +25,18 @@ export const useRequest = ({ onSuccess, onError } = {}) => {
         error: null,
         attempt: 1,
         maxAttempts: REQUEST_RETRY_CONFIG.maxAttempts,
+        remainingSeconds: getTimeoutSeconds(),
+        lastFailureReason: null,
       });
 
       const requestConfig = {
-        onRetryAttempt: ({ attempt, maxAttempts }) => {
+        onRetryAttempt: ({ attempt, maxAttempts, failureReason }) => {
           setState((current) => ({
             ...current,
             attempt,
             maxAttempts,
+            remainingSeconds: getTimeoutSeconds(),
+            lastFailureReason: failureReason,
           }));
         },
       };
@@ -44,6 +55,7 @@ export const useRequest = ({ onSuccess, onError } = {}) => {
           ...current,
           isLoading: false,
           error,
+          lastFailureReason: getRequestFailureReason(error),
         }));
         onError?.(error);
         throw error;
@@ -55,6 +67,27 @@ export const useRequest = ({ onSuccess, onError } = {}) => {
   const reset = useCallback(() => {
     setState(initialState);
   }, []);
+
+  useEffect(() => {
+    if (!state.isLoading) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setState((current) => {
+        if (!current.isLoading || current.remainingSeconds <= 0) {
+          return current;
+        }
+
+        return {
+          ...current,
+          remainingSeconds: current.remainingSeconds - 1,
+        };
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [state.attempt, state.isLoading]);
 
   return {
     ...state,

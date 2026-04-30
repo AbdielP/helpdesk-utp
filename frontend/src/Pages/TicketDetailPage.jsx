@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
-  CircularProgress,
   Divider,
   FormControl,
   InputLabel,
@@ -20,8 +19,10 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { ERROR_MESSAGES, ROLES, TICKET_STATUSES } from "../constants/constants";
 import { useAuth } from "../context/AuthContext";
+import { useRequest } from "../hooks/useRequest";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
+import RequestStatus from "../shared/RequestStatus";
 import TicketChip from "../shared/TicketChip";
 import {
   assignTicketToSupport,
@@ -87,21 +88,22 @@ const TicketDetailPage = () => {
 
   const [ticket, setTicket] = useState(null);
   const [supportUsers, setSupportUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const detailRequest = useRequest();
+  const { run: runDetailRequest } = detailRequest;
 
-  const loadTicketDetail = async () => {
+  const loadTicketDetail = useCallback(() => {
     if (!currentUser?.id || !id) {
       return;
     }
 
-    try {
-      setIsLoading(true);
-
-      const requests = [getTicketByRole(currentUser.role, id, currentUser.id)];
+    runDetailRequest(async (requestConfig) => {
+      const requests = [
+        getTicketByRole(currentUser.role, id, currentUser.id, requestConfig),
+      ];
 
       if (currentUser.role === ROLES.ADMIN) {
-        requests.push(getSupportUsers().catch(() => []));
+        requests.push(getSupportUsers(requestConfig).catch(() => []));
       }
 
       const [fetchedTicket, adminSupportUsers = []] = await Promise.all(
@@ -110,16 +112,14 @@ const TicketDetailPage = () => {
 
       setTicket(fetchedTicket);
       setSupportUsers(adminSupportUsers);
-    } catch {
+    }).catch(() => {
       setTicket(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    });
+  }, [currentUser, id, runDetailRequest]);
 
   useEffect(() => {
     loadTicketDetail();
-  }, [currentUser, id]);
+  }, [loadTicketDetail]);
 
   const assignedUser = ticket?.assigned_to_user ?? null;
   const createdByUser = ticket?.created_by_user ?? null;
@@ -168,10 +168,34 @@ const TicketDetailPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (detailRequest.isLoading || detailRequest.error) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", pt: 8 }}>
-        <CircularProgress />
+      <Box
+        sx={{
+          px: { xs: 2, md: 4 },
+          py: { xs: 3, md: 4 },
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
+        <Box sx={{ width: "100%", maxWidth: 1040, mx: "auto" }}>
+          <BackNavigationButton />
+          <Paper
+            variant="outlined"
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              backgroundColor: "#FFFFFF",
+              borderColor: "#DDDADF",
+            }}
+          >
+            <RequestStatus
+              label="Cargando detalle del ticket"
+              request={detailRequest}
+              minHeight={260}
+              onRetry={loadTicketDetail}
+            />
+          </Paper>
+        </Box>
       </Box>
     );
   }

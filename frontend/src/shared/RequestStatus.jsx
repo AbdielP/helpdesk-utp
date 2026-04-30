@@ -16,7 +16,29 @@ const getLoadingMessage = ({ attempt, maxAttempts }) => {
   return `Reintentando conexion ${attempt}/${maxAttempts}`;
 };
 
-const formatTimeout = (timeoutMs) => Math.ceil(timeoutMs / 1000);
+const getFailureMessage = (reason) => {
+  if (reason === "timeout") {
+    return "La solicitud supero el tiempo limite.";
+  }
+
+  if (reason === "network") {
+    return "No se pudo conectar con el servicio.";
+  }
+
+  if (reason === "server") {
+    return "El servicio respondio con un error temporal.";
+  }
+
+  return null;
+};
+
+const getFinalFailureMessage = ({ lastFailureReason, maxAttempts }) => {
+  if (lastFailureReason === "timeout") {
+    return `La solicitud supero el tiempo limite despues de ${maxAttempts} intentos.`;
+  }
+
+  return `No se pudo completar la solicitud despues de ${maxAttempts} intentos.`;
+};
 
 const RequestStatus = ({
   label = "Cargando informacion",
@@ -41,7 +63,7 @@ const RequestStatus = ({
             No se pudo cargar la informacion
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            El servicio no respondio despues de {request.maxAttempts} intentos.
+            {getFinalFailureMessage(request)}
           </Typography>
           {onRetry && (
             <Button variant="outlined" onClick={onRetry}>
@@ -72,9 +94,11 @@ const RequestStatus = ({
         <Typography variant="caption" color="text.secondary">
           {getLoadingMessage(request)}
         </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Tiempo limite por intento: {formatTimeout(request.timeoutMs)}s
-        </Typography>
+        {request.lastFailureReason && (
+          <Typography variant="caption" color="text.secondary">
+            {getFailureMessage(request.lastFailureReason)}
+          </Typography>
+        )}
       </Stack>
     </Box>
   );

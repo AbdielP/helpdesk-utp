@@ -7,6 +7,22 @@ import { useAuth } from "../context/AuthContext";
 import { useRequest } from "../hooks/useRequest";
 import Button from "../shared/Button";
 
+const getLoginFailureMessage = (reason) => {
+  if (reason === "timeout") {
+    return "La solicitud supero el tiempo limite.";
+  }
+
+  if (reason === "server") {
+    return "El servicio respondio con un error temporal.";
+  }
+
+  if (reason === "network") {
+    return "No se pudo conectar con el servicio.";
+  }
+
+  return null;
+};
+
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -105,9 +121,11 @@ const LoginPage = () => {
                       ? `Reintentando conexion ${loginRequest.attempt}/${loginRequest.maxAttempts}`
                       : `Intentando conexion ${loginRequest.attempt}/${loginRequest.maxAttempts}`}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Tiempo limite por intento: {Math.ceil(loginRequest.timeoutMs / 1000)}s
-                </Typography>
+                {loginRequest.lastFailureReason && (
+                  <Typography variant="caption" color="text.secondary">
+                    {getLoginFailureMessage(loginRequest.lastFailureReason)}
+                  </Typography>
+                )}
               </Stack>
             )}
 

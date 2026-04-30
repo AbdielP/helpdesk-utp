@@ -11,6 +11,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { ERROR_MESSAGES, ROUTES, TICKET_CATEGORIES } from "../constants/constants";
 import { useAuth } from "../context/AuthContext";
+import { useRequest } from "../hooks/useRequest";
 import { createTicket } from "../services/ticketService";
 import { useNotification } from "../shared/NotificationProvider";
 import BackNavigationButton from "../shared/BackNavigationButton";
@@ -24,9 +25,26 @@ const INITIAL_FORM_STATE = {
   priority: "",
 };
 
+const getSubmitStatusMessage = (request) => {
+  if (request.lastFailureReason === "timeout") {
+    return "La solicitud supero el tiempo limite.";
+  }
+
+  if (request.attempt === request.maxAttempts) {
+    return `Ultimo intento de conexion ${request.attempt}/${request.maxAttempts}`;
+  }
+
+  if (request.attempt > 1) {
+    return `Reintentando conexion ${request.attempt}/${request.maxAttempts}`;
+  }
+
+  return `Intentando conexion ${request.attempt}/${request.maxAttempts}`;
+};
+
 export default function CreateTicketPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitRequest = useRequest();
+  const isSubmitting = submitRequest.isLoading;
   const { user } = useAuth();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -50,24 +68,25 @@ export default function CreateTicketPage() {
     }
 
     try {
-      setIsSubmitting(true);
-
-      const createdTicket = await createTicket({
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        priority: formData.priority,
-        created_by: user.id,
-        assigned_to: null,
-      });
+      const createdTicket = await submitRequest.run((requestConfig) =>
+        createTicket(
+          {
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            priority: formData.priority,
+            created_by: user.id,
+            assigned_to: null,
+          },
+          requestConfig,
+        ),
+      );
 
       showNotification(`Ticket creado: ${createdTicket.title}`, "success");
       setFormData(INITIAL_FORM_STATE);
       navigate(ROUTES.HOME);
     } catch {
       showNotification(ERROR_MESSAGES.GENERIC, "error");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -236,8 +255,16 @@ export default function CreateTicketPage() {
                   flexWrap: "wrap",
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
-                  Los campos marcados con * son obligatorios
+                <Typography
+                  variant="caption"
+                  color={submitRequest.error ? "error" : "text.secondary"}
+                  sx={{ minHeight: 18 }}
+                >
+                  {isSubmitting
+                    ? getSubmitStatusMessage(submitRequest)
+                    : submitRequest.error
+                      ? `No se pudo crear el ticket despues de ${submitRequest.maxAttempts} intentos.`
+                      : "Los campos marcados con * son obligatorios"}
                 </Typography>
 
                 <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
