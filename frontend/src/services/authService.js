@@ -19,12 +19,12 @@ const createAuthError = (message) => {
   return error;
 };
 
-export const login = async (email, password) => {
+export const login = async (email, password, requestConfig = {}) => {
   try {
     const { data } = await apiClient.post("/auth/login", {
       email,
       password,
-    });
+    }, requestConfig);
 
     return data;
   } catch (error) {
@@ -48,9 +48,9 @@ export const clearSession = () => {
   document.cookie = `${STORAGE_KEYS.USER}=; Max-Age=0; path=/;`;
 };
 
-export const logout = async () => {
+export const logout = async (requestConfig = {}) => {
   try {
-    await apiClient.post("/auth/logout");
+    await apiClient.post("/auth/logout", undefined, requestConfig);
   } finally {
     clearSession();
   }

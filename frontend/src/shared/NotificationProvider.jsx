@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import Snackbar from "@mui/material/Snackbar"
 import Alert from "@mui/material/Alert"
 
@@ -11,19 +11,21 @@ export const NotificationProvider = ({ children }) => {
   const [message, setMessage] = useState("")
   const [severity, setSeverity] = useState("success")
 
-  const showNotification = (msg, type = "success") => {
+  const showNotification = useCallback((msg, type = "success") => {
     setMessage(msg)
     setSeverity(type)
     setOpen(true)
-  }
+  }, [])
 
-  const handleClose = (_, reason) => {
+  const handleClose = useCallback((_, reason) => {
     if (reason === "clickaway") return
     setOpen(false)
-  }
+  }, [])
+
+  const contextValue = useMemo(() => ({ showNotification }), [showNotification])
 
   return (
-    <NotificationContext.Provider value={{ showNotification }}>
+    <NotificationContext.Provider value={contextValue}>
       {children}
       <Snackbar
         open={open}

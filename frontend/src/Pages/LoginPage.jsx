@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AUTH_ERRORS, ERROR_MESSAGES, ROUTES } from "../constants/constants";
 import { useAuth } from "../context/AuthContext";
+import { useRequest } from "../hooks/useRequest";
 import Button from "../shared/Button";
 
 const LoginPage = () => {
@@ -15,13 +16,13 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const loginRequest = useRequest();
+  const isSubmitting = loginRequest.isLoading;
 
   const handleLogin = async () => {
     try {
       setError("");
-      setIsSubmitting(true);
-      await login(email, password);
+      await loginRequest.run((requestConfig) => login(email, password, requestConfig));
       navigate(ROUTES.HOME);
     } catch (err) {
       if (err.message === AUTH_ERRORS.INVALID_CREDENTIALS) {
@@ -31,8 +32,6 @@ const LoginPage = () => {
       } else {
         setError(ERROR_MESSAGES.GENERIC);
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -96,6 +95,21 @@ const LoginPage = () => {
             >
               {isSubmitting ? "Iniciando..." : "Iniciar sesion"}
             </Button>
+
+            {isSubmitting && (
+              <Stack spacing={0.5} textAlign="center">
+                <Typography variant="body2" color="text.secondary">
+                  {loginRequest.attempt === loginRequest.maxAttempts
+                    ? `Ultimo intento de conexion ${loginRequest.attempt}/${loginRequest.maxAttempts}`
+                    : loginRequest.attempt > 1
+                      ? `Reintentando conexion ${loginRequest.attempt}/${loginRequest.maxAttempts}`
+                      : `Intentando conexion ${loginRequest.attempt}/${loginRequest.maxAttempts}`}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Tiempo limite por intento: {Math.ceil(loginRequest.timeoutMs / 1000)}s
+                </Typography>
+              </Stack>
+            )}
 
             {error && (
               <Typography color="error" textAlign="center">

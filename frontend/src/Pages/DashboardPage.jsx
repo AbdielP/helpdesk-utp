@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -9,7 +8,9 @@ import { useNavigate } from "react-router-dom";
 import TicketsTable from "../components/TicketsTable";
 import { ERROR_MESSAGES, ROLES, STATUS_ORDER } from "../constants/constants";
 import { useAuth } from "../context/AuthContext";
+import { useRequest } from "../hooks/useRequest";
 import { useNotification } from "../shared/NotificationProvider";
+import RequestStatus from "../shared/RequestStatus";
 import { getSupportUsers, getTicketsByRole } from "../services/ticketService";
 
 const DashboardPage = () => {
@@ -20,35 +21,32 @@ const DashboardPage = () => {
 
   const [tickets, setTickets] = useState([]);
   const [supportUsers, setSupportUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const dashboardRequest = useRequest();
+  const { run: runDashboardRequest } = dashboardRequest;
 
-  useEffect(() => {
+  const loadDashboard = useCallback(() => {
     if (!user?.role) {
       return;
     }
 
-    const loadDashboard = async () => {
-      try {
-        setIsLoading(true);
+    runDashboardRequest(async (requestConfig) => {
+      const fetchedTickets = await getTicketsByRole(user.role, user.id, requestConfig);
+      setTickets(fetchedTickets);
 
-        const fetchedTickets = await getTicketsByRole(user.role, user.id);
-        setTickets(fetchedTickets);
-
-        if (user.role === ROLES.ADMIN) {
-          const fetchedSupportUsers = await getSupportUsers();
-          setSupportUsers(fetchedSupportUsers);
-        } else {
-          setSupportUsers([]);
-        }
-      } catch {
-        showNotification(ERROR_MESSAGES.GENERIC, "error");
-      } finally {
-        setIsLoading(false);
+      if (user.role === ROLES.ADMIN) {
+        const fetchedSupportUsers = await getSupportUsers(requestConfig);
+        setSupportUsers(fetchedSupportUsers);
+      } else {
+        setSupportUsers([]);
       }
-    };
+    }).catch(() => {
+      showNotification(ERROR_MESSAGES.GENERIC, "error");
+    });
+  }, [runDashboardRequest, showNotification, user]);
 
+  useEffect(() => {
     loadDashboard();
-  }, [showNotification, user]);
+  }, [loadDashboard]);
 
   const filtered = useMemo(() => {
     if (!user) {
@@ -199,17 +197,13 @@ const DashboardPage = () => {
             </Typography>
           </Box>
 
-          {isLoading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                py: 8,
-              }}
-            >
-              <CircularProgress />
-            </Box>
+          {dashboardRequest.isLoading || dashboardRequest.error ? (
+            <RequestStatus
+              label="Cargando tickets"
+              request={dashboardRequest}
+              minHeight={220}
+              onRetry={loadDashboard}
+            />
           ) : (
             <TicketsTable
               tickets={filtered}
