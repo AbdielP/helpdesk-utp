@@ -38,12 +38,18 @@ helpdesk-utp/
 
 ## Puertos usados
 
-- Frontend Vite: `5173`
+- Frontend Docker/Nginx: `80`
+- Frontend Vite dev: `5173`
 - Auth API: `5227`
 - User API: `5200`
 - Support API: `5093`
 - Admin API: `5110`
 - PostgreSQL: `5432`
+- Grafana: `3000`
+- Prometheus: `9090`
+- Tempo: `3200`
+- OTLP gRPC: `4317`
+- OTLP HTTP: `4318`
 
 ## 1. Levantar la base de datos
 
@@ -134,10 +140,10 @@ VALUES
 
 El backend vive en `backend/compose.yaml` y expone cuatro servicios:
 
-- `helpdesk-auth`
-- `helpdesk-user`
-- `helpdesk-support`
-- `helpdesk-admin`
+- `helpdesk-utp-auth`
+- `helpdesk-utp-user`
+- `helpdesk-utp-support`
+- `helpdesk-utp-admin`
 
 Desde la carpeta `backend`:
 
@@ -176,6 +182,34 @@ Luego inicia el frontend:
 npm run dev
 ```
 
+Para levantar el frontend con Docker desde la raiz del proyecto:
+
+```powershell
+docker compose up -d --build frontend
+```
+
+En Docker, el frontend queda disponible en `http://localhost`.
+
+## 4.1 Observabilidad
+
+El proyecto incluye observabilidad con Grafana, Prometheus y Tempo usando `docker-compose.observability.yml`.
+
+Para levantarla junto con los servicios principales:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
+```
+
+Servicios expuestos:
+
+- Grafana: `http://localhost:3000`
+- Prometheus: `http://localhost:9090`
+- Tempo: `http://localhost:3200`
+- OTLP gRPC: `http://localhost:4317`
+- OTLP HTTP: `http://localhost:4318`
+
+Grafana queda provisionado con datasources desde `observability/grafana/datasources`.
+
 ## 5. Orden recomendado de arranque
 
 1. Levantar la base de datos con `docker compose up -d`
@@ -190,8 +224,12 @@ npm run dev
 
 Cuando todo este arriba:
 
-- Frontend: `http://localhost:5173`
+- Frontend Docker: `http://localhost`
+- Frontend Vite dev: `http://localhost:5173`
 - Auth API: `http://localhost:5227`
 - User API: `http://localhost:5200`
 - Support API: `http://localhost:5093`
 - Admin API: `http://localhost:5110`
+- Grafana: `http://localhost:3000`
+- Prometheus: `http://localhost:9090`
+- Tempo: `http://localhost:3200`
