@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37216.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-auth", "helpdesk-auth\helpdesk-auth.csproj", "{91BA4D96-A6DC-45DC-8F33-72F586D1A101}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91BA4D96-A6DC-45DC-8F33-72F586D1A101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91BA4D96-A6DC-45DC-8F33-72F586D1A101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91BA4D96-A6DC-45DC-8F33-72F586D1A101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91BA4D96-A6DC-45DC-8F33-72F586D1A101}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {087EC339-2CD4-4F5E-A603-DA83772DA876}
+	EndGlobalSection
+EndGlobal
