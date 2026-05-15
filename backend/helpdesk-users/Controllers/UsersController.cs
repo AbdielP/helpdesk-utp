@@ -12,21 +12,23 @@ public class UsersController(UserDbContext dbContext) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] string? role)
     {
-        if (!string.Equals(role, "support", StringComparison.OrdinalIgnoreCase))
+        var normalizedRole = role?.Trim().ToLower();
+
+        if (normalizedRole != "support")
         {
             return BadRequest("Only role=support is supported here.");
         }
 
         var users = await dbContext.Users
             .AsNoTracking()
-            .Where(user => user.Role.ToLower() == "support")
+            .Where(user => user.Role.ToLower() == normalizedRole)
+            .OrderBy(user => user.Email)
             .Select(user => new UserResponse(
                 user.Id,
                 user.Email,
                 user.Role,
                 user.CreatedAt
             ))
-            .OrderBy(user => user.Email)
             .ToListAsync();
 
         return Ok(users);

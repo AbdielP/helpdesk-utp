@@ -1,0 +1,118 @@
+version=1
+
+# This file caches language service data to improve the performance of C# Dev Kit.
+# It is not intended for manual editing. It can safely be deleted and will be
+# regenerated automatically. For more information, see https://aka.ms/lscache
+#
+# To control where cache files are stored, use the following VS Code setting:
+#   "dotnet.projectsystem.cacheInProjectFolder": true
+
+[project]
+language=C#
+primary
+lastDtbSucceeded
+
+[properties]
+AssemblyName=helpdesk-utp.user
+CommandLineArgsForDesignTimeEvaluation=-langversion:13.0 -define:TRACE
+CompilerGeneratedFilesOutputPath=
+MaxSupportedLangVersion=13.0
+ProjectAssetsFile=<PATH>obj/project.assets.json
+RootNamespace=helpdesk_utp.user
+RunAnalyzers=
+RunAnalyzersDuringLiveAnalysis=
+SolutionPath=*Undefined*
+TargetFrameworkIdentifier=.NETCoreApp
+TargetPath=<PATH>bin/Debug/net10.0/helpdesk-utp.user.dll
+TargetRefPath=<PATH>obj/Debug/net10.0/ref/helpdesk-utp.user.dll
+TemporaryDependencyNodeTargetIdentifier=net10.0
+
+[commandLineArguments]
+/noconfig
+/unsafe-
+/checked-
+/nowarn:1701,1702,1701,1702
+/fullpaths
+/nostdlib+
+/errorreport:prompt
+/warn:1
+/define:TRACE;DEBUG;NET;NET10_0;NETCOREAPP;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP1_0_OR_GREATER;NETCOREAPP1_1_OR_GREATER;NETCOREAPP2_0_OR_GREATER;NETCOREAPP2_1_OR_GREATER;NETCOREAPP2_2_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER
+/highentropyva+
+/nullable:enable
+/features:"InterceptorsNamespaces=;Microsoft.AspNetCore.OpenApi.Generated"
+/debug+
+/debug:portable
+/filealign:512
+/optimize-
+/out:obj\Debug\net10.0\helpdesk-utp.user.dll
+/refout:obj\Debug\net10.0\refint\helpdesk-utp.user.dll
+/target:exe
+/warnaserror-
+/utf8output
+/deterministic+
+/langversion:13.0
+/warnaserror+:NU1605,SYSLIB0011
+
+[sourceFiles]
+Data/
+ UserDbContext.cs
+ UserDbContextFactory.cs
+Migrations/
+ 20260422022620_InitialCreate.cs
+ 20260422022620_InitialCreate.Designer.cs
+ UserDbContextModelSnapshot.cs
+Models/Entities.cs
+obj/Debug/net10.0/
+ .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
+ helpdesk-utp.user.AssemblyInfo.cs
+ helpdesk-utp.user.GlobalUsings.g.cs
+Program.cs
+Repositories/
+ ITicketRepository.cs
+ MockTicketRepository.cs
+ TicketRepository.cs
+Services/
+ ITicketService.cs
+ TicketService.cs
+
+[metadataReferences]
+<NUGET>/
+ microsoft.aspnetcore.openapi/10.0.0/lib/net10.0/Microsoft.AspNetCore.OpenApi.dll
+ microsoft.entityframeworkcore.abstractions/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+ microsoft.entityframeworkcore.relational/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
+ microsoft.entityframeworkcore/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.dll
+ microsoft.openapi/2.0.0/lib/net8.0/Microsoft.OpenApi.dll
+ npgsql.entityframeworkcore.postgresql/9.0.0/lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
+ npgsql/9.0.0/lib/net8.0/Npgsql.dll
+ opentelemetry.api.providerbuilderextensions/1.15.3/lib/net10.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
+ opentelemetry.api/1.15.3/lib/net10.0/OpenTelemetry.Api.dll
+ opentelemetry.exporter.console/1.11.0/lib/net9.0/OpenTelemetry.Exporter.Console.dll
+ opentelemetry.exporter.opentelemetryprotocol/1.15.3/lib/net10.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+ opentelemetry.exporter.prometheus.aspnetcore/1.15.3-beta.1/lib/net10.0/OpenTelemetry.Exporter.Prometheus.AspNetCore.dll
+ opentelemetry.extensions.hosting/1.11.0/lib/net9.0/OpenTelemetry.Extensions.Hosting.dll
+ opentelemetry.instrumentation.aspnetcore/1.11.0/lib/net8.0/OpenTelemetry.Instrumentation.AspNetCore.dll
+ opentelemetry.instrumentation.http/1.11.0/lib/net8.0/OpenTelemetry.Instrumentation.Http.dll
+ opentelemetry/1.15.3/lib/net10.0/OpenTelemetry.dll
+
+[analyzerReferences]
+<DOTNET>/sdk/9.0.313/Sdks/Microsoft.NET.Sdk.Razor/source-generators/
+ Microsoft.AspNetCore.Razor.Utilities.Shared.dll
+ Microsoft.CodeAnalysis.Razor.Compiler.dll
+ Microsoft.Extensions.ObjectPool.dll
+ System.Collections.Immutable.dll
+<DOTNET>/sdk/9.0.313/Sdks/Microsoft.NET.Sdk.Web/analyzers/cs/
+ Microsoft.AspNetCore.Analyzers.dll
+ Microsoft.AspNetCore.Mvc.Analyzers.dll
+<DOTNET>/sdk/9.0.313/Sdks/Microsoft.NET.Sdk/analyzers/
+ Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
+ Microsoft.CodeAnalysis.NetAnalyzers.dll
+<NUGET>/
+ microsoft.aspnetcore.openapi/10.0.0/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll
+ microsoft.codeanalysis.analyzers/3.3.4/analyzers/dotnet/cs/
+  Microsoft.CodeAnalysis.Analyzers.dll
+  Microsoft.CodeAnalysis.CSharp.Analyzers.dll
+ microsoft.entityframeworkcore.analyzers/9.0.0/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
+
+[analyzerConfigFiles]
+<DOTNET>/sdk/9.0.313/Sdks/Microsoft.NET.Sdk/codestyle/cs/build/config/analysislevelstyle_default.globalconfig
+obj/Debug/net10.0/helpdesk-utp.user.GeneratedMSBuildEditorConfig.editorconfig
