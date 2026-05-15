@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import usersApiClient from "./usersApiClient";
 import { AUTH_ERRORS, STORAGE_KEYS } from "../constants/constants";
 
 const getCookieValue = (key) => {
@@ -21,7 +21,7 @@ const createAuthError = (message) => {
 
 export const login = async (email, password, requestConfig = {}) => {
   try {
-    const { data } = await apiClient.post("/auth/login", {
+    const { data } = await usersApiClient.post("/users/login", {
       email,
       password,
     }, requestConfig);
@@ -50,7 +50,7 @@ export const clearSession = () => {
 
 export const logout = async (requestConfig = {}) => {
   try {
-    await apiClient.post("/auth/logout", undefined, requestConfig);
+    await Promise.resolve();
   } finally {
     clearSession();
   }
