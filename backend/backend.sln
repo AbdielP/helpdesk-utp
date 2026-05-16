@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.37216.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-users", "helpdesk-users\helpdesk-users.csproj", "{258ABEB5-707F-41FD-BAED-8E7C41C53A39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-tickets", "helpdesk-tickets\helpdesk-tickets.csproj", "{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{258ABEB5-707F-41FD-BAED-8E7C41C53A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{258ABEB5-707F-41FD-BAED-8E7C41C53A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{258ABEB5-707F-41FD-BAED-8E7C41C53A39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
