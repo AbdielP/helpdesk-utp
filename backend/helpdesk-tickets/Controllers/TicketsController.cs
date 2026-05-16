@@ -57,7 +57,4 @@ public class TicketsController(TicketsDbContext dbContext) : ControllerBase
 
         return Ok(tickets);
     }
-    // Probar esto en Postman con:
-    // GET http://localhost:5000/tickets?role=admin
-    // Luego adaptar frontedn
 }

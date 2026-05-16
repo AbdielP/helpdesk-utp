@@ -1,6 +1,6 @@
 @helpdesk_tickets_HostAddress = http://localhost:5225
 
-GET {{helpdesk_tickets_HostAddress}}/weatherforecast/
+GET {{helpdesk_tickets_HostAddress}}/tickets?role=admin
 Accept: application/json
 
 ###

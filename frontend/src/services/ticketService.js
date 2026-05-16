@@ -1,7 +1,9 @@
 import { ROLES } from "../constants/constants";
 import adminApiClient from "./adminApiClient";
 import supportApiClient from "./supportApiClient";
+import ticketsApiClient from "./ticketsApiClient";
 import userApiClient from "./userApiClient";
+import usersApiClient from "./usersApiClient";
 
 export const createTicket = async (ticketData, requestConfig = {}) => {
   const { data } = await userApiClient.post("/ticket/new", ticketData, requestConfig);
@@ -9,23 +11,11 @@ export const createTicket = async (ticketData, requestConfig = {}) => {
 };
 
 export const getTicketsByRole = async (role, userId, requestConfig = {}) => {
-  if (role === ROLES.ADMIN) {
-    const { data } = await adminApiClient.get("/tickets", requestConfig);
-    return data;
-  }
-
-  if (role === ROLES.SUPPORT) {
-    const { data } = await supportApiClient.get("/tickets", {
-      ...requestConfig,
-      params: { userId },
-    });
-    return data;
-  }
-
-  const { data } = await userApiClient.get("/tickets", {
+  const { data } = await ticketsApiClient.get("/tickets", {
     ...requestConfig,
-    params: { userId },
+    params: { role, userId },
   });
+
   return data;
 };
 
@@ -85,7 +75,7 @@ export const assignTicketToSupport = async (
 };
 
 export const getUsersByRole = async (role, requestConfig = {}) => {
-  const { data } = await adminApiClient.get("/users", {
+  const { data } = await usersApiClient.get("/users", {
     ...requestConfig,
     params: { role },
   });
