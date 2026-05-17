@@ -55,10 +55,15 @@ TemporaryDependencyNodeTargetIdentifier=net9.0
 [sourceFiles]
 Controllers/TicketsController.cs
 Data/TicketsDbContext.cs
-DTOs/TicketResponse.cs
+DTOs/
+ TicketDetailResponse.cs
+ TicketHistoryResponse.cs
+ TicketResponse.cs
+ TicketUserSummary.cs
 Entities/
  Ticket.cs
  TicketHistory.cs
+ User.cs
 obj/Debug/net9.0/
  .NETCoreApp,Version=v9.0.AssemblyAttributes.cs
  helpdesk-tickets.AssemblyInfo.cs

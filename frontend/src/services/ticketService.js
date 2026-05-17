@@ -20,23 +20,11 @@ export const getTicketsByRole = async (role, userId, requestConfig = {}) => {
 };
 
 export const getTicketByRole = async (role, ticketId, userId, requestConfig = {}) => {
-  if (role === ROLES.ADMIN) {
-    const { data } = await adminApiClient.get(`/ticket/${ticketId}`, requestConfig);
-    return data;
-  }
-
-  if (role === ROLES.SUPPORT) {
-    const { data } = await supportApiClient.get(`/ticket/${ticketId}`, {
-      ...requestConfig,
-      params: { userId },
-    });
-    return data;
-  }
-
-  const { data } = await userApiClient.get(`/ticket/${ticketId}`, {
+  const { data } = await ticketsApiClient.get(`/tickets/${ticketId}`, {
     ...requestConfig,
-    params: { userId },
+    params: { role, userId },
   });
+
   return data;
 };
 

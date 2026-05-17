@@ -7,6 +7,7 @@ public class TicketsDbContext(DbContextOptions<TicketsDbContext> options) : DbCo
 {
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketHistory> TicketHistories => Set<TicketHistory>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
