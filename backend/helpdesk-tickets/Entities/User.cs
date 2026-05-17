@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace helpdesk_tickets.Entities;
 
@@ -15,4 +16,13 @@ public class User
 
     [Column("role")]
     public required string Role { get; set; }
+
+    [JsonIgnore]
+    public ICollection<Ticket> CreatedTickets { get; set; } = [];
+
+    [JsonIgnore]
+    public ICollection<Ticket> AssignedTickets { get; set; } = [];
+
+    [JsonIgnore]
+    public ICollection<TicketHistory> Histories { get; set; } = [];
 }

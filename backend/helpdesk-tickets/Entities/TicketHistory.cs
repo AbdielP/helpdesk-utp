@@ -15,9 +15,15 @@ public class TicketHistory
     [JsonPropertyName("ticket_id")]
     public Guid TicketId { get; set; }
 
+    [JsonIgnore]
+    public Ticket? Ticket { get; set; }
+
     [Column("user_id")]
     [JsonPropertyName("user_id")]
     public Guid UserId { get; set; }
+
+    [JsonIgnore]
+    public User? User { get; set; }
 
     [Column("action")]
     public required string Action { get; set; }

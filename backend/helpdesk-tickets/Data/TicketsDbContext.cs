@@ -13,7 +13,26 @@ public class TicketsDbContext(DbContextOptions<TicketsDbContext> options) : DbCo
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<TicketHistory>()
-            .ToTable("ticket_history");
+        modelBuilder.Entity<Ticket>()
+            .HasOne(t => t.CreatedByUser)
+            .WithMany(u => u.CreatedTickets)
+            .HasForeignKey(t => t.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Ticket>()
+            .HasOne(t => t.AssignedToUser)
+            .WithMany(u => u.AssignedTickets)
+            .HasForeignKey(t => t.AssignedTo)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Ticket>()
+            .HasMany(t => t.History)
+            .WithOne(h => h.Ticket)
+            .HasForeignKey(h => h.TicketId);
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Histories)
+            .WithOne(h => h.User)
+            .HasForeignKey(h => h.UserId);
     }
 }

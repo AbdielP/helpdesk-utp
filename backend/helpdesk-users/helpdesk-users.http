@@ -1,6 +1,16 @@
 @helpdesk_users_HostAddress = http://localhost:5065
 
-GET {{helpdesk_users_HostAddress}}/weatherforecast/
+POST {{helpdesk_users_HostAddress}}/users/login
+Content-Type: application/json
+
+{
+  "email": "user1@mail.com",
+  "password": "1234"
+}
+
+###
+
+GET {{helpdesk_users_HostAddress}}/users?role=support
 Accept: application/json
 
 ###
