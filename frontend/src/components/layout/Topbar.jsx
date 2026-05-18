@@ -8,6 +8,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { DRAWER_WIDTH, ROUTES } from "../../constants/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import NotificationsMenu from "./NotificationsMenu";
 
 const Topbar = ({ open, handleDrawerOpen }) => {
   const { logout } = useAuth();
@@ -58,6 +59,8 @@ const Topbar = ({ open, handleDrawerOpen }) => {
             }}
           />
         </Box>
+
+        <NotificationsMenu />
 
         <Button
           color="inherit"

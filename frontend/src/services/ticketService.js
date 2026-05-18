@@ -1,12 +1,9 @@
 import { ROLES } from "../constants/constants";
-import adminApiClient from "./adminApiClient";
-import supportApiClient from "./supportApiClient";
 import ticketsApiClient from "./ticketsApiClient";
-import userApiClient from "./userApiClient";
 import usersApiClient from "./usersApiClient";
 
 export const createTicket = async (ticketData, requestConfig = {}) => {
-  const { data } = await userApiClient.post("/ticket/new", ticketData, requestConfig);
+  const { data } = await ticketsApiClient.post("/tickets", ticketData, requestConfig);
   return data;
 };
 
@@ -37,13 +34,8 @@ export const updateTicketStatusByRole = async (
 ) => {
   const payload = { status, actorUserId };
 
-  if (role === ROLES.ADMIN) {
-    await adminApiClient.patch(`/ticket/${ticketId}/status`, payload, requestConfig);
-    return;
-  }
-
-  if (role === ROLES.SUPPORT) {
-    await supportApiClient.patch(`/ticket/${ticketId}/status`, payload, requestConfig);
+  if (role === ROLES.ADMIN || role === ROLES.SUPPORT) {
+    await ticketsApiClient.patch(`/tickets/${ticketId}/status`, payload, requestConfig);
     return;
   }
 
@@ -56,7 +48,7 @@ export const assignTicketToSupport = async (
   actorUserId,
   requestConfig = {},
 ) => {
-  await adminApiClient.patch(`/ticket/${ticketId}/assign`, {
+  await ticketsApiClient.patch(`/tickets/${ticketId}/assign`, {
     assigneeUserId: userId,
     actorUserId,
   }, requestConfig);
