@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-users", "helpdesk-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-tickets", "helpdesk-tickets\helpdesk-tickets.csproj", "{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpdesk-notifications", "helpdesk-notifications\helpdesk-notifications.csproj", "{CF0734A5-A713-4B55-9F00-FA977E01EC88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92F589FD-27DD-4D8D-8F87-80D1D900FEA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF0734A5-A713-4B55-9F00-FA977E01EC88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF0734A5-A713-4B55-9F00-FA977E01EC88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF0734A5-A713-4B55-9F00-FA977E01EC88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF0734A5-A713-4B55-9F00-FA977E01EC88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 using helpdesk_tickets.Data;
 using helpdesk_tickets.DTOs;
 using helpdesk_tickets.Entities;
+using helpdesk_tickets.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,9 @@ namespace helpdesk_tickets.Controllers;
 
 [ApiController]
 [Route("tickets")]
-public class TicketsController(TicketsDbContext dbContext) : ControllerBase
+public class TicketsController(
+    TicketsDbContext dbContext,
+    NotificationEventPublisher notificationEventPublisher) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<TicketResponse>>> GetTickets(
@@ -240,6 +243,18 @@ public class TicketsController(TicketsDbContext dbContext) : ControllerBase
         }
 
         await dbContext.SaveChangesAsync();
+        await notificationEventPublisher.PublishTicketEventAsync(
+            "ticket.created",
+            ticket.Id,
+            ticket.CreatedBy);
+
+        if (ticket.AssignedTo is not null)
+        {
+            await notificationEventPublisher.PublishTicketEventAsync(
+                "ticket.assigned",
+                ticket.Id,
+                ticket.CreatedBy);
+        }
 
         var response = new TicketResponse(
             ticket.Id,
@@ -305,6 +320,15 @@ public class TicketsController(TicketsDbContext dbContext) : ControllerBase
         });
 
         await dbContext.SaveChangesAsync();
+        await notificationEventPublisher.PublishTicketEventAsync(
+            status.Equals("Cerrado", StringComparison.OrdinalIgnoreCase)
+                ? "ticket.closed"
+                : "ticket.status_changed",
+            ticket.Id,
+            request.ActorUserId,
+            previousStatus,
+            status);
+
         return NoContent();
     }
 
@@ -356,6 +380,11 @@ public class TicketsController(TicketsDbContext dbContext) : ControllerBase
         });
 
         await dbContext.SaveChangesAsync();
+        await notificationEventPublisher.PublishTicketEventAsync(
+            "ticket.assigned",
+            ticket.Id,
+            request.ActorUserId);
+
         return NoContent();
     }
 }
