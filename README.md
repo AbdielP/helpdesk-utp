@@ -4,7 +4,7 @@ Proyecto final de Topicos Especiales de Ingenieria de Software II.
 
 Stack principal:
 - Frontend: React + Vite
-- Backend: .NET 10
+- Backend: .NET 9
 - Base de datos: PostgreSQL 15
 - Orquestacion local: Docker Compose
 
@@ -40,10 +40,9 @@ helpdesk-utp/
 
 - Frontend Docker/Nginx: `80`
 - Frontend Vite dev: `5173`
-- Auth API: `5227`
-- User API: `5200`
-- Support API: `5093`
-- Admin API: `5110`
+- Users API: `5200`
+- Tickets API: `5201`
+- Notifications API: `5202`
 - PostgreSQL: `5432`
 - Grafana: `3000`
 - Prometheus: `9090`
@@ -136,30 +135,31 @@ VALUES
 ('admin1@mail.com', '1234', 'admin');
 ```
 
-## 3. Levantar el backend en Docker
+## 3. Levantar el backend y frontend en Docker
 
-El backend vive en `backend/compose.yaml` y expone cuatro servicios:
-
-- `helpdesk-utp-auth`
-- `helpdesk-utp-user`
-- `helpdesk-utp-support`
-- `helpdesk-utp-admin`
-
-Desde la carpeta `backend`:
+Desde la raiz del proyecto:
 
 ```powershell
-docker compose -f compose.yaml up --build -d
+docker compose up -d --build
 ```
+
+Esto levanta:
+
+- `db`
+- `helpdesk-users`
+- `helpdesk-tickets`
+- `helpdesk-notifications`
+- `frontend`
 
 Si quieres reconstruir solo servicios especificos:
 
 ```powershell
-docker compose -f compose.yaml up --build -d helpdesk-utp-auth helpdesk-utp-user helpdesk-utp-support helpdesk-utp-admin
+docker compose up -d --build helpdesk-users helpdesk-tickets helpdesk-notifications frontend
 ```
 
-## 4. Levantar el frontend
+## 4. Levantar el frontend en desarrollo
 
-En la carpeta `frontend`:
+Si vas a correr el frontend con Vite en tu PC, en la carpeta `frontend`:
 
 ```powershell
 npm i
@@ -170,22 +170,15 @@ Crea el archivo `.env` copiando el contenido de `.env.example`.
 Contenido esperado:
 
 ```env
-VITE_AUTH_API_URL=http://localhost:5227
-VITE_USER_API_URL=http://localhost:5200
-VITE_SUPPORT_API_URL=http://localhost:5093
-VITE_ADMIN_API_URL=http://localhost:5110
+VITE_USERS_API_URL=http://localhost:5200
+VITE_TICKETS_API_URL=http://localhost:5201
+VITE_NOTIFICATIONS_API_URL=http://localhost:5202
 ```
 
 Luego inicia el frontend:
 
 ```powershell
 npm run dev
-```
-
-Para levantar el frontend con Docker desde la raiz del proyecto:
-
-```powershell
-docker compose up -d --build frontend
 ```
 
 En Docker, el frontend queda disponible en `http://localhost`.
@@ -215,7 +208,7 @@ Grafana queda provisionado con datasources desde `observability/grafana/datasour
 1. Levantar la base de datos con `docker compose up -d`
 2. Conectarse a la BD `helpdesk`
 3. Ejecutar manualmente el SQL para crear tablas e insertar usuarios
-4. Levantar backend con `docker compose -f backend/compose.yaml up --build -d`
+4. Levantar backend y frontend con `docker compose up -d --build`
 5. En `frontend/`, correr `npm i`
 6. Crear `frontend/.env` copiando `frontend/.env.example`
 7. Correr `npm run dev`
@@ -226,10 +219,9 @@ Cuando todo este arriba:
 
 - Frontend Docker: `http://localhost`
 - Frontend Vite dev: `http://localhost:5173`
-- Auth API: `http://localhost:5227`
-- User API: `http://localhost:5200`
-- Support API: `http://localhost:5093`
-- Admin API: `http://localhost:5110`
+- Users API: `http://localhost:5200`
+- Tickets API: `http://localhost:5201`
+- Notifications API: `http://localhost:5202`
 - Grafana: `http://localhost:3000`
 - Prometheus: `http://localhost:9090`
 - Tempo: `http://localhost:3200`

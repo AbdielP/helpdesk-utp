@@ -14,14 +14,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
- 
-  helpdesk-utp-auth:
-    image: helpdesk-utp-auth
-    container_name: helpdesk-utp.auth
+
+  helpdesk-users:
+    image: helpdesk-users
+    container_name: helpdesk.users
     restart: unless-stopped
     build:
       context: ./backend
-      dockerfile: helpdesk-utp.auth/Dockerfile
+      dockerfile: helpdesk-users/Dockerfile
     depends_on:
       - db
     environment:
@@ -29,73 +29,47 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
       Cors__AllowedOrigins__0: http://localhost:5173
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      OTEL_SERVICE_NAME: helpdesk-utp.auth
-    ports:
-      - "5227:8080"
- 
-  helpdesk-utp-admin:
-    image: helpdesk-utp-admin
-    container_name: helpdesk-utp.admin
-    restart: unless-stopped
-    build:
-      context: ./backend
-      dockerfile: helpdesk-utp.admin/Dockerfile
-    depends_on:
-      - db
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
-      Cors__AllowedOrigins__0: http://localhost:5173
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      OTEL_SERVICE_NAME: helpdesk-utp.admin
-    ports:
-      - "5110:8080"
- 
-  helpdesk-utp-support:
-    image: helpdesk-utp-support
-    container_name: helpdesk-utp.support
-    restart: unless-stopped
-    build:
-      context: ./backend
-      dockerfile: helpdesk-utp.support/Dockerfile
-    depends_on:
-      - db
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
-      Cors__AllowedOrigins__0: http://localhost:5173
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      OTEL_SERVICE_NAME: helpdesk-utp.support
-    ports:
-      - "5093:8080"
- 
-  helpdesk-utp-user:
-    image: helpdesk-utp-user
-    container_name: helpdesk-utp.user
-    restart: unless-stopped
-    build:
-      context: ./backend
-      dockerfile: helpdesk-utp.user/Dockerfile
-    depends_on:
-      - db
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
-      Cors__AllowedOrigins__0: http://localhost:5173
-      ApplyMigrationsOnStartup: "true"
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      OTEL_SERVICE_NAME: helpdesk-utp.user
+      Cors__AllowedOrigins__1: http://localhost
     ports:
       - "5200:8080"
- 
+
+  helpdesk-tickets:
+    image: helpdesk-tickets
+    container_name: helpdesk.tickets
+    restart: unless-stopped
+    build:
+      context: ./backend
+      dockerfile: helpdesk-tickets/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Notifications__ApiUrl: http://helpdesk-notifications:8080
+      Cors__AllowedOrigins__0: http://localhost:5173
+      Cors__AllowedOrigins__1: http://localhost
+    ports:
+      - "5201:8080"
+
+  helpdesk-notifications:
+    image: helpdesk-notifications
+    container_name: helpdesk.notifications
+    restart: unless-stopped
+    build:
+      context: ./backend
+      dockerfile: helpdesk-notifications/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+      Cors__AllowedOrigins__1: http://localhost
+    ports:
+      - "5202:8080"
+
   frontend:
     image: helpdesk-utp-frontend
     container_name: helpdesk-utp.frontend
@@ -104,15 +78,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_AUTH_API_URL: /auth-api
-        VITE_USER_API_URL: /user-api
-        VITE_SUPPORT_API_URL: /support-api
-        VITE_ADMIN_API_URL: /admin-api
+        VITE_USERS_API_URL: /users-api
+        VITE_TICKETS_API_URL: /tickets-api
+        VITE_NOTIFICATIONS_API_URL: /notifications-api
     depends_on:
-      - helpdesk-utp-auth
-      - helpdesk-utp-admin
-      - helpdesk-utp-support
-      - helpdesk-utp-user
+      - helpdesk-users
+      - helpdesk-tickets
+      - helpdesk-notifications
     ports:
       - "80:80"
  
