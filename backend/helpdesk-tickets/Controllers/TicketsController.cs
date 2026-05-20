@@ -205,7 +205,7 @@ public class TicketsController(
             }
         }
 
-        var now = DateTime.UtcNow;
+        var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
         var ticket = new Ticket
         {
             Id = Guid.NewGuid(),
@@ -308,7 +308,7 @@ public class TicketsController(
 
         var previousStatus = ticket.Status;
         ticket.Status = status;
-        ticket.UpdatedAt = DateTime.UtcNow;
+        ticket.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
 
         dbContext.TicketHistories.Add(new TicketHistory
         {
@@ -368,7 +368,7 @@ public class TicketsController(
         }
 
         ticket.AssignedTo = request.AssigneeUserId;
-        ticket.UpdatedAt = DateTime.UtcNow;
+        ticket.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
 
         dbContext.TicketHistories.Add(new TicketHistory
         {
