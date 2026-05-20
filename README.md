@@ -181,7 +181,21 @@ npm run dev
 
 En Docker, el frontend queda disponible en `http://localhost`.
 
-## 4.1 Observabilidad opcional
+## 4.1 Nota para Vercel
+
+Cuando el frontend se despliegue en Vercel, migrar las variables de `frontend/.env` al panel de Environment Variables de Vercel.
+
+No configurar las URLs finales hasta tener desplegados los backends. Las variables son:
+
+```env
+VITE_USERS_API_URL=
+VITE_TICKETS_API_URL=
+VITE_NOTIFICATIONS_API_URL=
+VITE_API_TIMEOUT_MS=10000
+VITE_API_RETRY_DELAY_MS=5000
+```
+
+## 4.2 Observabilidad opcional
 
 No es necesaria para correr la app. Si algun dia quieres probar Grafana, Prometheus y Tempo:
 
