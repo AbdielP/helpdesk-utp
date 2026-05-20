@@ -38,7 +38,19 @@ export const STATUS_ORDER = {
 };
 
 export const TICKET_CATEGORIES = ["Red", "Plataforma", "Cuenta", "Hardware"];
-export const TICKET_PRIORITIES = ["Baja", "Media", "Alta"];
+export const TICKET_PRIORITIES = [
+  { value: "low", label: "Baja" },
+  { value: "medium", label: "Media" },
+  { value: "high", label: "Alta" },
+];
+
+export const TICKET_PRIORITY_LABELS = TICKET_PRIORITIES.reduce(
+  (labels, priority) => ({
+    ...labels,
+    [priority.value]: priority.label,
+  }),
+  {},
+);
 export const TICKET_STATUSES = ["Abierto", "En proceso", "Cerrado"];
 
 // Configuracion de estados para MUI (props + colores)

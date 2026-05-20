@@ -1,5 +1,6 @@
 import Chip from "@mui/material/Chip";
 import { useTheme } from "@mui/material/styles";
+import { TICKET_PRIORITY_LABELS } from "../constants/constants";
 
 /**
  * Componente reutilizable para mostrar chips de prioridad o estado
@@ -13,9 +14,10 @@ const TicketChip = ({ type = "priority", value, variant = "filled" }) => {
   if (type === "priority") {
     const colors = theme.custom.colors.priorities[value];
     if (!colors) return null;
+    const label = TICKET_PRIORITY_LABELS[value] ?? value;
     return (
       <Chip
-        label={value}
+        label={label}
         size="small"
         sx={{
           backgroundColor: colors.bg,

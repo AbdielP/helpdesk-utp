@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Chip from "@mui/material/Chip";
 import { useTheme } from "@mui/material/styles";
-import { TICKET_PRIORITIES } from "../constants/constants";
+import { TICKET_PRIORITIES, TICKET_PRIORITY_LABELS } from "../constants/constants";
 
 /**
  * Componente reutilizable para el select de prioridad
@@ -33,10 +33,11 @@ const PrioritySelectField = ({
       SelectProps={{
         renderValue: (selectedValue) => {
           const colors = priorityColors[selectedValue];
+          const label = TICKET_PRIORITY_LABELS[selectedValue] ?? selectedValue;
           if (!colors) return selectedValue;
           return (
             <Chip
-              label={selectedValue}
+              label={label}
               size="small"
               sx={{
                 backgroundColor: colors.bg,
@@ -52,9 +53,9 @@ const PrioritySelectField = ({
       }}
     >
       {TICKET_PRIORITIES.map((priorityOption) => {
-        const colors = priorityColors[priorityOption];
+        const colors = priorityColors[priorityOption.value];
         return (
-          <MenuItem key={priorityOption} value={priorityOption}>
+          <MenuItem key={priorityOption.value} value={priorityOption.value}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
               {colors && (
                 <Box
@@ -67,7 +68,7 @@ const PrioritySelectField = ({
                   }}
                 />
               )}
-              {priorityOption}
+              {priorityOption.label}
             </Box>
           </MenuItem>
         );

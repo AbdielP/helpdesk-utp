@@ -30,9 +30,9 @@ export const theme = createTheme({
   custom: {
     colors: {
       priorities: {
-        Alta: { bg: "#FDECEE", color: "#C43D4B", border: "#F6C7CD" },
-        Media: { bg: "#FFF6E8", color: "#B96C00", border: "#F4D29A" },
-        Baja: { bg: "#EAF8F1", color: "#1E8A57", border: "#B9E7CF" },
+        high: { bg: "#FDECEE", color: "#C43D4B", border: "#F6C7CD" },
+        medium: { bg: "#FFF6E8", color: "#B96C00", border: "#F4D29A" },
+        low: { bg: "#EAF8F1", color: "#1E8A57", border: "#B9E7CF" },
       },
       statuses: {
         Abierto: "#3F7AE0",
