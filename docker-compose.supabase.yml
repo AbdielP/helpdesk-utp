@@ -1,20 +1,4 @@
 services:
-  db:
-    image: helpdesk-utp-db
-    container_name: helpdesk-utp.db
-    build:
-      context: ./docker/postgres
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-helpdesk}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   helpdesk-users:
     image: helpdesk-users
     container_name: helpdesk.users
@@ -22,12 +6,10 @@ services:
     build:
       context: ./backend
       dockerfile: helpdesk-users/Dockerfile
-    depends_on:
-      - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING}
       Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
       Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
     ports:
@@ -40,12 +22,10 @@ services:
     build:
       context: ./backend
       dockerfile: helpdesk-tickets/Dockerfile
-    depends_on:
-      - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING}
       Notifications__ApiUrl: ${NOTIFICATIONS_API_URL:-http://helpdesk-notifications:8080}
       Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
       Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
@@ -59,12 +39,10 @@ services:
     build:
       context: ./backend
       dockerfile: helpdesk-notifications/Dockerfile
-    depends_on:
-      - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING}
       Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
       Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
     ports:
@@ -87,7 +65,3 @@ services:
       - helpdesk-notifications
     ports:
       - "80:80"
- 
- 
-volumes:
-  postgres_data:

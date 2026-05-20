@@ -44,11 +44,9 @@ helpdesk-utp/
 - Tickets API: `5201`
 - Notifications API: `5202`
 - PostgreSQL: `5432`
-- Grafana: `3000`
-- Prometheus: `9090`
-- Tempo: `3200`
-- OTLP gRPC: `4317`
-- OTLP HTTP: `4318`
+- Grafana opcional: `3000`
+- Prometheus opcional: `9090`
+- Tempo opcional: `3200`
 
 ## 1. Levantar la base de datos
 
@@ -183,25 +181,19 @@ npm run dev
 
 En Docker, el frontend queda disponible en `http://localhost`.
 
-## 4.1 Observabilidad
+## 4.1 Observabilidad opcional
 
-El proyecto incluye observabilidad con Grafana, Prometheus y Tempo usando `docker-compose.observability.yml`.
-
-Para levantarla junto con los servicios principales:
+No es necesaria para correr la app. Si algun dia quieres probar Grafana, Prometheus y Tempo:
 
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
 ```
 
-Servicios expuestos:
+Servicios:
 
 - Grafana: `http://localhost:3000`
 - Prometheus: `http://localhost:9090`
 - Tempo: `http://localhost:3200`
-- OTLP gRPC: `http://localhost:4317`
-- OTLP HTTP: `http://localhost:4318`
-
-Grafana queda provisionado con datasources desde `observability/grafana/datasources`.
 
 ## 5. Orden recomendado de arranque
 
@@ -222,6 +214,3 @@ Cuando todo este arriba:
 - Users API: `http://localhost:5200`
 - Tickets API: `http://localhost:5201`
 - Notifications API: `http://localhost:5202`
-- Grafana: `http://localhost:3000`
-- Prometheus: `http://localhost:9090`
-- Tempo: `http://localhost:3200`
