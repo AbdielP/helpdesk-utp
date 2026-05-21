@@ -41,6 +41,11 @@ const shouldRetry = (error) => {
     return false;
   }
 
+  const method = error.config.method?.toLowerCase();
+  if (method && method !== "get") {
+    return false;
+  }
+
   if (error.code === "ECONNABORTED" || error.code === "ERR_NETWORK") {
     return true;
   }
