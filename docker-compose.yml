@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-helpdesk}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: helpdesk
     ports:
       - "5432:5432"
     volumes:
@@ -25,11 +25,11 @@ services:
     depends_on:
       - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
-      Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
-      Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+      Cors__AllowedOrigins__1: http://localhost
     ports:
       - "5200:8080"
 
@@ -43,12 +43,12 @@ services:
     depends_on:
       - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
-      Notifications__ApiUrl: ${NOTIFICATIONS_API_URL:-http://helpdesk-notifications:8080}
-      Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
-      Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Notifications__ApiUrl: http://helpdesk-notifications:8080
+      Cors__AllowedOrigins__0: http://localhost:5173
+      Cors__AllowedOrigins__1: http://localhost
     ports:
       - "5201:8080"
 
@@ -62,11 +62,11 @@ services:
     depends_on:
       - db
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Database=helpdesk;Username=postgres;Password=postgres}
-      Cors__AllowedOrigins__0: ${FRONTEND_DEV_ORIGIN:-http://localhost:5173}
-      Cors__AllowedOrigins__1: ${FRONTEND_DOCKER_ORIGIN:-http://localhost}
+      ConnectionStrings__DefaultConnection: Host=db;Database=helpdesk;Username=postgres;Password=postgres
+      Cors__AllowedOrigins__0: http://localhost:5173
+      Cors__AllowedOrigins__1: http://localhost
     ports:
       - "5202:8080"
 
