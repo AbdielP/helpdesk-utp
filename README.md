@@ -2,85 +2,133 @@
 
 Proyecto final de Topicos Especiales de Ingenieria de Software II.
 
-Stack principal:
+## Version live
+
+- Frontend: `https://helpdesk-utp.vercel.app`
+- Users API: `https://helpdesk-users.onrender.com`
+- Tickets API: `https://helpdesk-tickets-jcm8.onrender.com`
+- Notifications API: `https://helpdesk-notifications.onrender.com`
+- Base de datos live: Supabase PostgreSQL
+
+Nota: los servicios gratuitos de Render pueden dormir por inactividad. La primera peticion puede tardar.
+
+## Stack
+
 - Frontend: React + Vite
 - Backend: .NET 9
-- Base de datos: PostgreSQL 15
+- Base de datos local: PostgreSQL 15
 - Orquestacion local: Docker Compose
-
-## TODO
-
-1. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
-2. Falta `refreshSession()` / `authMe()` para refrescar la sesion al recargar pagina.
-3. El backend no esta usando JWT, está instalado en helpdesk-users
-4. Mensajes de errores especificos.
-    - Mensajes personalizados cuando servicios down.
-5. Hay duplicidad de endpoints según rol
-    - Ejemplo: consultar tickets
-6. las metricas de tickets podrían ser un servicio
 
 ## Estructura
 
 ```text
 helpdesk-utp/
-|-- frontend/
 |-- backend/
+|   |-- helpdesk-users/
+|   |-- helpdesk-tickets/
+|   `-- helpdesk-notifications/
+|-- frontend/
 |-- docker-compose.yml
+|-- docker-compose.supabase.yml
 `-- README.md
 ```
-## Requisitos previos
 
-- Docker Desktop
-- Node.js 24.x
-- npm
-- .NET SDK 10
-- Un cliente para PostgreSQL o `psql` (OPCIONAL)
+## Entornos
 
-## Puertos usados
+### Local completo
 
-- Frontend Docker/Nginx: `80`
-- Frontend Vite dev: `5173`
-- Users API: `5200`
-- Tickets API: `5201`
-- Notifications API: `5202`
-- PostgreSQL: `5432`
-- Grafana opcional: `3000`
-- Prometheus opcional: `9090`
-- Tempo opcional: `3200`
+Usa `docker-compose.yml`.
 
-## 1. Levantar la base de datos
-
-Desde la raiz del proyecto:
+Levanta frontend, backends y PostgreSQL local en Docker.
 
 ```powershell
-docker compose up -d
+docker compose up -d --build
 ```
 
-Esto levanta PostgreSQL con estos valores:
+URLs locales:
 
-- Host: `localhost`
-- Port: `5432`
-- Database: `helpdesk`
-- Username: `postgres`
-- Password: `postgres`
+- Frontend Docker: `http://localhost`
+- Users API: `http://localhost:5200`
+- Tickets API: `http://localhost:5201`
+- Notifications API: `http://localhost:5202`
+- PostgreSQL: `localhost:5432`
 
-Importante:
-- Debes conectarte a la base de datos llamada `helpdesk`.
-- Las migrations no estan funcionales para preparar la BD automaticamente.
-- Por eso, la base de datos se debe crear y poblar manualmente.
+Credenciales de PostgreSQL local:
 
-## 2. Crear tablas y poblar la base de datos manualmente
+```text
+Database: helpdesk
+User: postgres
+Password: postgres
+```
 
-Conectate a PostgreSQL asegurandote de usar la base `helpdesk`.
+### Local contra Supabase
+
+Usa `docker-compose.supabase.yml`.
+
+Este modo levanta solo frontend y backends locales, pero usa la base de datos de Supabase configurada en el `.env` de la raiz.
+
+```powershell
+docker compose -f docker-compose.supabase.yml up -d --build
+```
+
+Para apagar:
+
+```powershell
+docker compose -f docker-compose.supabase.yml down
+```
+
+## Variables de entorno
+
+### Raiz del proyecto
+
+`.env` es local y no se sube a git. Sirve para el modo Supabase.
+
+Plantilla:
+
+```text
+.env.example
+```
+
+### Frontend
+
+`frontend/.env` es local y no se sube a git. Sirve cuando corres Vite en desarrollo.
+
+Plantilla:
+
+```text
+frontend/.env.example
+```
+
+Variables esperadas:
+
+```env
+VITE_USERS_API_URL=http://localhost:5200
+VITE_TICKETS_API_URL=http://localhost:5201
+VITE_NOTIFICATIONS_API_URL=http://localhost:5202
+VITE_API_TIMEOUT_MS=10000
+VITE_API_RETRY_DELAY_MS=5000
+```
+
+En Vercel, estas mismas variables se configuran en el panel de Environment Variables, usando las URLs live de Render.
+
+## Preparar base de datos local
+
+Las migraciones no estan automatizadas. Despues de levantar PostgreSQL local, conectate a la base `helpdesk` y ejecuta:
 
 ```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+DROP TABLE IF EXISTS ticket_history;
+DROP TABLE IF EXISTS tickets;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    CONSTRAINT chk_role CHECK (role IN ('admin', 'user', 'support'))
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT users_role_check CHECK (role IN ('admin', 'user', 'support'))
 );
 
 CREATE TABLE tickets (
@@ -88,17 +136,18 @@ CREATE TABLE tickets (
     title TEXT NOT NULL,
     description TEXT,
     category TEXT,
-    priority TEXT,
+    priority TEXT NOT NULL,
     status TEXT,
     created_by UUID NOT NULL,
     assigned_to UUID,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    CONSTRAINT fk_created_by
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT tickets_priority_check CHECK (priority IN ('low', 'medium', 'high')),
+    CONSTRAINT fk_tickets_created_by
         FOREIGN KEY (created_by)
         REFERENCES users(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_assigned_to
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_tickets_assigned_to
         FOREIGN KEY (assigned_to)
         REFERENCES users(id)
         ON DELETE SET NULL
@@ -109,12 +158,12 @@ CREATE TABLE ticket_history (
     ticket_id UUID NOT NULL,
     user_id UUID NOT NULL,
     action TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    CONSTRAINT fk_ticket
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_ticket_history_ticket
         FOREIGN KEY (ticket_id)
         REFERENCES tickets(id)
         ON DELETE CASCADE,
-    CONSTRAINT fk_user
+    CONSTRAINT fk_ticket_history_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON DELETE CASCADE
@@ -133,71 +182,34 @@ VALUES
 ('admin1@mail.com', '1234', 'admin');
 ```
 
-## 3. Levantar el backend y frontend en Docker
+Usuarios de prueba:
 
-Desde la raiz del proyecto:
-
-```powershell
-docker compose up -d --build
+```text
+user1@mail.com / 1234
+user2@mail.com / 1234
+support1@mail.com / 1234
+support2@mail.com / 1234
+admin1@mail.com / 1234
 ```
 
-Esto levanta:
+## Desarrollo frontend sin Docker
 
-- `db`
-- `helpdesk-users`
-- `helpdesk-tickets`
-- `helpdesk-notifications`
-- `frontend`
-
-Si quieres reconstruir solo servicios especificos:
+En `frontend/`:
 
 ```powershell
-docker compose up -d --build helpdesk-users helpdesk-tickets helpdesk-notifications frontend
-```
-
-## 4. Levantar el frontend en desarrollo
-
-Si vas a correr el frontend con Vite en tu PC, en la carpeta `frontend`:
-
-```powershell
-npm i
-```
-
-Crea el archivo `.env` copiando el contenido de `.env.example`.
-
-Contenido esperado:
-
-```env
-VITE_USERS_API_URL=http://localhost:5200
-VITE_TICKETS_API_URL=http://localhost:5201
-VITE_NOTIFICATIONS_API_URL=http://localhost:5202
-```
-
-Luego inicia el frontend:
-
-```powershell
+npm install
 npm run dev
 ```
 
-En Docker, el frontend queda disponible en `http://localhost`.
+Frontend Vite:
 
-## 4.1 Nota para Vercel
-
-Cuando el frontend se despliegue en Vercel, migrar las variables de `frontend/.env` al panel de Environment Variables de Vercel.
-
-No configurar las URLs finales hasta tener desplegados los backends. Las variables son:
-
-```env
-VITE_USERS_API_URL=
-VITE_TICKETS_API_URL=
-VITE_NOTIFICATIONS_API_URL=
-VITE_API_TIMEOUT_MS=10000
-VITE_API_RETRY_DELAY_MS=5000
+```text
+http://localhost:5173
 ```
 
-## 4.2 Observabilidad opcional
+## Observabilidad opcional
 
-No es necesaria para correr la app. Si algun dia quieres probar Grafana, Prometheus y Tempo:
+No es necesaria para correr la app.
 
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
@@ -209,22 +221,22 @@ Servicios:
 - Prometheus: `http://localhost:9090`
 - Tempo: `http://localhost:3200`
 
-## 5. Orden recomendado de arranque
+## Comandos utiles
 
-1. Levantar la base de datos con `docker compose up -d`
-2. Conectarse a la BD `helpdesk`
-3. Ejecutar manualmente el SQL para crear tablas e insertar usuarios
-4. Levantar backend y frontend con `docker compose up -d --build`
-5. En `frontend/`, correr `npm i`
-6. Crear `frontend/.env` copiando `frontend/.env.example`
-7. Correr `npm run dev`
+Ver contenedores:
 
-## 6. Verificacion rapida
+```powershell
+docker compose ps
+```
 
-Cuando todo este arriba:
+Ver logs:
 
-- Frontend Docker: `http://localhost`
-- Frontend Vite dev: `http://localhost:5173`
-- Users API: `http://localhost:5200`
-- Tickets API: `http://localhost:5201`
-- Notifications API: `http://localhost:5202`
+```powershell
+docker compose logs --no-color --tail=80
+```
+
+Reconstruir un servicio:
+
+```powershell
+docker compose up -d --build helpdesk-tickets
+```
