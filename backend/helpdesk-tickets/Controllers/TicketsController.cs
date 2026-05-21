@@ -184,6 +184,12 @@ public class TicketsController(
             return BadRequest("created_by is required.");
         }
 
+        var normalizedPriority = NormalizePriority(request.Priority);
+        if (normalizedPriority is null)
+        {
+            return BadRequest("priority must be low, medium, or high.");
+        }
+
         var createdByExists = await dbContext.Users
             .AsNoTracking()
             .AnyAsync(user => user.Id == request.CreatedBy);
@@ -212,7 +218,7 @@ public class TicketsController(
             Title = request.Title.Trim(),
             Description = request.Description.Trim(),
             Category = request.Category.Trim(),
-            Priority = request.Priority.Trim(),
+            Priority = normalizedPriority,
             Status = "Abierto",
             CreatedBy = request.CreatedBy,
             AssignedTo = request.AssignedTo,
@@ -386,5 +392,16 @@ public class TicketsController(
             request.ActorUserId);
 
         return NoContent();
+    }
+
+    private static string? NormalizePriority(string priority)
+    {
+        return priority.Trim().ToLowerInvariant() switch
+        {
+            "low" or "baja" => "low",
+            "medium" or "media" => "medium",
+            "high" or "alta" => "high",
+            _ => null
+        };
     }
 }
