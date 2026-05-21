@@ -67,7 +67,7 @@ public class NotificationsController(
             Type = request.Type.Trim(),
             Message = request.Message.Trim(),
             IsRead = false,
-            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)
+            CreatedAt = DateTime.UtcNow
         };
 
         dbContext.Notifications.Add(notification);
@@ -256,7 +256,7 @@ public class NotificationsController(
             Type = type,
             Message = message,
             IsRead = false,
-            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)
+            CreatedAt = DateTime.UtcNow
         };
 
     private async Task SendNotificationAsync(Notification notification)
