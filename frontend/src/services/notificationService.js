@@ -20,10 +20,12 @@ export const markAllAsRead = async (userId, requestConfig = {}) => {
 };
 
 export const createNotificationsConnection = (userId) => {
-  const hubUrl = `${notificationsApiUrl.replace(/\/$/, "")}/hubs/notifications?userId=${userId}`;
+  const hubUrl = `${notificationsApiUrl.replace(/\/$/, "")}/hubs/notifications`;
 
   return new HubConnectionBuilder()
-    .withUrl(hubUrl)
+    .withUrl(hubUrl, {
+      withCredentials: true,
+    })
     .withAutomaticReconnect()
     .configureLogging(LogLevel.Warning)
     .build();

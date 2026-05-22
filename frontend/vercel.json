@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/users-api/:path*",
+      "destination": "https://helpdesk-users.onrender.com/:path*"
+    },
+    {
+      "source": "/tickets-api/:path*",
+      "destination": "https://helpdesk-tickets-jcm8.onrender.com/:path*"
+    },
+    {
+      "source": "/notifications-api/:path*",
+      "destination": "https://helpdesk-notifications.onrender.com/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}

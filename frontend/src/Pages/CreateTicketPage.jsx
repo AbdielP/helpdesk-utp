@@ -75,8 +75,6 @@ export default function CreateTicketPage() {
             description: formData.description,
             category: formData.category,
             priority: formData.priority,
-            created_by: user.id,
-            assigned_to: null,
           },
           requestConfig,
         ),

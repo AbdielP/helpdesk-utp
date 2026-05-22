@@ -8,15 +8,26 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
+    let isMounted = true;
+
+    const loadSession = async () => {
+      const currentUser = await authService.refreshSession();
+      if (isMounted) {
+        setUser(currentUser);
+        setLoading(false);
+      }
+    };
+
+    loadSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email, password, requestConfig) => {
     const res = await authService.login(email, password, requestConfig);
 
-    authService.persistSession(res);
     setUser(res.user);
   };
   

@@ -1,16 +1,13 @@
 import usersApiClient from "./usersApiClient";
-import { AUTH_ERRORS, STORAGE_KEYS } from "../constants/constants";
+import { AUTH_ERRORS } from "../constants/constants";
 
-const getCookieValue = (key) => {
-  const cookie = document.cookie
-    .split("; ")
-    .find((item) => item.startsWith(`${key}=`));
+const LEGACY_AUTH_STORAGE_KEYS = ["token", "user"];
 
-  if (!cookie) {
-    return null;
-  }
-
-  return cookie.split("=").slice(1).join("=");
+export const clearLegacyClientSession = () => {
+  LEGACY_AUTH_STORAGE_KEYS.forEach((key) => {
+    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
+  });
 };
 
 const createAuthError = (message) => {
@@ -21,6 +18,8 @@ const createAuthError = (message) => {
 
 export const login = async (email, password, requestConfig = {}) => {
   try {
+    clearLegacyClientSession();
+
     const { data } = await usersApiClient.post("/users/login", {
       email,
       password,
@@ -36,37 +35,23 @@ export const login = async (email, password, requestConfig = {}) => {
   }
 };
 
-export const persistSession = ({ token, user }) => {
-  document.cookie = `${STORAGE_KEYS.TOKEN}=${encodeURIComponent(token)}; path=/;`;
-  document.cookie = `${STORAGE_KEYS.USER}=${encodeURIComponent(
-    JSON.stringify(user),
-  )}; path=/;`;
-};
-
-export const clearSession = () => {
-  document.cookie = `${STORAGE_KEYS.TOKEN}=; Max-Age=0; path=/;`;
-  document.cookie = `${STORAGE_KEYS.USER}=; Max-Age=0; path=/;`;
-};
-
 export const logout = async (requestConfig = {}) => {
   try {
-    await Promise.resolve();
+    await usersApiClient.post("/users/logout", null, requestConfig);
+  } catch {
+    // Logout should clear client state even if the API is temporarily unavailable.
   } finally {
-    clearSession();
+    clearLegacyClientSession();
   }
 };
 
-export const getCurrentUser = () => {
-  const rawUser = getCookieValue(STORAGE_KEYS.USER);
-
-  if (!rawUser) {
-    return null;
-  }
+export const refreshSession = async () => {
+  clearLegacyClientSession();
 
   try {
-    return JSON.parse(decodeURIComponent(rawUser));
+    const { data } = await usersApiClient.get("/users/me");
+    return data;
   } catch {
-    clearSession();
     return null;
   }
 };

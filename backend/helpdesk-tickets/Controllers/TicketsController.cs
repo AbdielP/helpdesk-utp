@@ -2,11 +2,15 @@ using helpdesk_tickets.Data;
 using helpdesk_tickets.DTOs;
 using helpdesk_tickets.Entities;
 using helpdesk_tickets.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace helpdesk_tickets.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("tickets")]
 public class TicketsController(
@@ -14,23 +18,14 @@ public class TicketsController(
     NotificationEventPublisher notificationEventPublisher) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<TicketResponse>>> GetTickets(
-        [FromQuery] string? role,
-        [FromQuery] Guid? userId)
+    public async Task<ActionResult<List<TicketResponse>>> GetTickets()
     {
-        var normalizedRole = role?.Trim().ToLower();
+        var normalizedRole = GetCurrentUserRole();
+        var userId = GetCurrentUserId();
 
-        if (normalizedRole is not "admin" and not "support" and not "user")
+        if (normalizedRole is not "admin" and not "support" and not "user" || userId is null)
         {
-            return BadRequest("role must be admin, support, or user.");
-        }
-
-        if (normalizedRole is "support" or "user")
-        {
-            if (userId is null || userId == Guid.Empty)
-            {
-                return BadRequest("userId is required for support and user roles.");
-            }
+            return Unauthorized();
         }
 
         var query = dbContext.Tickets.AsNoTracking();
@@ -63,24 +58,14 @@ public class TicketsController(
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TicketDetailResponse>> GetTicketById(
-        Guid id,
-        [FromQuery] string? role,
-        [FromQuery] Guid? userId)
+    public async Task<ActionResult<TicketDetailResponse>> GetTicketById(Guid id)
     {
-        var normalizedRole = role?.Trim().ToLower();
+        var normalizedRole = GetCurrentUserRole();
+        var userId = GetCurrentUserId();
 
-        if (normalizedRole is not "admin" and not "support" and not "user")
+        if (normalizedRole is not "admin" and not "support" and not "user" || userId is null)
         {
-            return BadRequest("role must be admin, support, or user.");
-        }
-
-        if (normalizedRole is "support" or "user")
-        {
-            if (userId is null || userId == Guid.Empty)
-            {
-                return BadRequest("userId is required for support and user roles.");
-            }
+            return Unauthorized();
         }
 
         var ticket = await dbContext.Tickets
@@ -168,20 +153,22 @@ public class TicketsController(
         ));
     }
 
+    [Authorize(Roles = "user")]
     [HttpPost]
     public async Task<ActionResult<TicketResponse>> CreateTicket(CreateTicketRequest request)
     {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId is null)
+        {
+            return Unauthorized();
+        }
+
         if (string.IsNullOrWhiteSpace(request.Title) ||
             string.IsNullOrWhiteSpace(request.Description) ||
             string.IsNullOrWhiteSpace(request.Category) ||
             string.IsNullOrWhiteSpace(request.Priority))
         {
             return BadRequest("title, description, category, and priority are required.");
-        }
-
-        if (request.CreatedBy == Guid.Empty)
-        {
-            return BadRequest("created_by is required.");
         }
 
         var normalizedPriority = NormalizePriority(request.Priority);
@@ -192,23 +179,11 @@ public class TicketsController(
 
         var createdByExists = await dbContext.Users
             .AsNoTracking()
-            .AnyAsync(user => user.Id == request.CreatedBy);
+            .AnyAsync(user => user.Id == currentUserId.Value);
 
         if (!createdByExists)
         {
-            return BadRequest("created_by must reference an existing user.");
-        }
-
-        if (request.AssignedTo is Guid assignedToUserId)
-        {
-            var assignedToExists = await dbContext.Users
-                .AsNoTracking()
-                .AnyAsync(user => user.Id == assignedToUserId);
-
-            if (!assignedToExists)
-            {
-                return BadRequest("assigned_to must reference an existing user.");
-            }
+            return BadRequest("authenticated user must reference an existing user.");
         }
 
         var now = DateTime.UtcNow;
@@ -220,8 +195,8 @@ public class TicketsController(
             Category = request.Category.Trim(),
             Priority = normalizedPriority,
             Status = "Abierto",
-            CreatedBy = request.CreatedBy,
-            AssignedTo = request.AssignedTo,
+            CreatedBy = currentUserId.Value,
+            AssignedTo = null,
             CreatedAt = now,
             UpdatedAt = now
         };
@@ -281,27 +256,39 @@ public class TicketsController(
     [HttpPatch("{id:guid}/status")]
     public async Task<IActionResult> UpdateTicketStatus(Guid id, UpdateTicketStatusRequest request)
     {
+        var currentUserId = GetCurrentUserId();
+        var currentRole = GetCurrentUserRole();
+        if (currentUserId is null)
+        {
+            return Unauthorized();
+        }
+
+        if (currentRole is not "admin" and not "support")
+        {
+            return Forbid();
+        }
+
         if (string.IsNullOrWhiteSpace(request.Status))
         {
             return BadRequest("status is required.");
         }
 
-        if (request.ActorUserId == Guid.Empty)
-        {
-            return BadRequest("actorUserId is required.");
-        }
-
         var actorExists = await dbContext.Users
             .AsNoTracking()
-            .AnyAsync(user => user.Id == request.ActorUserId);
+            .AnyAsync(user => user.Id == currentUserId.Value);
 
         if (!actorExists)
         {
-            return BadRequest("actorUserId must reference an existing user.");
+            return BadRequest("authenticated user must reference an existing user.");
         }
 
         var ticket = await dbContext.Tickets.FirstOrDefaultAsync(existing => existing.Id == id);
         if (ticket is null)
+        {
+            return NotFound();
+        }
+
+        if (currentRole == "support" && ticket.AssignedTo != currentUserId.Value)
         {
             return NotFound();
         }
@@ -320,7 +307,7 @@ public class TicketsController(
         {
             Id = Guid.NewGuid(),
             TicketId = ticket.Id,
-            UserId = request.ActorUserId,
+            UserId = currentUserId.Value,
             Action = $"Estado cambiado de {previousStatus} a {status}",
             CreatedAt = ticket.UpdatedAt
         });
@@ -331,24 +318,31 @@ public class TicketsController(
                 ? "ticket.closed"
                 : "ticket.status_changed",
             ticket.Id,
-            request.ActorUserId,
+            currentUserId.Value,
             previousStatus,
             status);
 
         return NoContent();
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPatch("{id:guid}/assign")]
     public async Task<IActionResult> AssignTicket(Guid id, AssignTicketRequest request)
     {
-        if (request.AssigneeUserId == Guid.Empty || request.ActorUserId == Guid.Empty)
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId is null)
         {
-            return BadRequest("assigneeUserId and actorUserId are required.");
+            return Unauthorized();
+        }
+
+        if (request.AssigneeUserId == Guid.Empty)
+        {
+            return BadRequest("assigneeUserId is required.");
         }
 
         var usersExist = await dbContext.Users
             .AsNoTracking()
-            .Where(user => user.Id == request.AssigneeUserId || user.Id == request.ActorUserId)
+            .Where(user => user.Id == request.AssigneeUserId || user.Id == currentUserId.Value)
             .Select(user => user.Id)
             .ToListAsync();
 
@@ -357,9 +351,9 @@ public class TicketsController(
             return BadRequest("assigneeUserId must reference an existing user.");
         }
 
-        if (!usersExist.Contains(request.ActorUserId))
+        if (!usersExist.Contains(currentUserId.Value))
         {
-            return BadRequest("actorUserId must reference an existing user.");
+            return BadRequest("authenticated user must reference an existing user.");
         }
 
         var ticket = await dbContext.Tickets.FirstOrDefaultAsync(existing => existing.Id == id);
@@ -380,7 +374,7 @@ public class TicketsController(
         {
             Id = Guid.NewGuid(),
             TicketId = ticket.Id,
-            UserId = request.ActorUserId,
+            UserId = currentUserId.Value,
             Action = $"Ticket asignado al tecnico {request.AssigneeUserId}",
             CreatedAt = ticket.UpdatedAt
         });
@@ -389,10 +383,21 @@ public class TicketsController(
         await notificationEventPublisher.PublishTicketEventAsync(
             "ticket.assigned",
             ticket.Id,
-            request.ActorUserId);
+            currentUserId.Value);
 
         return NoContent();
     }
+
+    private Guid? GetCurrentUserId()
+    {
+        var rawUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                        User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        return Guid.TryParse(rawUserId, out var userId) ? userId : null;
+    }
+
+    private string? GetCurrentUserRole() =>
+        User.FindFirstValue(ClaimTypes.Role)?.Trim().ToLowerInvariant();
 
     private static string? NormalizePriority(string priority)
     {

@@ -109,7 +109,26 @@ VITE_API_TIMEOUT_MS=10000
 VITE_API_RETRY_DELAY_MS=5000
 ```
 
-En Vercel, estas mismas variables se configuran en el panel de Environment Variables, usando las URLs live de Render.
+En Vercel, el frontend debe usar rutas relativas para mantener la autenticacion por cookie `HttpOnly` en el mismo origen:
+
+```env
+VITE_USERS_API_URL=/users-api
+VITE_TICKETS_API_URL=/tickets-api
+VITE_NOTIFICATIONS_API_URL=/notifications-api
+```
+
+`frontend/vercel.json` reescribe esas rutas hacia las APIs de Render. No uses las URLs directas de Render como `VITE_*_API_URL` en Vercel, porque la cookie de sesion quedaria en un dominio distinto al de las otras APIs.
+
+Variables requeridas en los 3 servicios de Render:
+
+```env
+Jwt__Issuer=helpdesk-utp
+Jwt__Audience=helpdesk-utp
+Jwt__Key=CAMBIAR_POR_UN_SECRETO_LARGO_IGUAL_EN_LOS_3_SERVICIOS
+Cors__AllowedOrigins__0=https://helpdesk-utp.vercel.app
+```
+
+`Jwt__Key` debe ser el mismo valor en Users, Tickets y Notifications.
 
 ## Preparar base de datos local
 
@@ -240,3 +259,13 @@ Reconstruir un servicio:
 ```powershell
 docker compose up -d --build helpdesk-tickets
 ```
+## TODO
+
+1. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
+2. Falta `refreshSession()` / `authMe()` para refrescar la sesion al recargar pagina.
+3. [x] JWT real implementado en backend y frontend.
+4. Mensajes de errores especificos.
+    - Mensajes personalizados cuando servicios down.
+5. Hay duplicidad de endpoints según rol
+    - Ejemplo: consultar tickets
+6. las metricas de tickets podrían ser un servicio

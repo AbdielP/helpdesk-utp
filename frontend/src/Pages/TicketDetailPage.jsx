@@ -27,8 +27,8 @@ import TicketChip from "../shared/TicketChip";
 import {
   assignTicketToSupport,
   getSupportUsers,
-  getTicketByRole,
-  updateTicketStatusByRole,
+  getTicket,
+  updateTicketStatus,
 } from "../services/ticketService";
 
 const formatDateTime = (value) => {
@@ -99,7 +99,7 @@ const TicketDetailPage = () => {
 
     runDetailRequest(async (requestConfig) => {
       const requests = [
-        getTicketByRole(currentUser.role, id, currentUser.id, requestConfig),
+        getTicket(id, requestConfig),
       ];
 
       if (currentUser.role === ROLES.ADMIN) {
@@ -136,12 +136,7 @@ const TicketDetailPage = () => {
 
     try {
       setIsSaving(true);
-      await updateTicketStatusByRole(
-        currentUser.role,
-        ticket.id,
-        nextStatus,
-        currentUser.id,
-      );
+      await updateTicketStatus(ticket.id, nextStatus);
       await loadTicketDetail();
       showNotification(`Estado actualizado a ${nextStatus}`, "success");
     } catch {
@@ -158,7 +153,7 @@ const TicketDetailPage = () => {
 
     try {
       setIsSaving(true);
-      await assignTicketToSupport(ticket.id, nextAssignedTo, currentUser.id);
+      await assignTicketToSupport(ticket.id, nextAssignedTo);
       await loadTicketDetail();
       showNotification("Ticket asignado correctamente", "success");
     } catch {

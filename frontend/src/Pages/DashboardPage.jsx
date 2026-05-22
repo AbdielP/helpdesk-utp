@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRequest } from "../hooks/useRequest";
 import { useNotification } from "../shared/NotificationProvider";
 import RequestStatus from "../shared/RequestStatus";
-import { getSupportUsers, getTicketsByRole } from "../services/ticketService";
+import { getSupportUsers, getTickets } from "../services/ticketService";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const DashboardPage = () => {
     }
 
     runDashboardRequest(async (requestConfig) => {
-      const fetchedTickets = await getTicketsByRole(user.role, user.id, requestConfig);
+      const fetchedTickets = await getTickets(requestConfig);
       setTickets(fetchedTickets);
 
       if (user.role === ROLES.ADMIN) {

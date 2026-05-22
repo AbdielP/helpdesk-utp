@@ -2,12 +2,16 @@ using helpdesk_notifications.Data;
 using helpdesk_notifications.DTOs;
 using helpdesk_notifications.Entities;
 using helpdesk_notifications.Hubs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace helpdesk_notifications.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("notifications")]
 public class NotificationsController(
@@ -17,6 +21,11 @@ public class NotificationsController(
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<List<Notification>>> GetUserNotifications(Guid userId)
     {
+        if (!CanAccessUserNotifications(userId))
+        {
+            return Forbid();
+        }
+
         var notifications = await dbContext.Notifications
             .AsNoTracking()
             .Where(notification => notification.UserId == userId)
@@ -30,6 +39,11 @@ public class NotificationsController(
     [HttpGet("user/{userId:guid}/unread-count")]
     public async Task<ActionResult<object>> GetUnreadCount(Guid userId)
     {
+        if (!CanAccessUserNotifications(userId))
+        {
+            return Forbid();
+        }
+
         var count = await dbContext.Notifications
             .AsNoTracking()
             .CountAsync(notification => notification.UserId == userId && !notification.IsRead);
@@ -37,6 +51,7 @@ public class NotificationsController(
         return Ok(new { count });
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<Notification>> CreateNotification(CreateNotificationRequest request)
     {
@@ -77,6 +92,7 @@ public class NotificationsController(
         return Created($"/notifications/{notification.Id}", notification);
     }
 
+    [AllowAnonymous]
     [HttpPost("events/ticket")]
     public async Task<IActionResult> CreateFromTicketEvent(TicketEventRequest request)
     {
@@ -134,6 +150,11 @@ public class NotificationsController(
             return NotFound();
         }
 
+        if (!CanAccessUserNotifications(notification.UserId))
+        {
+            return Forbid();
+        }
+
         if (!notification.IsRead)
         {
             notification.IsRead = true;
@@ -147,6 +168,11 @@ public class NotificationsController(
     [HttpPatch("user/{userId:guid}/read-all")]
     public async Task<IActionResult> MarkAllAsRead(Guid userId)
     {
+        if (!CanAccessUserNotifications(userId))
+        {
+            return Forbid();
+        }
+
         var updatedCount = await dbContext.Notifications
             .Where(notification => notification.UserId == userId && !notification.IsRead)
             .ExecuteUpdateAsync(setters => setters.SetProperty(notification => notification.IsRead, true));
@@ -279,5 +305,21 @@ public class NotificationsController(
             .Clients
             .Group(NotificationsHub.GetUserGroupName(userId))
             .SendAsync("UnreadCountChanged", count);
+    }
+
+    private bool CanAccessUserNotifications(Guid userId)
+    {
+        var currentUserId = GetCurrentUserId();
+        var currentRole = User.FindFirstValue(ClaimTypes.Role)?.Trim().ToLowerInvariant();
+
+        return currentRole == "admin" || currentUserId == userId;
+    }
+
+    private Guid? GetCurrentUserId()
+    {
+        var rawUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                        User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        return Guid.TryParse(rawUserId, out var userId) ? userId : null;
     }
 }

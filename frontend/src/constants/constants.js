@@ -21,7 +21,6 @@ export const ERROR_MESSAGES = {
 
 export const STORAGE_KEYS = {
   USER: "user",
-  TOKEN: "token",
 };
 
 export const ROUTES = {
