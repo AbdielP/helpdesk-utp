@@ -54,6 +54,13 @@ const shouldRetry = (error) => {
   return status >= 500 && status < 600;
 };
 
+/**
+ * Crea un cliente HTTP con cookies habilitadas y reintentos prudentes para lecturas.
+ * Los POST/PATCH no se reintentan para evitar duplicar acciones del usuario.
+ *
+ * @param {string} baseURL URL base del servicio que se va a consumir.
+ * @returns {import("axios").AxiosInstance} Cliente Axios configurado para las APIs del helpdesk.
+ */
 export const createApiClient = (baseURL) => {
   const client = axios.create({
     baseURL,
@@ -96,6 +103,9 @@ export const createApiClient = (baseURL) => {
   return client;
 };
 
+/**
+ * Valores que usa la UI para mostrar intentos, timeouts y espera entre reintentos.
+ */
 export const REQUEST_RETRY_CONFIG = {
   maxAttempts: DEFAULT_MAX_ATTEMPTS,
   timeoutMs: getTimeoutMs(),

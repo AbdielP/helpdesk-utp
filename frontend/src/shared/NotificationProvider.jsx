@@ -6,6 +6,10 @@ const NotificationContext = createContext()
 
 export const useNotification = () => useContext(NotificationContext)
 
+/**
+ * Expone una forma unica de mostrar mensajes breves en la app.
+ * Asi las pantallas no tienen que conocer los detalles de Snackbar ni severidades de MUI.
+ */
 export const NotificationProvider = ({ children }) => {
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState("")

@@ -10,6 +10,9 @@ using System.Security.Claims;
 
 namespace helpdesk_tickets.Controllers;
 
+/// <summary>
+/// Gestiona el ciclo de vida de los tickets y aplica las reglas de visibilidad por rol.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("tickets")]
@@ -17,6 +20,9 @@ public class TicketsController(
     TicketsDbContext dbContext,
     NotificationEventPublisher notificationEventPublisher) : ControllerBase
 {
+    /// <summary>
+    /// Devuelve los tickets visibles para el usuario actual segun su rol.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<TicketResponse>>> GetTickets()
     {
@@ -57,6 +63,9 @@ public class TicketsController(
         return Ok(tickets);
     }
 
+    /// <summary>
+    /// Obtiene el detalle de un ticket junto con usuarios relacionados e historial de cambios.
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TicketDetailResponse>> GetTicketById(Guid id)
     {
@@ -153,6 +162,9 @@ public class TicketsController(
         ));
     }
 
+    /// <summary>
+    /// Crea un ticket como usuario final y registra el primer evento de historial.
+    /// </summary>
     [Authorize(Roles = "user")]
     [HttpPost]
     public async Task<ActionResult<TicketResponse>> CreateTicket(CreateTicketRequest request)
@@ -253,6 +265,9 @@ public class TicketsController(
         return Created($"/tickets/{ticket.Id}", response);
     }
 
+    /// <summary>
+    /// Cambia el estado de un ticket y notifica al usuario que lo creo.
+    /// </summary>
     [HttpPatch("{id:guid}/status")]
     public async Task<IActionResult> UpdateTicketStatus(Guid id, UpdateTicketStatusRequest request)
     {
@@ -325,6 +340,9 @@ public class TicketsController(
         return NoContent();
     }
 
+    /// <summary>
+    /// Asigna un ticket a soporte; solo administradores pueden mover esta responsabilidad.
+    /// </summary>
     [Authorize(Roles = "admin")]
     [HttpPatch("{id:guid}/assign")]
     public async Task<IActionResult> AssignTicket(Guid id, AssignTicketRequest request)

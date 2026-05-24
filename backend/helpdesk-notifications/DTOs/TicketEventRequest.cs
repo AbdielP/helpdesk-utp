@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace helpdesk_notifications.DTOs;
 
+/// <summary>
+/// Evento recibido desde Tickets API para decidir a quienes notificar.
+/// </summary>
 public record TicketEventRequest(
     string Type,
     [property: JsonPropertyName("ticket_id")] Guid TicketId,

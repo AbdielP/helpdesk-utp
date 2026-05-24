@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace helpdesk_tickets.DTOs;
 
+/// <summary>
+/// Vista resumida de un ticket para listados y tableros.
+/// </summary>
 public record TicketResponse(
     Guid Id,
     string Title,

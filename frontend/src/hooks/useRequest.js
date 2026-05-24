@@ -15,6 +15,24 @@ const initialState = {
   lastFailureReason: null,
 };
 
+/**
+ * Centraliza el estado visual de una peticion: carga, error, reintentos y cuenta regresiva.
+ * Sirve para que las pantallas no repitan la misma logica cada vez que llaman una API.
+ *
+ * @param {{ onSuccess?: Function, onError?: Function }} [callbacks]
+ * @returns {{
+ *   isLoading: boolean,
+ *   isRetrying: boolean,
+ *   error: unknown,
+ *   attempt: number,
+ *   maxAttempts: number,
+ *   remainingSeconds: number,
+ *   lastFailureReason: string | null,
+ *   timeoutMs: number,
+ *   run: Function,
+ *   reset: Function
+ * }}
+ */
 export const useRequest = ({ onSuccess, onError } = {}) => {
   const [state, setState] = useState(initialState);
 

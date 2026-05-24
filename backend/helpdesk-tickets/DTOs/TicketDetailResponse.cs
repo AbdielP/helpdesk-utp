@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace helpdesk_tickets.DTOs;
 
+/// <summary>
+/// Vista completa de un ticket, incluyendo actores e historial para la pantalla de detalle.
+/// </summary>
 public record TicketDetailResponse(
     Guid Id,
     string Title,

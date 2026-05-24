@@ -11,6 +11,9 @@ using System.Security.Claims;
 
 namespace helpdesk_notifications.Controllers;
 
+/// <summary>
+/// Guarda notificaciones y las envia en tiempo real al usuario conectado por SignalR.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("notifications")]
@@ -18,6 +21,9 @@ public class NotificationsController(
     NotificationsDbContext dbContext,
     IHubContext<NotificationsHub> hubContext) : ControllerBase
 {
+    /// <summary>
+    /// Lista las notificaciones recientes de un usuario, respetando que solo el usuario o admin puedan verlas.
+    /// </summary>
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<List<Notification>>> GetUserNotifications(Guid userId)
     {
@@ -36,6 +42,9 @@ public class NotificationsController(
         return Ok(notifications);
     }
 
+    /// <summary>
+    /// Devuelve cuantas notificaciones siguen pendientes de leer para pintar el contador del frontend.
+    /// </summary>
     [HttpGet("user/{userId:guid}/unread-count")]
     public async Task<ActionResult<object>> GetUnreadCount(Guid userId)
     {
@@ -51,6 +60,9 @@ public class NotificationsController(
         return Ok(new { count });
     }
 
+    /// <summary>
+    /// Crea una notificacion directa y la empuja por SignalR si el usuario esta conectado.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<Notification>> CreateNotification(CreateNotificationRequest request)
@@ -92,6 +104,9 @@ public class NotificationsController(
         return Created($"/notifications/{notification.Id}", notification);
     }
 
+    /// <summary>
+    /// Traduce eventos de tickets en notificaciones para usuarios, soporte o administradores.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("events/ticket")]
     public async Task<IActionResult> CreateFromTicketEvent(TicketEventRequest request)
@@ -141,6 +156,9 @@ public class NotificationsController(
         return Ok(notifications);
     }
 
+    /// <summary>
+    /// Marca una notificacion como leida y actualiza el contador en tiempo real.
+    /// </summary>
     [HttpPatch("{id:guid}/read")]
     public async Task<IActionResult> MarkAsRead(Guid id)
     {
@@ -165,6 +183,9 @@ public class NotificationsController(
         return NoContent();
     }
 
+    /// <summary>
+    /// Limpia de una vez todas las notificaciones pendientes de un usuario.
+    /// </summary>
     [HttpPatch("user/{userId:guid}/read-all")]
     public async Task<IActionResult> MarkAllAsRead(Guid userId)
     {

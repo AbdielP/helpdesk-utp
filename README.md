@@ -198,6 +198,18 @@ Servicios:
 - Prometheus: `http://localhost:9090`
 - Tempo: `http://localhost:3200`
 
+## Documentacion
+
+- [Arquitectura](docs/architecture.md)
+- [API](docs/api.md)
+- [Plan de documentacion tecnica](docs/documentation-plan.md)
+
+Swagger local:
+
+- Users API: `http://localhost:5200/swagger`
+- Tickets API: `http://localhost:5201/swagger`
+- Notifications API: `http://localhost:5202/swagger`
+
 ## Comandos utiles
 
 Ver contenedores:
@@ -217,10 +229,7 @@ Reconstruir un servicio:
 ```powershell
 docker compose up -d --build helpdesk-tickets
 ```
-## TODO
 
-1. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
-2. Mensajes de errores especificos.
-    - Mensajes personalizados cuando servicios down.
-3. Documentación JSDOC, Swagger, doc automatizada.
-4. Pruebas: Selenium, PlayWright
+## Pendientes
+
+Ver [roadmap tecnico](docs/roadmap.md).

@@ -10,6 +10,9 @@ using System.Text;
 
 namespace helpdesk_users.Controllers;
 
+/// <summary>
+/// Maneja la sesion de la app y expone los datos minimos de usuarios que necesitan las otras pantallas.
+/// </summary>
 [ApiController]
 [Route("users")]
 public class UsersController(
@@ -17,6 +20,9 @@ public class UsersController(
     IConfiguration configuration,
     IWebHostEnvironment environment) : ControllerBase
 {
+    /// <summary>
+    /// Lista usuarios de soporte para que un administrador pueda asignar tickets.
+    /// </summary>
     [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsers([FromQuery] string? role)
@@ -43,6 +49,9 @@ public class UsersController(
         return Ok(users);
     }
 
+    /// <summary>
+    /// Inicia sesion y guarda el JWT en una cookie HttpOnly para que el frontend no tenga que manejar el token.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
@@ -70,6 +79,9 @@ public class UsersController(
         ));
     }
 
+    /// <summary>
+    /// Cierra la sesion eliminando la cookie de acceso.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("logout")]
     public IActionResult Logout()
@@ -78,6 +90,9 @@ public class UsersController(
         return NoContent();
     }
 
+    /// <summary>
+    /// Devuelve el usuario asociado a la cookie actual; el frontend lo usa para restaurar la sesion.
+    /// </summary>
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<UserResponse>> GetCurrentUser()
