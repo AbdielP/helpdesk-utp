@@ -79,6 +79,10 @@ const getAssignmentEvent = (history = []) =>
     .sort((left, right) => new Date(right.created_at) - new Date(left.created_at))
     .find((entry) => entry.action?.startsWith("Ticket asignado"));
 
+/**
+ * Pantalla de detalle y gestion de un ticket.
+ * Centraliza lectura, historial, cambios de estado y asignacion cuando el rol lo permite.
+ */
 const TicketDetailPage = () => {
   const { id } = useParams();
   const theme = useTheme();

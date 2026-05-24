@@ -74,6 +74,10 @@ const formatNotificationTime = (value) => {
   return createdAt.toLocaleDateString("es-PA");
 };
 
+/**
+ * Menu de notificaciones en tiempo real.
+ * Combina una carga inicial por HTTP con eventos SignalR para mantener contador y lista al dia.
+ */
 const NotificationsMenu = () => {
   const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);

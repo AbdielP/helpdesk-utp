@@ -210,6 +210,14 @@ Swagger local:
 - Tickets API: `http://localhost:5201/swagger`
 - Notifications API: `http://localhost:5202/swagger`
 
+JSDoc frontend:
+
+```powershell
+cd frontend
+npm run docs:frontend
+Start-Process .\jsdoc\index.html
+```
+
 ## Comandos utiles
 
 Ver contenedores:

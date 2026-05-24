@@ -2,6 +2,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ROUTES } from "../constants/constants";
 
+/**
+ * Protege rutas que necesitan sesion y, opcionalmente, un conjunto de roles permitidos.
+ */
 const ProtectedRoute = ({ roles }) => {
   const { user, loading } = useAuth();
 

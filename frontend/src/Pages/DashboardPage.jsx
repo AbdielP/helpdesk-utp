@@ -13,6 +13,10 @@ import { useNotification } from "../shared/NotificationProvider";
 import RequestStatus from "../shared/RequestStatus";
 import { getSupportUsers, getTickets } from "../services/ticketService";
 
+/**
+ * Pantalla principal despues del login.
+ * Carga tickets segun el rol actual y, para administradores, tambien carga soportes asignables.
+ */
 const DashboardPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();

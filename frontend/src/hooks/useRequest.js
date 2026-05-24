@@ -19,7 +19,7 @@ const initialState = {
  * Centraliza el estado visual de una peticion: carga, error, reintentos y cuenta regresiva.
  * Sirve para que las pantallas no repitan la misma logica cada vez que llaman una API.
  *
- * @param {{ onSuccess?: Function, onError?: Function }} [callbacks]
+ * @param {Object} [callbacks] Callbacks opcionales para reaccionar a exito o error.
  * @returns {{
  *   isLoading: boolean,
  *   isRetrying: boolean,

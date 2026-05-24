@@ -41,6 +41,10 @@ const getSubmitStatusMessage = (request) => {
   return `Intentando conexion ${request.attempt}/${request.maxAttempts}`;
 };
 
+/**
+ * Formulario de creacion de tickets para usuarios finales.
+ * Usa el hook de peticiones para mostrar reintentos y evita crear tickets sin sesion activa.
+ */
 export default function CreateTicketPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const submitRequest = useRequest();

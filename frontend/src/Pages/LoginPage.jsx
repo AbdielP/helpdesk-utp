@@ -23,6 +23,10 @@ const getLoginFailureMessage = (reason) => {
   return null;
 };
 
+/**
+ * Pantalla de inicio de sesion.
+ * Delega la cookie HttpOnly al backend y muestra mensajes distintos para credenciales y fallos de red.
+ */
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();

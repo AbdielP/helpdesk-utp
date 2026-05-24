@@ -3,6 +3,10 @@ import * as authService from "../services/authService";
 
 const AuthContext = createContext();
 
+/**
+ * Mantiene la sesion de la app en memoria a partir de la cookie HttpOnly del backend.
+ * Al montar, valida la sesion con `/users/me` para evitar confiar en datos guardados en el navegador.
+ */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,6 +47,9 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+/**
+ * Acceso centralizado al usuario actual y acciones de login/logout.
+ */
 export const useAuth = () => {
   return useContext(AuthContext);
 };

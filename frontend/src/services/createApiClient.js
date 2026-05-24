@@ -59,7 +59,7 @@ const shouldRetry = (error) => {
  * Los POST/PATCH no se reintentan para evitar duplicar acciones del usuario.
  *
  * @param {string} baseURL URL base del servicio que se va a consumir.
- * @returns {import("axios").AxiosInstance} Cliente Axios configurado para las APIs del helpdesk.
+ * @returns {Object} Cliente Axios configurado para las APIs del helpdesk.
  */
 export const createApiClient = (baseURL) => {
   const client = axios.create({
