@@ -132,74 +132,32 @@ Cors__AllowedOrigins__0=https://helpdesk-utp.vercel.app
 
 ## Preparar base de datos local
 
-Las migraciones no estan automatizadas. Despues de levantar PostgreSQL local, conectate a la base `helpdesk` y ejecuta:
+La base se prepara con migraciones de Entity Framework Core.
 
-```sql
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+Al arrancar `helpdesk-users`, el servicio ejecuta automaticamente:
 
-DROP TABLE IF EXISTS ticket_history;
-DROP TABLE IF EXISTS tickets;
-DROP TABLE IF EXISTS users;
-
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT users_role_check CHECK (role IN ('admin', 'user', 'support'))
-);
-
-CREATE TABLE tickets (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title TEXT NOT NULL,
-    description TEXT,
-    category TEXT,
-    priority TEXT NOT NULL,
-    status TEXT,
-    created_by UUID NOT NULL,
-    assigned_to UUID,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT tickets_priority_check CHECK (priority IN ('low', 'medium', 'high')),
-    CONSTRAINT fk_tickets_created_by
-        FOREIGN KEY (created_by)
-        REFERENCES users(id)
-        ON DELETE RESTRICT,
-    CONSTRAINT fk_tickets_assigned_to
-        FOREIGN KEY (assigned_to)
-        REFERENCES users(id)
-        ON DELETE SET NULL
-);
-
-CREATE TABLE ticket_history (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    ticket_id UUID NOT NULL,
-    user_id UUID NOT NULL,
-    action TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT fk_ticket_history_ticket
-        FOREIGN KEY (ticket_id)
-        REFERENCES tickets(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_ticket_history_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
-
-CREATE INDEX idx_tickets_created_by ON tickets(created_by);
-CREATE INDEX idx_tickets_assigned_to ON tickets(assigned_to);
-CREATE INDEX idx_ticket_history_ticket_id ON ticket_history(ticket_id);
-
-INSERT INTO users (email, password, role)
-VALUES
-('user1@mail.com', '1234', 'user'),
-('user2@mail.com', '1234', 'user'),
-('support1@mail.com', '1234', 'support'),
-('support2@mail.com', '1234', 'support'),
-('admin1@mail.com', '1234', 'admin');
+```text
+Database.Migrate()
 ```
+
+La migracion inicial vive en:
+
+```text
+backend/helpdesk-users/Migrations/20260524000000_InitialHelpdeskSchema.cs
+```
+
+Esa migracion crea las tablas `users`, `tickets`, `ticket_history` y `notifications`. Despues se ejecuta un seed idempotente para crear o actualizar los usuarios de prueba.
+
+En Docker local, PostgreSQL crea la base `helpdesk` por la variable `POSTGRES_DB`, y las migraciones crean las tablas al iniciar `helpdesk-users`.
+
+Si quieres recrear la base local desde cero:
+
+```powershell
+docker compose down -v
+docker compose up -d --build
+```
+
+En Supabase, el proyecto/base de datos debe existir previamente. Al arrancar `helpdesk-users` con la cadena de conexion de Supabase, las migraciones crean las tablas y pueblan los usuarios si la conexion tiene permisos suficientes.
 
 Usuarios de prueba:
 
@@ -262,10 +220,7 @@ docker compose up -d --build helpdesk-tickets
 ## TODO
 
 1. Luego de cambiar un estado desde `ticketDetails`, al volver a `dashboard` hace un pequeno refresh. Tal vez sea el chip de la notificacion lo que lo provoca.
-2. Falta `refreshSession()` / `authMe()` para refrescar la sesion al recargar pagina.
-3. [x] JWT real implementado en backend y frontend.
-4. Mensajes de errores especificos.
+2. Mensajes de errores especificos.
     - Mensajes personalizados cuando servicios down.
-5. Hay duplicidad de endpoints según rol
-    - Ejemplo: consultar tickets
-6. las metricas de tickets podrían ser un servicio
+3. Documentación JSDOC, Swagger, doc automatizada.
+4. Pruebas: Selenium, PlayWright

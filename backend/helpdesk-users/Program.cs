@@ -66,6 +66,8 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 var app = builder.Build();
 
+await DatabaseInitializer.InitializeAsync(app.Services);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
     app.MapOpenApi();
