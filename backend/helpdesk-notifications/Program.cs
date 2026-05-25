@@ -14,6 +14,13 @@ var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    jwtKey ??= "testing-secret-key-with-more-than-32-bytes";
+    jwtIssuer ??= "helpdesk-utp";
+    jwtAudience ??= "helpdesk-utp";
+}
+
 if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32)
 {
     throw new InvalidOperationException("Jwt:Key must be configured with at least 32 bytes.");
@@ -104,3 +111,5 @@ app.MapControllers();
 app.MapHub<NotificationsHub>("/hubs/notifications");
 
 app.Run();
+
+public partial class Program;
